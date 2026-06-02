@@ -32,7 +32,9 @@ function montarTV(config) {
     let videoUrl = config.tvVideo || "https://www.youtube.com/embed/jfKfPfyJRdk";
     
     // Lógica do Player: Decide se é IPTV ou YouTube
-    if (videoUrl.includes('.m3u8')) {
+    const isIPTV = videoUrl.includes('.m3u8') || videoUrl.includes('output=hls') || videoUrl.includes('type=m3u');
+    
+    if (isIPTV) {
         const videoElement = document.getElementById('tv-iptv-player');
         videoElement.style.display = 'block';
         
