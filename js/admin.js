@@ -240,3 +240,36 @@ function gerarQRCode(id) {
     document.getElementById('link-tv').href = urlTv;
     container.style.display = "block";
 }
+
+// Funcionalidade de Gravação NFC (Web NFC API)
+document.getElementById('btn-nfc').addEventListener('click', async () => {
+    const statusText = document.getElementById('nfc-status');
+    const urlFinal = document.getElementById('link-cliente').href;
+
+    if (!("NDEFReader" in window)) {
+        statusText.style.display = 'block';
+        statusText.style.color = '#ff4444'; // Red
+        statusText.innerText = '❌ Erro: O seu navegador não suporta gravação NFC. Por favor, use o Google Chrome em um celular Android.';
+        return;
+    }
+
+    try {
+        statusText.style.display = 'block';
+        statusText.style.color = 'var(--accent-gold)';
+        statusText.innerText = '⏳ Aproxime a Tag NFC da parte de trás do seu celular...';
+        
+        const ndef = new NDEFReader();
+        await ndef.write(urlFinal);
+        
+        statusText.style.color = '#28a745'; // Green
+        statusText.innerText = '✅ Tag NFC Gravada com Sucesso!';
+        
+        // Vibração de sucesso se suportado
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        
+    } catch (error) {
+        console.error("Erro ao gravar NFC:", error);
+        statusText.style.color = '#ff4444';
+        statusText.innerText = '❌ Erro ao gravar: ' + (error.message || 'Verifique se a tag é regravável e tente novamente.');
+    }
+});
