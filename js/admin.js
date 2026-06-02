@@ -1,51 +1,77 @@
-import { db, doc, setDoc } from './firebase-config.js';
+import { db, doc, setDoc, storage, ref, uploadBytes, getDownloadURL } from './firebase-config.js';
+
+// Função auxiliar para fazer upload de um arquivo para o Storage e retornar a URL
+async function uploadImage(file, path) {
+    if (!file) return null;
+    const storageRef = ref(storage, path);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    return url;
+}
 
 document.getElementById('admin-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const btn = document.getElementById('btn-salvar');
-    btn.innerText = "Salvando no Banco...";
+    const loadingMsg = document.getElementById('loading-msg');
     btn.disabled = true;
+    loadingMsg.style.display = 'block';
 
-    // Pega os dados do formulário
     const barberId = document.getElementById('barberId').value.trim().toLowerCase();
-    const nome = document.getElementById('nome').value;
-    const pixKey = document.getElementById('pixKey').value;
-    const wifiPassword = document.getElementById('wifiPassword').value;
-    const corPrincipal = document.getElementById('corPrincipal').value;
-    const instagramUrl = document.getElementById('instagramUrl').value;
-    const whatsappUrl = document.getElementById('whatsappUrl').value;
-
-    const barbeariaData = {
-        nome: nome,
-        pixKey: pixKey,
-        wifiPassword: wifiPassword,
-        corPrincipal: corPrincipal,
-        instagramUrl: instagramUrl,
-        whatsappUrl: whatsappUrl,
-        slogan: "ESTILO & TRADIÇÃO",
-        dataCriacao: new Date().toISOString()
-    };
 
     try {
-        // Salva os dados no Firestore (no documento com o nome do ID escolhido)
+        // 1. Fazer upload de todas as imagens que o usuário enviou
+        const logoFile = document.getElementById('logoFile').files[0];
+        const logoUrl = await uploadImage(logoFile, `barbearias/${barberId}/logo.jpg`);
+
+        const corte1File = document.getElementById('corte1File').files[0];
+        const corte1Url = await uploadImage(corte1File, `barbearias/${barberId}/corte1.jpg`);
+        
+        const corte2File = document.getElementById('corte2File').files[0];
+        const corte2Url = await uploadImage(corte2File, `barbearias/${barberId}/corte2.jpg`);
+        
+        const corte3File = document.getElementById('corte3File').files[0];
+        const corte3Url = await uploadImage(corte3File, `barbearias/${barberId}/corte3.jpg`);
+
+        const tvAd1File = document.getElementById('tvAd1File').files[0];
+        const tvAd1Url = await uploadImage(tvAd1File, `barbearias/${barberId}/tvAd1.jpg`);
+
+        const tvAd2File = document.getElementById('tvAd2File').files[0];
+        const tvAd2Url = await uploadImage(tvAd2File, `barbearias/${barberId}/tvAd2.jpg`);
+
+        // 2. Montar objeto com os dados (apenas adiciona URL se a imagem foi enviada)
+        const barbeariaData = {
+            nome: document.getElementById('nome').value,
+            pixKey: document.getElementById('pixKey').value,
+            wifiPassword: document.getElementById('wifiPassword').value,
+            corPrincipal: document.getElementById('corPrincipal').value,
+            instagramUrl: document.getElementById('instagramUrl').value,
+            whatsappUrl: document.getElementById('whatsappUrl').value,
+            tvVideo: document.getElementById('tvVideo').value,
+            catalogo: [
+                { nome: document.getElementById('corte1Nome').value, imagem: corte1Url || "assets/fade.png" },
+                { nome: document.getElementById('corte2Nome').value, imagem: corte2Url || "assets/fade.png" },
+                { nome: document.getElementById('corte3Nome').value, imagem: corte3Url || "assets/fade.png" }
+            ].filter(c => c.nome !== ""), // Salva apenas os que tem nome preenchido
+            tvAds: [
+                tvAd1Url, tvAd2Url
+            ].filter(url => url !== null) // Remove os nulos
+        };
+
+        if(logoUrl) barbeariaData.logoUrl = logoUrl;
+
+        // 3. Salvar no Banco de Dados
         await setDoc(doc(db, "barbearias", barberId), barbeariaData);
         
-        btn.innerText = "Salvo com sucesso!";
-        btn.style.background = "#28a745"; // Verde sucesso
-
+        loadingMsg.innerText = "Salvo com sucesso!";
+        loadingMsg.style.color = "#28a745";
         gerarQRCode(barberId);
 
-        setTimeout(() => {
-            btn.innerText = "Salvar e Gerar QR Code";
-            btn.style.background = "var(--accent-gold)";
-            btn.disabled = false;
-        }, 3000);
-
     } catch (error) {
-        console.error("Erro ao salvar:", error);
-        alert("Erro ao conectar no banco de dados. Verifique as configurações do Firebase no console.");
-        btn.innerText = "Salvar e Gerar QR Code";
+        console.error("Erro no processo:", error);
+        loadingMsg.innerText = "Erro ao salvar. Verifique se o Firebase Storage está ativado no painel.";
+        loadingMsg.style.color = "red";
+    } finally {
         btn.disabled = false;
     }
 });
@@ -53,28 +79,22 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
 function gerarQRCode(barberId) {
     const qrcodeContainer = document.getElementById('qrcode-container');
     const qrcodeDiv = document.getElementById('qrcode');
-    const linkPreview = document.getElementById('link-preview');
-    
-    // Limpa qrcode antigo
     qrcodeDiv.innerHTML = '';
     
-    // Constrói a URL da página do cliente (dinâmica)
-    // Pega a URL base atual (ex: localhost ou vercel) e remove o admin.html se tiver
     let baseUrl = window.location.href.split('admin.html')[0];
     if(!baseUrl.endsWith('/')) baseUrl += '/';
     
     const clientUrl = baseUrl + "?id=" + barberId;
+    const tvUrl = baseUrl + "tv.html?id=" + barberId;
 
-    // Gera a imagem
     new QRCode(qrcodeDiv, {
         text: clientUrl,
-        width: 250,
-        height: 250,
-        colorDark : "#000000",
-        colorLight : "#ffffff",
+        width: 250, height: 250,
+        colorDark : "#000000", colorLight : "#ffffff",
         correctLevel : QRCode.CorrectLevel.H
     });
 
-    linkPreview.href = clientUrl;
+    document.getElementById('link-preview-app').href = clientUrl;
+    document.getElementById('link-preview-tv').href = tvUrl;
     qrcodeContainer.style.display = "block";
 }

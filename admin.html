@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Dono - Criar QR Code</title>
+    <title>Painel do Dono - SaaS</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         .admin-container {
@@ -15,6 +15,18 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.1);
         }
+        .form-section {
+            background: rgba(0,0,0,0.3);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 3px solid var(--accent-gold);
+        }
+        .form-section h3 {
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
         .form-group {
             margin-bottom: 1rem;
             display: flex;
@@ -22,16 +34,19 @@
             gap: 0.5rem;
         }
         .form-group label {
-            color: var(--accent-gold);
-            font-weight: 600;
+            color: white;
+            font-size: 0.9rem;
         }
         .form-group input {
             padding: 0.8rem;
             border-radius: 8px;
             border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.3);
+            background: rgba(255,255,255,0.05);
             color: white;
             font-size: 1rem;
+        }
+        .form-group input[type="file"] {
+            padding: 0.5rem;
         }
         #qrcode-container {
             margin-top: 2rem;
@@ -44,69 +59,106 @@
             margin-left: auto;
             margin-right: auto;
         }
-        #qrcode-container canvas, #qrcode-container img {
-            margin: 0 auto;
-        }
+        #qrcode-container canvas, #qrcode-container img { margin: 0 auto; }
+        .loading-text { text-align: center; color: var(--accent-gold); font-weight: bold; margin-top: 1rem; display: none;}
     </style>
 </head>
 <body>
 
     <div class="admin-container">
-        <h1 style="text-align: center; margin-bottom: 2rem;">Painel da Barbearia</h1>
+        <h1 style="text-align: center; margin-bottom: 2rem;">Configuração da Barbearia</h1>
         
         <form id="admin-form">
-            <div class="form-group">
-                <label>ID da Barbearia (ex: marcelo-barber)</label>
-                <input type="text" id="barberId" placeholder="nome-da-sua-barbearia" required pattern="[a-z0-9-]+">
-                <small style="color: gray;">Não use espaços, apenas letras minúsculas e hifens.</small>
+            
+            <div class="form-section">
+                <h3>1. Dados Principais</h3>
+                <div class="form-group">
+                    <label>ID Único (ex: marcelo-barber)</label>
+                    <input type="text" id="barberId" required pattern="[a-z0-9-]+">
+                    <small style="color: gray;">Apenas letras minúsculas e hifens.</small>
+                </div>
+                <div class="form-group">
+                    <label>Nome Oficial</label>
+                    <input type="text" id="nome" required>
+                </div>
+                <div class="form-group">
+                    <label>Cor Principal (Destaque)</label>
+                    <input type="color" id="corPrincipal" value="#d4af37" style="height: 50px;">
+                </div>
+                <div class="form-group">
+                    <label>Logo da Barbearia (Imagem)</label>
+                    <input type="file" id="logoFile" accept="image/*">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Nome Oficial da Barbearia</label>
-                <input type="text" id="nome" placeholder="Barbearia do Marcelo" required>
+            <div class="form-section">
+                <h3>2. Contato e Informações</h3>
+                <div class="form-group">
+                    <label>Chave PIX</label>
+                    <input type="text" id="pixKey" required>
+                </div>
+                <div class="form-group">
+                    <label>Senha do Wi-Fi</label>
+                    <input type="text" id="wifiPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>Instagram (Link completo)</label>
+                    <input type="url" id="instagramUrl">
+                </div>
+                <div class="form-group">
+                    <label>WhatsApp (Link wa.me/...)</label>
+                    <input type="url" id="whatsappUrl">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Chave PIX</label>
-                <input type="text" id="pixKey" placeholder="Seu CPF, CNPJ ou Celular" required>
+            <div class="form-section">
+                <h3>3. Catálogo (Celular)</h3>
+                <small style="color: gray; display:block; margin-bottom: 1rem;">Envie até 3 fotos de cortes e seus nomes.</small>
+                <div class="form-group">
+                    <input type="text" id="corte1Nome" placeholder="Nome do Corte 1 (Ex: Degradê)">
+                    <input type="file" id="corte1File" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="corte2Nome" placeholder="Nome do Corte 2">
+                    <input type="file" id="corte2File" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="corte3Nome" placeholder="Nome do Corte 3">
+                    <input type="file" id="corte3File" accept="image/*">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Senha do Wi-Fi</label>
-                <input type="text" id="wifiPassword" placeholder="Senha123" required>
+            <div class="form-section">
+                <h3>4. Sistema de TV</h3>
+                <div class="form-group">
+                    <label>Vídeo Principal (Programação normal)</label>
+                    <input type="url" id="tvVideo" placeholder="Link do vídeo do YouTube" value="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&loop=1&playlist=jfKfPfyJRdk">
+                    <small style="color: gray;">Deve ser um link de Incorporação (embed) do YouTube.</small>
+                </div>
+                <small style="color: gray; display:block; margin: 1rem 0;">Imagens de Anúncio que vão interromper o vídeo:</small>
+                <div class="form-group">
+                    <input type="file" id="tvAd1File" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <input type="file" id="tvAd2File" accept="image/*">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Cor Principal (Hexadecimal)</label>
-                <input type="color" id="corPrincipal" value="#d4af37" style="height: 50px;">
-            </div>
-
-            <div class="form-group">
-                <label>Link do Instagram</label>
-                <input type="url" id="instagramUrl" placeholder="https://instagram.com/seu.perfil">
-            </div>
-
-            <div class="form-group">
-                <label>Link do WhatsApp</label>
-                <input type="url" id="whatsappUrl" placeholder="https://wa.me/5511999999999">
-            </div>
-
-            <button type="submit" class="btn" id="btn-salvar" style="margin-top: 1rem; width: 100%;">
-                <i class="fas fa-save"></i> Salvar e Gerar QR Code
+            <button type="submit" class="btn" id="btn-salvar" style="width: 100%; padding: 1rem;">
+                Salvar Barbearia
             </button>
+            <div id="loading-msg" class="loading-text">Processando imagens e salvando dados... Aguarde!</div>
         </form>
 
         <div id="qrcode-container">
-            <h3 style="color: black; margin-bottom: 1rem;">O seu QR Code</h3>
+            <h3 style="color: black; margin-bottom: 1rem;">QR Code Gerado!</h3>
             <div id="qrcode"></div>
-            <p style="color: gray; font-size: 0.9rem; margin-top: 1rem;">Clique com o botão direito para salvar a imagem.</p>
-            <a id="link-preview" href="#" target="_blank" style="color: blue; display: block; margin-top: 1rem;">Abrir página gerada</a>
+            <a id="link-preview-app" href="#" target="_blank" style="color: blue; display: block; margin-top: 1rem;">Abrir Página Mobile</a>
+            <a id="link-preview-tv" href="#" target="_blank" style="color: red; display: block; margin-top: 0.5rem;">Abrir Tela da TV</a>
         </div>
     </div>
 
-    <!-- Script de geração de QR Code nativo (biblioteca confiável) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- Módulo Admin (Firebase) -->
     <script type="module" src="js/admin.js"></script>
 </body>
 </html>

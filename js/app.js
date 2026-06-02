@@ -5,12 +5,7 @@ async function carregarDados() {
     const barberId = urlParams.get('id');
 
     if (!barberId) {
-        document.body.innerHTML = `
-            <div style='text-align:center; margin-top:20vh;'>
-                <h1 style='color:white; font-size:3rem; font-weight:800;'>SaaS Barbearia</h1>
-                <p style='color:gray; margin-top: 1rem; font-size:1.2rem;'>Bem-vindo à plataforma. Acesse a página do estabelecimento usando o QR Code.</p>
-                <a href="admin.html" class="btn" style="width:fit-content; margin: 2rem auto;">Acessar Painel do Dono</a>
-            </div>`;
+        mostrarErro("Nenhuma barbearia selecionada. O link precisa ter ?id=nome-da-barbearia");
         return;
     }
 
@@ -22,53 +17,65 @@ async function carregarDados() {
             const config = docSnap.data();
             aplicarConfiguracoes(config);
         } else {
-            document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:20vh'>Barbearia não encontrada no banco de dados!</h1>";
+            mostrarErro(`A barbearia "${barberId}" não foi encontrada. O dono precisa salvar as configurações no Painel primeiro.`);
         }
     } catch (error) {
         console.error("Erro ao buscar dados:", error);
-        document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:20vh'>Erro ao conectar com o banco de dados. Verifique as permissões do Firebase.</h1>";
+        mostrarErro("Erro ao conectar com o servidor. O dono da barbearia precisa liberar o Banco de Dados (Firestore) no painel do Google.");
     }
 }
 
-function aplicarConfiguracoes(config) {
-    // Aplica as cores no CSS
-    document.documentElement.style.setProperty('--accent-gold', config.corPrincipal);
-    document.documentElement.style.setProperty('--accent-gold-hover', config.corPrincipal);
-    
-    // Preenche textos
-    document.getElementById('wl-nome').innerText = config.nome;
-    document.getElementById('wl-slogan').innerText = config.slogan || "ESTILO & TRADIÇÃO";
-    document.getElementById('wl-logo').src = "assets/logo.png"; // Padrão V1
-    document.title = config.nome;
+function mostrarErro(mensagem) {
+    document.body.innerHTML = `
+        <div style='text-align:center; margin-top:20vh; padding: 20px;'>
+            <h1 style='color:white; font-size:2rem; font-weight:800; margin-bottom:1rem;'>Ops!</h1>
+            <p style='color:#ff4444; font-size:1.2rem;'>${mensagem}</p>
+            <a href="admin.html" class="btn" style="width:fit-content; margin: 2rem auto; display:block;">Ir para Painel Administrativo</a>
+        </div>`;
+}
 
+function aplicarConfiguracoes(config) {
+    // Cores
+    if(config.corPrincipal) {
+        document.documentElement.style.setProperty('--accent-gold', config.corPrincipal);
+        document.documentElement.style.setProperty('--accent-gold-hover', config.corPrincipal);
+    }
+    
+    // Textos e Logo
+    document.getElementById('wl-nome').innerText = config.nome || "Barbearia";
+    if(config.logoUrl) document.getElementById('wl-logo').src = config.logoUrl;
+    document.title = config.nome || "App Barbearia";
+
+    // Links Sociais
     document.getElementById('wl-instagram').href = config.instagramUrl || "#";
     document.getElementById('wl-whatsapp').href = config.whatsappUrl || "#";
 
+    // Copiar
     document.getElementById('wl-wifi').innerText = config.wifiPassword || "Sem Senha";
     document.getElementById('wl-pix').innerText = config.pixKey || "Não Cadastrado";
 
-    // Catálogo Fixo
+    // Catálogo Dinâmico
     const catalogoContainer = document.getElementById('wl-catalogo');
     catalogoContainer.innerHTML = ''; 
-    const cortes = [
-        { nome: "Degradê / Fade", imagem: "assets/fade.png" },
-        { nome: "Social", imagem: "assets/fade.png" },
-        { nome: "Barba Premium", imagem: "assets/fade.png" }
-    ];
-    cortes.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'catalog-item';
-        div.innerHTML = `
-            <img src="${item.imagem}" alt="${item.nome}">
-            <div class="catalog-info">
-                <p>${item.nome}</p>
-            </div>
-        `;
-        catalogoContainer.appendChild(div);
-    });
+    
+    if (config.catalogo && config.catalogo.length > 0) {
+        config.catalogo.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'catalog-item';
+            div.innerHTML = `
+                <img src="${item.imagem}" alt="${item.nome}">
+                <div class="catalog-info">
+                    <p>${item.nome}</p>
+                </div>
+            `;
+            catalogoContainer.appendChild(div);
+        });
+    } else {
+         catalogoContainer.innerHTML = '<p style="color:gray; text-align:center; width:100%;">Nenhum corte cadastrado.</p>';
+    }
 }
 
-// Funções globais atachadas ao window para o HTML conseguir chamar o onclick
+// Funções de copiar
 window.copyToClipboard = function(elementId, successMessage) {
     const textToCopy = document.getElementById(elementId).innerText;
     if (navigator.clipboard) {
@@ -85,16 +92,10 @@ window.copyToClipboard = function(elementId, successMessage) {
 function fallbackCopy(text, successMessage) {
     const textArea = document.createElement("textarea");
     textArea.value = text;
-    textArea.style.top = "0";
-    textArea.style.left = "0";
-    textArea.style.position = "fixed";
+    textArea.style.top = "0"; textArea.style.left = "0"; textArea.style.position = "fixed";
     document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    try {
-        document.execCommand('copy');
-        window.showToast(successMessage);
-    } catch (err) {}
+    textArea.focus(); textArea.select();
+    try { document.execCommand('copy'); window.showToast(successMessage); } catch (err) {}
     document.body.removeChild(textArea);
 }
 
@@ -102,9 +103,7 @@ window.showToast = function(message) {
     const toast = document.getElementById("toast");
     toast.innerText = message;
     toast.classList.add("show");
-    setTimeout(() => {
-        toast.classList.remove("show");
-    }, 3000);
+    setTimeout(() => { toast.classList.remove("show"); }, 3000);
 }
 
 document.addEventListener('DOMContentLoaded', carregarDados);

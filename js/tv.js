@@ -1,11 +1,16 @@
 import { db, doc, getDoc } from './firebase-config.js';
 
+let intervalNormalProg = 5 * 60 * 1000; // 5 minutos tocando o vídeo normal
+let intervalAds = 30 * 1000; // 30 segundos passando os anúncios (comercial)
+
+let tvAdsArray = [];
+
 async function initTV() {
     const urlParams = new URLSearchParams(window.location.search);
     const barberId = urlParams.get('id');
 
     if (!barberId) {
-        document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:20vh'>URL Inválida. Faltou o ID da barbearia (?id=nome)</h1>";
+        document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:20vh'>URL Inválida!</h1>";
         return;
     }
 
@@ -14,56 +19,87 @@ async function initTV() {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            const config = docSnap.data();
-            montarTV(config);
+            montarTV(docSnap.data());
         } else {
-            document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:20vh'>Barbearia não cadastrada!</h1>";
+            document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:20vh'>Barbearia não encontrada!</h1>";
         }
     } catch (error) {
-        console.error(error);
-        document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:20vh'>Erro ao conectar com o banco.</h1>";
+        document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:20vh'>Erro de conexão com o Banco.</h1>";
     }
 }
 
 function montarTV(config) {
     document.title = config.nome + " - TV";
-    document.getElementById('wl-nome').innerText = config.nome;
 
-    document.documentElement.style.setProperty('--accent-gold', config.corPrincipal);
+    // Puxa o link do vídeo (garantindo que tem autoplay e mute se for youtube)
+    let videoUrl = config.tvVideo || "https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&loop=1&playlist=jfKfPfyJRdk";
+    if (videoUrl.includes('youtube.com') && !videoUrl.includes('autoplay')) {
+        videoUrl += videoUrl.includes('?') ? '&autoplay=1&mute=1' : '?autoplay=1&mute=1';
+    }
+    document.getElementById('tv-video-frame').src = videoUrl;
     
-    // Vídeo padrão via Firebase futuramente
-    document.getElementById('tv-video-frame').src = "https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&loop=1&playlist=jfKfPfyJRdk";
-    
+    // Configura os slides de anúncio
     const slider = document.getElementById('tv-slider');
     slider.innerHTML = '';
-    const anuncios = ["assets/tv_ad1.png", "assets/fade.png"];
+    tvAdsArray = config.tvAds || [];
     
-    anuncios.forEach((imgUrl, index) => {
-        const slide = document.createElement('div');
-        slide.className = 'tv-slide' + (index === 0 ? ' active' : '');
-        slide.style.backgroundImage = `url('${imgUrl}')`;
-        slider.appendChild(slide);
-    });
+    if (tvAdsArray.length > 0) {
+        tvAdsArray.forEach((imgUrl, index) => {
+            const slide = document.createElement('div');
+            slide.className = 'tv-slide' + (index === 0 ? ' active' : '');
+            slide.style.backgroundImage = `url('${imgUrl}')`;
+            slider.appendChild(slide);
+        });
 
-    if (anuncios.length > 1) {
-        startCarousel();
+        // Inicia o ciclo: Assistir Vídeo -> Pausar para Comercial -> Assistir Vídeo
+        iniciarCicloDaTV();
     }
+}
+
+function iniciarCicloDaTV() {
+    const adLayer = document.getElementById('ad-layer');
+    
+    // Rotina principal (loop eterno)
+    function rodarPrograma() {
+        // Esconde anúncios, mostra vídeo normal
+        adLayer.classList.remove('active');
+        
+        // Daqui a X minutos, puxa o comercial
+        setTimeout(rodarComercial, intervalNormalProg);
+    }
+
+    function rodarComercial() {
+        // Cobre a tela com o anúncio
+        adLayer.classList.add('active');
+        
+        // Passa os slides do anúncio se tiver mais de 1
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.tv-slide');
+        let slideInterval;
+
+        if(slides.length > 1) {
+            slideInterval = setInterval(() => {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }, 8000); // Toca cada foto por 8 segundos
+        }
+
+        // Fim do comercial, volta pra programação
+        setTimeout(() => {
+            if(slideInterval) clearInterval(slideInterval);
+            rodarPrograma();
+        }, intervalAds);
+    }
+
+    // Começa assistindo o programa normal
+    rodarPrograma();
 }
 
 function updateClock() {
     const clockElement = document.getElementById('clock');
     const now = new Date();
     clockElement.innerText = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-}
-
-function startCarousel() {
-    const slides = document.querySelectorAll('.tv-slide');
-    let currentSlide = 0;
-    setInterval(() => {
-        slides[currentSlide].classList.remove('active');
-        currentSlide = (currentSlide + 1) % slides.length;
-        slides[currentSlide].classList.add('active');
-    }, 10000);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
