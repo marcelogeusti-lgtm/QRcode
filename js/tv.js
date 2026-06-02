@@ -86,11 +86,17 @@ function montarTV(config) {
         });
 
         // Inicia o ciclo: Assistir Vídeo -> Pausar para Comercial -> Assistir Vídeo
-        iniciarCicloDaTV();
+        const tempoVideoMins = config.tvTempoVideo || 5;
+        const tempoVideo = tempoVideoMins * 60 * 1000;
+        
+        const tempoAnuncioSecs = config.tvTempoAnuncio || 30;
+        const tempoAnuncio = tempoAnuncioSecs * 1000;
+
+        iniciarCicloDaTV(tempoVideo, tempoAnuncio);
     }
 }
 
-function iniciarCicloDaTV() {
+function iniciarCicloDaTV(tempoVideo, tempoAnuncio) {
     const adLayer = document.getElementById('ad-layer');
     
     // Rotina principal (loop eterno)
@@ -99,7 +105,7 @@ function iniciarCicloDaTV() {
         adLayer.classList.remove('active');
         
         // Daqui a X minutos, puxa o comercial
-        setTimeout(rodarComercial, intervalNormalProg);
+        setTimeout(rodarComercial, tempoVideo);
     }
 
     function rodarComercial() {
@@ -123,7 +129,7 @@ function iniciarCicloDaTV() {
         setTimeout(() => {
             if(slideInterval) clearInterval(slideInterval);
             rodarPrograma();
-        }, intervalAds);
+        }, tempoAnuncio);
     }
 
     // Começa assistindo o programa normal
