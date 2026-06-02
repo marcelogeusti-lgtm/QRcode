@@ -6,158 +6,96 @@
     <title>Painel do Dono - SaaS</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        .admin-container {
-            max-width: 600px;
-            margin: 2rem auto;
-            background: rgba(255,255,255,0.05);
-            padding: 2rem;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
+        .drag-zone {
+            border: 2px dashed rgba(255,255,255,0.3); padding: 2rem; text-align: center;
+            border-radius: 8px; cursor: pointer; transition: all 0.3s; margin-bottom: 1rem;
+            background: rgba(0,0,0,0.2);
         }
-        .form-section {
-            background: rgba(0,0,0,0.3);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            border-left: 3px solid var(--accent-gold);
-        }
-        .form-section h3 {
-            color: var(--accent-gold);
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .form-group label {
-            color: white;
-            font-size: 0.9rem;
-        }
-        .form-group input {
-            padding: 0.8rem;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.05);
-            color: white;
-            font-size: 1rem;
-        }
-        .form-group input[type="file"] {
-            padding: 0.5rem;
-        }
-        #qrcode-container {
-            margin-top: 2rem;
-            text-align: center;
-            display: none;
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        #qrcode-container canvas, #qrcode-container img { margin: 0 auto; }
-        .loading-text { text-align: center; color: var(--accent-gold); font-weight: bold; margin-top: 1rem; display: none;}
+        .drag-zone.dragover { border-color: var(--accent-gold); background: rgba(212, 175, 55, 0.1); }
+        .drag-zone p { color: #aaa; margin: 0; pointer-events: none; }
+        .drag-zone input { display: none; }
+        .header-painel { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        #btn-logout { background: transparent; border: 1px solid #ff4444; color: #ff4444; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
-<body>
+<body style="background: var(--bg-dark); padding: 2rem; color: white;">
 
-    <div class="admin-container">
-        <h1 style="text-align: center; margin-bottom: 2rem;">Configuração da Barbearia</h1>
-        
+    <div style="max-width: 800px; margin: 0 auto; background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 12px;">
+        <div class="header-painel">
+            <h1 style="color: var(--accent-gold);">Painel da Barbearia</h1>
+            <button id="btn-logout">Sair</button>
+        </div>
+
         <form id="admin-form">
+            <!-- ID Único -->
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display:block; margin-bottom:0.5rem;">ID da Barbearia (Apenas minúsculas e sem acentos, ex: marcelo-vip)</label>
+                <input type="text" id="barberId" required style="width:100%; padding: 0.8rem; border-radius: 4px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
+            </div>
+
+            <!-- Dados Básicos -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <div><label>Nome da Barbearia</label><input type="text" id="nome" required style="width:100%; padding:0.8rem;"></div>
+                <div><label>Slogan</label><input type="text" id="slogan" style="width:100%; padding:0.8rem;"></div>
+                <div><label>Cor Principal (ex: #d4af37)</label><input type="color" id="cor" value="#d4af37" style="width:100%; height:45px;"></div>
+                <div><label>Link do Instagram</label><input type="url" id="instagram" style="width:100%; padding:0.8rem;"></div>
+                <div><label>Link do WhatsApp</label><input type="url" id="whatsapp" style="width:100%; padding:0.8rem;"></div>
+                <div><label>Chave PIX</label><input type="text" id="pix" style="width:100%; padding:0.8rem;"></div>
+                <div><label>Senha do Wi-Fi</label><input type="text" id="wifi" style="width:100%; padding:0.8rem;"></div>
+            </div>
+
+            <hr style="border-color: #333; margin: 2rem 0;">
+
+            <!-- Temporizadores -->
+            <h2 style="margin-bottom: 1rem;">Configuração da TV</h2>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display:block; margin-bottom:0.5rem;">Link do Vídeo do YouTube</label>
+                <input type="text" id="tvVideo" style="width:100%; padding: 0.8rem; background: rgba(0,0,0,0.5); color:white;">
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <div><label>Tempo do Vídeo (Minutos)</label><input type="number" id="tvTempoVideo" value="5" min="1" required style="width:100%; padding:0.8rem;"></div>
+                <div><label>Duração do Comercial (Segundos)</label><input type="number" id="tvTempoAnuncio" value="30" min="5" required style="width:100%; padding:0.8rem;"></div>
+            </div>
+
+            <hr style="border-color: #333; margin: 2rem 0;">
+
+            <!-- Uploads Drag & Drop -->
+            <h2 style="margin-bottom: 1rem;">Fotos (Com Compressão Automática)</h2>
             
-            <div class="form-section">
-                <h3>1. Dados Principais</h3>
-                <div class="form-group">
-                    <label>ID Único (ex: marcelo-barber)</label>
-                    <input type="text" id="barberId" required pattern="[a-z0-9-]+">
-                    <small style="color: gray;">Apenas letras minúsculas e hifens.</small>
-                </div>
-                <div class="form-group">
-                    <label>Nome Oficial</label>
-                    <input type="text" id="nome" required>
-                </div>
-                <div class="form-group">
-                    <label>Cor Principal (Destaque)</label>
-                    <input type="color" id="corPrincipal" value="#d4af37" style="height: 50px;">
-                </div>
-                <div class="form-group">
-                    <label>Logo da Barbearia (Imagem)</label>
-                    <input type="file" id="logoFile" accept="image/*">
-                </div>
+            <label>Logo da Barbearia</label>
+            <div class="drag-zone" id="drop-logo" onclick="document.getElementById('logoFile').click()">
+                <p>Arraste a Logo aqui ou Clique para selecionar</p>
+                <input type="file" id="logoFile" accept="image/*">
             </div>
 
-            <div class="form-section">
-                <h3>2. Contato e Informações</h3>
-                <div class="form-group">
-                    <label>Chave PIX</label>
-                    <input type="text" id="pixKey" required>
-                </div>
-                <div class="form-group">
-                    <label>Senha do Wi-Fi</label>
-                    <input type="text" id="wifiPassword" required>
-                </div>
-                <div class="form-group">
-                    <label>Instagram (Link completo)</label>
-                    <input type="url" id="instagramUrl">
-                </div>
-                <div class="form-group">
-                    <label>WhatsApp (Link wa.me/...)</label>
-                    <input type="url" id="whatsappUrl">
-                </div>
+            <label>Fotos dos Cortes (Catálogo)</label>
+            <div class="drag-zone" id="drop-cortes" onclick="document.getElementById('cortesFiles').click()">
+                <p>Arraste as fotos dos cortes aqui (Pode selecionar várias)</p>
+                <input type="file" id="cortesFiles" accept="image/*" multiple>
             </div>
 
-            <div class="form-section">
-                <h3>3. Catálogo (Celular)</h3>
-                <small style="color: gray; display:block; margin-bottom: 1rem;">Envie até 3 fotos de cortes e seus nomes.</small>
-                <div class="form-group">
-                    <input type="text" id="corte1Nome" placeholder="Nome do Corte 1 (Ex: Degradê)">
-                    <input type="file" id="corte1File" accept="image/*">
-                </div>
-                <div class="form-group">
-                    <input type="text" id="corte2Nome" placeholder="Nome do Corte 2">
-                    <input type="file" id="corte2File" accept="image/*">
-                </div>
-                <div class="form-group">
-                    <input type="text" id="corte3Nome" placeholder="Nome do Corte 3">
-                    <input type="file" id="corte3File" accept="image/*">
-                </div>
+            <label>Fotos para os Comerciais da TV (Use imagens na horizontal)</label>
+            <div class="drag-zone" id="drop-tv" onclick="document.getElementById('tvAdsFiles').click()">
+                <p>Arraste as fotos dos anúncios aqui (Pode selecionar várias)</p>
+                <input type="file" id="tvAdsFiles" accept="image/*" multiple>
             </div>
 
-            <div class="form-section">
-                <h3>4. Sistema de TV</h3>
-                <div class="form-group">
-                    <label>Vídeo Principal (Programação normal)</label>
-                    <input type="url" id="tvVideo" placeholder="Link do vídeo do YouTube" value="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&loop=1&playlist=jfKfPfyJRdk">
-                    <small style="color: gray;">Deve ser um link de Incorporação (embed) do YouTube.</small>
-                </div>
-                <small style="color: gray; display:block; margin: 1rem 0;">Imagens de Anúncio que vão interromper o vídeo:</small>
-                <div class="form-group">
-                    <input type="file" id="tvAd1File" accept="image/*">
-                </div>
-                <div class="form-group">
-                    <input type="file" id="tvAd2File" accept="image/*">
-                </div>
-            </div>
-
-            <button type="submit" class="btn" id="btn-salvar" style="width: 100%; padding: 1rem;">
+            <button type="submit" class="btn" style="width:100%; padding: 1.2rem; font-size:1.1rem; margin-top:2rem;" id="btn-salvar">
                 Salvar Barbearia
             </button>
-            <div id="loading-msg" class="loading-text">Processando imagens e salvando dados... Aguarde!</div>
+            <p id="loading-msg" style="text-align:center; display:none; margin-top:1rem; color: var(--accent-gold);">Processando imagens, comprimindo e salvando dados... Aguarde!</p>
         </form>
 
-        <div id="qrcode-container">
-            <h3 style="color: black; margin-bottom: 1rem;">QR Code Gerado!</h3>
-            <div id="qrcode"></div>
-            <a id="link-preview-app" href="#" target="_blank" style="color: blue; display: block; margin-top: 1rem;">Abrir Página Mobile</a>
-            <a id="link-preview-tv" href="#" target="_blank" style="color: red; display: block; margin-top: 0.5rem;">Abrir Tela da TV</a>
+        <div id="qrcode-container" style="display:none; text-align:center; margin-top: 3rem; background:white; padding:2rem; border-radius:12px;">
+            <h2 style="color:black; margin-bottom:1rem;">O QR Code da sua Barbearia</h2>
+            <div id="qrcode" style="display:inline-block; padding: 10px; border: 4px solid var(--accent-gold); border-radius: 8px;"></div>
+            <p style="color:black; margin-top:1rem; font-size:14px;">Imprima este QR Code e coloque na sua bancada!</p>
+            <p style="margin-top:1rem;"><a id="link-cliente" href="#" target="_blank" style="color: var(--accent-gold); font-weight:bold;">Acessar Site do Cliente</a></p>
+            <p><a id="link-tv" href="#" target="_blank" style="color: var(--accent-gold); font-weight:bold;">Acessar Link da TV</a></p>
         </div>
     </div>
 
+    <!-- Script de Geração de QR Code Local -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script type="module" src="js/admin.js"></script>
 </body>

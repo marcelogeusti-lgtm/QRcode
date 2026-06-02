@@ -1,15 +1,21 @@
-import { db, doc, setDoc, storage, ref, uploadBytes, getDownloadURL } from './firebase-config.js';
+import { db, doc, setDoc, storage, ref, uploadBytes, getDownloadURL, auth, onAuthStateChanged, signOut, getDoc } from './firebase-config.js';
 
-// Função auxiliar para fazer upload de um arquivo para o Storage e retornar a URL
-async function uploadImage(file, path) {
-    if (!file) return null;
-    const storageRef = ref(storage, path);
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
-    return url;
-}
+let currentUser = null;
 
-// Bloqueia espaços e acentos no ID enquanto o usuário digita
+// Proteção da Rota
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        window.location.href = "login.html";
+    } else {
+        currentUser = user;
+    }
+});
+
+document.getElementById('btn-logout').addEventListener('click', () => {
+    signOut(auth);
+});
+
+// Força minúsculas e remove acentos no ID
 document.getElementById('barberId').addEventListener('input', function(e) {
     let val = this.value.toLowerCase();
     val = val.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove acentos
@@ -17,59 +23,145 @@ document.getElementById('barberId').addEventListener('input', function(e) {
     this.value = val;
 });
 
+// Configuração Visual do Drag and Drop
+function setupDropZone(zoneId, inputId) {
+    const zone = document.getElementById(zoneId);
+    const input = document.getElementById(inputId);
+    const text = zone.querySelector('p');
+
+    zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        zone.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0) {
+            input.files = e.dataTransfer.files;
+            text.innerText = `${input.files.length} arquivo(s) selecionado(s)`;
+            text.style.color = "#d4af37";
+        }
+    });
+    input.addEventListener('change', () => {
+        if(input.files.length > 0) {
+            text.innerText = `${input.files.length} arquivo(s) selecionado(s)`;
+            text.style.color = "#d4af37";
+        }
+    });
+}
+setupDropZone('drop-logo', 'logoFile');
+setupDropZone('drop-cortes', 'cortesFiles');
+setupDropZone('drop-tv', 'tvAdsFiles');
+
+// MÁGICA: Compressor de Imagem com Canvas (Reduz 5MB para ~100KB)
+function compressImage(file, maxWidth = 1080) {
+    return new Promise((resolve) => {
+        if (!file || !file.type.match(/image.*/)) {
+            resolve(file); // Retorna original se não for imagem
+            return;
+        }
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Exporta como JPEG qualidade 0.7
+                canvas.toBlob((blob) => {
+                    const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                        type: 'image/jpeg',
+                        lastModified: Date.now()
+                    });
+                    resolve(compressedFile);
+                }, 'image/jpeg', 0.7);
+            };
+        };
+    });
+}
+
+// Upload com Compressão
+async function uploadImage(file, path) {
+    if (!file) return null;
+    const compressed = await compressImage(file);
+    const storageRef = ref(storage, path);
+    await uploadBytes(storageRef, compressed);
+    return await getDownloadURL(storageRef);
+}
+
 document.getElementById('admin-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    if(!currentUser) return;
     
     const btn = document.getElementById('btn-salvar');
     const loadingMsg = document.getElementById('loading-msg');
     btn.disabled = true;
     loadingMsg.style.display = 'block';
+    loadingMsg.style.color = 'var(--accent-gold)';
 
-    const barberId = document.getElementById('barberId').value.trim().toLowerCase();
+    const barberId = document.getElementById('barberId').value.trim();
 
     try {
-        // 1. Fazer upload de todas as imagens que o usuário enviou
+        // Validação de Segurança Básica: Tenta ler para ver se já existe e é de outro dono
+        const docRef = doc(db, "barbearias", barberId);
+        const docSnap = await docRef.getDoc ? await getDoc(docRef) : null;
+        if (docSnap && docSnap.exists()) {
+            if (docSnap.data().ownerUid !== currentUser.uid) {
+                throw new Error("Este ID de barbearia já pertence a outro usuário. Escolha um ID diferente.");
+            }
+        }
+
+        // 1. Upload Logo
         const logoFile = document.getElementById('logoFile').files[0];
-        const logoUrl = await uploadImage(logoFile, `barbearias/${barberId}/logo.jpg`);
+        const logoUrl = logoFile ? await uploadImage(logoFile, `barbearias/${barberId}/logo.jpg`) : null;
 
-        const corte1File = document.getElementById('corte1File').files[0];
-        const corte1Url = await uploadImage(corte1File, `barbearias/${barberId}/corte1.jpg`);
-        
-        const corte2File = document.getElementById('corte2File').files[0];
-        const corte2Url = await uploadImage(corte2File, `barbearias/${barberId}/corte2.jpg`);
-        
-        const corte3File = document.getElementById('corte3File').files[0];
-        const corte3Url = await uploadImage(corte3File, `barbearias/${barberId}/corte3.jpg`);
+        // 2. Upload Cortes
+        const cortesFiles = document.getElementById('cortesFiles').files;
+        const cortesUrls = [];
+        for (let i = 0; i < cortesFiles.length; i++) {
+            const url = await uploadImage(cortesFiles[i], `barbearias/${barberId}/cortes/corte_${i}.jpg`);
+            cortesUrls.push(url);
+        }
 
-        const tvAd1File = document.getElementById('tvAd1File').files[0];
-        const tvAd1Url = await uploadImage(tvAd1File, `barbearias/${barberId}/tvAd1.jpg`);
+        // 3. Upload Anúncios TV
+        const tvAdsFiles = document.getElementById('tvAdsFiles').files;
+        const tvAdsUrls = [];
+        for (let i = 0; i < tvAdsFiles.length; i++) {
+            const url = await uploadImage(tvAdsFiles[i], `barbearias/${barberId}/tvAds/ad_${i}.jpg`);
+            tvAdsUrls.push(url);
+        }
 
-        const tvAd2File = document.getElementById('tvAd2File').files[0];
-        const tvAd2Url = await uploadImage(tvAd2File, `barbearias/${barberId}/tvAd2.jpg`);
-
-        // 2. Montar objeto com os dados (apenas adiciona URL se a imagem foi enviada)
+        // 4. Salvar Banco de Dados
         const barbeariaData = {
+            ownerUid: currentUser.uid,
             nome: document.getElementById('nome').value,
-            pixKey: document.getElementById('pixKey').value,
-            wifiPassword: document.getElementById('wifiPassword').value,
-            corPrincipal: document.getElementById('corPrincipal').value,
-            instagramUrl: document.getElementById('instagramUrl').value,
-            whatsappUrl: document.getElementById('whatsappUrl').value,
+            slogan: document.getElementById('slogan').value,
+            corPrincipal: document.getElementById('cor').value,
+            instagramUrl: document.getElementById('instagram').value,
+            whatsappUrl: document.getElementById('whatsapp').value,
+            pixKey: document.getElementById('pix').value,
+            wifiPassword: document.getElementById('wifi').value,
             tvVideo: document.getElementById('tvVideo').value,
-            catalogo: [
-                { nome: document.getElementById('corte1Nome').value, imagem: corte1Url || "assets/fade.png" },
-                { nome: document.getElementById('corte2Nome').value, imagem: corte2Url || "assets/fade.png" },
-                { nome: document.getElementById('corte3Nome').value, imagem: corte3Url || "assets/fade.png" }
-            ].filter(c => c.nome !== ""), // Salva apenas os que tem nome preenchido
-            tvAds: [
-                tvAd1Url, tvAd2Url
-            ].filter(url => url !== null) // Remove os nulos
+            tvTempoVideo: parseInt(document.getElementById('tvTempoVideo').value) || 5,
+            tvTempoAnuncio: parseInt(document.getElementById('tvTempoAnuncio').value) || 30,
+            dataCriacao: new Date().toISOString()
         };
 
-        if(logoUrl) barbeariaData.logoUrl = logoUrl;
+        if (logoUrl) barbeariaData.logoUrl = logoUrl;
+        if (cortesUrls.length > 0) barbeariaData.catalogo = cortesUrls;
+        if (tvAdsUrls.length > 0) barbeariaData.tvAds = tvAdsUrls;
 
-        // 3. Salvar no Banco de Dados
-        await setDoc(doc(db, "barbearias", barberId), barbeariaData);
+        await setDoc(docRef, barbeariaData, { merge: true });
         
         loadingMsg.innerText = "Salvo com sucesso!";
         loadingMsg.style.color = "#28a745";
@@ -77,32 +169,30 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
 
     } catch (error) {
         console.error("Erro no processo:", error);
-        loadingMsg.innerText = "Erro ao salvar. Verifique se o Firebase Storage está ativado no painel.";
+        loadingMsg.innerText = error.message.includes("pertence a outro") ? error.message : "Erro ao salvar. Verifique se o Firebase Storage está ativo.";
         loadingMsg.style.color = "red";
     } finally {
         btn.disabled = false;
     }
 });
 
-function gerarQRCode(barberId) {
-    const qrcodeContainer = document.getElementById('qrcode-container');
-    const qrcodeDiv = document.getElementById('qrcode');
-    qrcodeDiv.innerHTML = '';
+function gerarQRCode(id) {
+    const container = document.getElementById('qrcode-container');
+    const qrDiv = document.getElementById('qrcode');
+    const urlFinal = window.location.origin + "/?id=" + id;
+    const urlTv = window.location.origin + "/tv.html?id=" + id;
     
-    let baseUrl = window.location.href.split('admin.html')[0];
-    if(!baseUrl.endsWith('/')) baseUrl += '/';
-    
-    const clientUrl = baseUrl + "?id=" + barberId;
-    const tvUrl = baseUrl + "tv.html?id=" + barberId;
-
-    new QRCode(qrcodeDiv, {
-        text: clientUrl,
-        width: 250, height: 250,
-        colorDark : "#000000", colorLight : "#ffffff",
+    qrDiv.innerHTML = "";
+    new QRCode(qrDiv, {
+        text: urlFinal,
+        width: 250,
+        height: 250,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
         correctLevel : QRCode.CorrectLevel.H
     });
-
-    document.getElementById('link-preview-app').href = clientUrl;
-    document.getElementById('link-preview-tv').href = tvUrl;
-    qrcodeContainer.style.display = "block";
+    
+    document.getElementById('link-cliente').href = urlFinal;
+    document.getElementById('link-tv').href = urlTv;
+    container.style.display = "block";
 }

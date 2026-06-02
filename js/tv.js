@@ -1,8 +1,5 @@
 import { db, doc, getDoc } from './firebase-config.js';
 
-let intervalNormalProg = 5 * 60 * 1000; // 5 minutos tocando o vídeo normal
-let intervalAds = 30 * 1000; // 30 segundos passando os anúncios (comercial)
-
 let tvAdsArray = [];
 
 async function initTV() {

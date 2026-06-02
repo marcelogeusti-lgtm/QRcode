@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaS Barbearia - Acesso Restrito</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { display: flex; align-items: center; justify-content: center; height: 100vh; background: var(--bg-dark); }
+        .login-box {
+            background: rgba(255,255,255,0.05); padding: 3rem 2rem; border-radius: 12px;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 400px;
+            text-align: center;
+        }
+        .login-box h2 { color: var(--accent-gold); margin-bottom: 2rem; font-size: 1.8rem; }
+        .form-group { margin-bottom: 1.5rem; text-align: left; }
+        .form-group label { color: white; display: block; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .form-group input {
+            width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.5); color: white; box-sizing: border-box;
+        }
+        .btn-toggle {
+            background: none; border: none; color: var(--accent-gold); cursor: pointer;
+            margin-top: 1rem; font-size: 0.9rem; text-decoration: underline;
+        }
+        #error-msg { color: #ff4444; font-size: 0.9rem; margin-top: 1rem; display: none; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2 id="form-title">Entrar na Conta</h2>
+        <form id="auth-form">
+            <div class="form-group">
+                <label>Seu E-mail</label>
+                <input type="email" id="email" required placeholder="barbearia@email.com">
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="password" required placeholder="******">
+            </div>
+            <button type="submit" class="btn" style="width: 100%; padding: 1rem;" id="btn-submit">Fazer Login</button>
+            <p id="error-msg">Erro ao fazer login.</p>
+        </form>
+        <button class="btn-toggle" id="btn-toggle">Ainda não tem conta? Criar agora</button>
+    </div>
+
+    <script type="module" src="js/login.js"></script>
+</body>
+</html>
