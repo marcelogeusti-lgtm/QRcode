@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV - Carregando...</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="tv-body">
+
+    <div class="tv-layout">
+        <!-- Lado Esquerdo: Vídeo (70%) -->
+        <div class="tv-video-section">
+            <iframe id="tv-video-frame" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+
+        <!-- Lado Direito: Anúncios e Info (30%) -->
+        <div class="tv-ads-section">
+            <div class="tv-header">
+                <h2 id="wl-nome">...</h2>
+                <div class="tv-clock" id="clock">00:00</div>
+            </div>
+            
+            <div class="tv-carousel" id="tv-slider">
+                <!-- Slides injetados dinamicamente via JS -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/tv.js"></script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Carregando...</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- Header -->
+        <header class="header">
+            <img src="" alt="Logo" id="wl-logo" class="logo-img">
+            <h1 id="wl-nome">...</h1>
+            <p id="wl-slogan">...</p>
+        </header>
+
+        <!-- Redes Sociais -->
+        <div class="social-row">
+            <a href="#" id="wl-instagram" class="btn btn-outline" target="_blank">
+                <i class="fab fa-instagram"></i> Instagram
+            </a>
+            <a href="#" id="wl-whatsapp" class="btn" target="_blank">
+                <i class="fab fa-whatsapp"></i> Agendar
+            </a>
+        </div>
+
+        <!-- Wi-Fi Card -->
+        <div class="glass-card">
+            <div class="card-title">
+                <i class="fas fa-wifi"></i> Rede Wi-Fi
+            </div>
+            <p class="text-muted">Conecte-se na nossa rede enquanto espera o seu corte.</p>
+            <div class="info-row">
+                <span class="info-text" id="wl-wifi">...</span>
+                <button class="copy-btn" onclick="copyToClipboard('wl-wifi', 'Senha copiada!')" title="Copiar senha">
+                    <i class="far fa-copy"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- PIX Card -->
+        <div class="glass-card">
+            <div class="card-title">
+                <i class="fab fa-pix"></i> Pagamento PIX
+            </div>
+            <p class="text-muted">Pague seu corte de forma rápida e segura.</p>
+            <div class="info-row">
+                <span class="info-text" id="wl-pix">...</span>
+                <button class="copy-btn" onclick="copyToClipboard('wl-pix', 'Chave Pix copiada!')" title="Copiar Pix">
+                    <i class="far fa-copy"></i>
+                </button>
+            </div>
+            <button class="btn btn-outline" style="margin-top: 0.5rem;" onclick="copyToClipboard('wl-pix', 'Chave Pix copiada!')">
+                Copiar Chave PIX
+            </button>
+        </div>
+
+        <!-- Catálogo de Cortes -->
+        <div class="glass-card">
+            <div class="card-title">
+                <i class="fas fa-cut"></i> Nossos Cortes
+            </div>
+            <div class="catalog-container" id="wl-catalogo">
+                <!-- Preenchido dinamicamente via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de Notificação -->
+    <div id="toast" class="toast">Copiado!</div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
