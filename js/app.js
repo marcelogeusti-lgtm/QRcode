@@ -30,7 +30,6 @@ function mostrarErro(mensagem) {
         <div style='text-align:center; margin-top:20vh; padding: 20px;'>
             <h1 style='color:white; font-size:2rem; font-weight:800; margin-bottom:1rem;'>Ops!</h1>
             <p style='color:#ff4444; font-size:1.2rem;'>${mensagem}</p>
-            <a href="admin.html" class="btn" style="width:fit-content; margin: 2rem auto; display:block;">Ir para Painel Administrativo</a>
         </div>`;
 }
 

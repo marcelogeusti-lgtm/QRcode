@@ -9,6 +9,14 @@ async function uploadImage(file, path) {
     return url;
 }
 
+// Bloqueia espaços e acentos no ID enquanto o usuário digita
+document.getElementById('barberId').addEventListener('input', function(e) {
+    let val = this.value.toLowerCase();
+    val = val.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove acentos
+    val = val.replace(/[^a-z0-9-]/g, ""); // Remove tudo que não for letra, numero ou hifen
+    this.value = val;
+});
+
 document.getElementById('admin-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     
