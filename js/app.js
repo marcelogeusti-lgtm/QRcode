@@ -65,12 +65,29 @@ function aplicarConfiguracoes(config) {
         config.catalogo.forEach(item => {
             const div = document.createElement('div');
             div.className = 'catalog-item';
-            div.innerHTML = `
-                <img src="${item.imagem}" alt="${item.nome}">
+            
+            // Tratamento para manter compatibilidade com dados antigos (onde item era apenas a URL da string)
+            let itemUrl = item;
+            let itemNome = "";
+            let itemPreco = "";
+            
+            if (typeof item === 'object') {
+                itemUrl = item.url;
+                itemNome = item.nome || "";
+                itemPreco = item.preco || "";
+            }
+
+            let html = `<img src="${itemUrl}" alt="Item do Catálogo">`;
+            
+            if (itemNome || itemPreco) {
+                html += `
                 <div class="catalog-info">
-                    <p>${item.nome}</p>
-                </div>
-            `;
+                    <p style="color:white; margin-bottom:2px; font-size:1rem;">${itemNome}</p>
+                    <span style="color:var(--accent-gold); font-weight:bold; font-size:0.9rem;">${itemPreco}</span>
+                </div>`;
+            }
+            
+            div.innerHTML = html;
             catalogoContainer.appendChild(div);
         });
     } else {

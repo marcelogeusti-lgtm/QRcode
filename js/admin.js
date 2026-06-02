@@ -1,6 +1,7 @@
 import { db, doc, setDoc, storage, ref, uploadBytes, getDownloadURL, auth, onAuthStateChanged, signOut, getDoc, collection, query, where, getDocs } from './firebase-config.js';
 
 let currentUser = null;
+window.localCatalog = [];
 
 // Proteção da Rota
 onAuthStateChanged(auth, async (user) => {
@@ -41,8 +42,16 @@ async function carregarDadosDoUsuario(uid) {
             
             // Mostra texto de que tem foto salva
             if(data.logoUrl) document.querySelector('#drop-logo p').innerText = "✅ Logo atual salva no sistema. Envie outra para substituir.";
-            if(data.catalogo && data.catalogo.length > 0) document.querySelector('#drop-cortes p').innerText = `✅ ${data.catalogo.length} fotos de cortes salvas. Envie novas para substituir.`;
             if(data.tvAds && data.tvAds.length > 0) document.querySelector('#drop-tv p').innerText = `✅ ${data.tvAds.length} anúncios de TV salvos. Envie novas para substituir.`;
+            
+            // Catálogo (Tratando dados antigos vs novos)
+            if(data.catalogo && data.catalogo.length > 0) {
+                window.localCatalog = data.catalogo.map(item => {
+                    if (typeof item === 'string') return { nome: "Sem Nome", preco: "", url: item };
+                    return item;
+                });
+                renderCatalogAdmin();
+            }
             
             // Já mostra o QR code e link sem precisar apertar salvar de novo
             gerarQRCode(docData.id);
@@ -89,8 +98,77 @@ function setupDropZone(zoneId, inputId) {
     });
 }
 setupDropZone('drop-logo', 'logoFile');
-setupDropZone('drop-cortes', 'cortesFiles');
 setupDropZone('drop-tv', 'tvAdsFiles');
+setupDropZone('drop-novo-item', 'novoItemFile');
+
+// Lógica de Renderização do Catálogo Local
+window.renderCatalogAdmin = function() {
+    const grid = document.getElementById('admin-catalog-grid');
+    grid.innerHTML = "";
+    
+    if (window.localCatalog.length === 0) {
+        grid.innerHTML = "<p style='color:gray; grid-column: 1 / -1;'>Nenhum item no catálogo ainda.</p>";
+        return;
+    }
+    
+    window.localCatalog.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'catalog-item-admin';
+        
+        let src = item.url;
+        if (item.file) {
+            src = URL.createObjectURL(item.file);
+        }
+        
+        div.innerHTML = `
+            <button type="button" class="btn-remove-item" onclick="removerItemCatalogo(${index})">X</button>
+            <img src="${src}" alt="Item">
+            <div class="info">
+                <p title="${item.nome}">${item.nome || 'Sem Nome'}</p>
+                <small>${item.preco || ''}</small>
+            </div>
+        `;
+        grid.appendChild(div);
+    });
+};
+
+window.removerItemCatalogo = function(index) {
+    if(confirm("Tem certeza que deseja remover este item?")) {
+        window.localCatalog.splice(index, 1);
+        renderCatalogAdmin();
+    }
+};
+
+document.getElementById('btn-add-item').addEventListener('click', () => {
+    const fileInput = document.getElementById('novoItemFile');
+    const nomeInput = document.getElementById('novoItemNome');
+    const precoInput = document.getElementById('novoItemPreco');
+    
+    if (!fileInput.files[0]) {
+        alert("Por favor, selecione uma foto para o item.");
+        return;
+    }
+    if (!nomeInput.value.trim()) {
+        alert("Por favor, dê um nome ao item.");
+        return;
+    }
+    
+    window.localCatalog.push({
+        nome: nomeInput.value.trim(),
+        preco: precoInput.value.trim(),
+        file: fileInput.files[0],
+        url: "" // será preenchido no upload
+    });
+    
+    // Limpa form
+    fileInput.value = "";
+    nomeInput.value = "";
+    precoInput.value = "";
+    document.getElementById('txt-novo-item').innerText = "Clique para selecionar a foto";
+    document.getElementById('txt-novo-item').style.color = "#aaa";
+    
+    renderCatalogAdmin();
+});
 
 // MÁGICA: Compressor de Imagem com Canvas (Reduz 5MB para ~100KB)
 function compressImage(file, maxWidth = 1080) {
@@ -166,12 +244,20 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
         const logoFile = document.getElementById('logoFile').files[0];
         const logoUrl = logoFile ? await uploadImage(logoFile, `barbearias/${barberId}/logo.jpg`) : null;
 
-        // 2. Upload Cortes
-        const cortesFiles = document.getElementById('cortesFiles').files;
-        const cortesUrls = [];
-        for (let i = 0; i < cortesFiles.length; i++) {
-            const url = await uploadImage(cortesFiles[i], `barbearias/${barberId}/cortes/corte_${i}.jpg`);
-            cortesUrls.push(url);
+        // 2. Upload Catálogo Visual (Processando array misto de arquivos novos e urls antigas)
+        const catalogToSave = [];
+        for (let i = 0; i < window.localCatalog.length; i++) {
+            const item = window.localCatalog[i];
+            let finalUrl = item.url;
+            if (item.file) {
+                // Se tem '.file', é um upload novo
+                finalUrl = await uploadImage(item.file, `barbearias/${barberId}/cat_${Date.now()}_${i}.jpg`);
+            }
+            catalogToSave.push({
+                nome: item.nome || "",
+                preco: item.preco || "",
+                url: finalUrl
+            });
         }
 
         // 3. Upload Anúncios TV
@@ -200,7 +286,7 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
         };
 
         if (logoUrl) barbeariaData.logoUrl = logoUrl;
-        if (cortesUrls.length > 0) barbeariaData.catalogo = cortesUrls;
+        if (catalogToSave.length > 0) barbeariaData.catalogo = catalogToSave;
         if (tvAdsUrls.length > 0) barbeariaData.tvAds = tvAdsUrls;
 
         await setDoc(docRef, barbeariaData, { merge: true });

@@ -27,59 +27,79 @@
         </div>
 
         <form id="admin-form">
-            <!-- ID Único -->
-            <div style="margin-bottom: 1.5rem;">
-                <label style="display:block; margin-bottom:0.5rem;">ID do Negócio (Apenas minúsculas e sem acentos, ex: marcelo-vip)</label>
-                <input type="text" id="barberId" required style="width:100%; padding: 0.8rem; border-radius: 4px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
+            <!-- Abas de Navegação -->
+            <div class="tabs">
+                <button type="button" class="tab-btn active" onclick="openTab('tab-loja')">🏠 Início</button>
+                <button type="button" class="tab-btn" onclick="openTab('tab-catalogo')">📦 Catálogo</button>
+                <button type="button" class="tab-btn" onclick="openTab('tab-tv')">📺 TV & Mídia</button>
             </div>
 
-            <!-- Dados Básicos -->
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                <div><label>Nome do Negócio</label><input type="text" id="nome" required style="width:100%; padding:0.8rem;"></div>
-                <div><label>Slogan</label><input type="text" id="slogan" style="width:100%; padding:0.8rem;"></div>
-                <div style="grid-column: span 2;"><label>Título do Catálogo (Ex: Nossos Cortes, Nossos Pratos, Nossos Serviços)</label><input type="text" id="tituloCatalogo" value="Nosso Catálogo" style="width:100%; padding:0.8rem;"></div>
-                <div><label>Cor Principal (ex: #d4af37)</label><input type="color" id="cor" value="#d4af37" style="width:100%; height:45px;"></div>
-                <div><label>Link do Instagram</label><input type="url" id="instagram" style="width:100%; padding:0.8rem;"></div>
-                <div><label>Link do WhatsApp</label><input type="url" id="whatsapp" style="width:100%; padding:0.8rem;"></div>
-                <div><label>Chave PIX</label><input type="text" id="pix" style="width:100%; padding:0.8rem;"></div>
-                <div><label>Senha do Wi-Fi</label><input type="text" id="wifi" style="width:100%; padding:0.8rem;"></div>
+            <!-- ================= ABA LOJA ================= -->
+            <div id="tab-loja" class="tab-content active">
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display:block; margin-bottom:0.5rem;">ID do Negócio (Apenas minúsculas e sem acentos)</label>
+                    <input type="text" id="barberId" required style="width:100%; padding: 0.8rem; border-radius: 4px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div><label>Nome do Negócio</label><input type="text" id="nome" required style="width:100%; padding:0.8rem;"></div>
+                    <div><label>Slogan</label><input type="text" id="slogan" style="width:100%; padding:0.8rem;"></div>
+                    <div style="grid-column: span 2;"><label>Título do Catálogo (Ex: Nossos Cortes, Nossos Pratos)</label><input type="text" id="tituloCatalogo" value="Nosso Catálogo" style="width:100%; padding:0.8rem;"></div>
+                    <div><label>Cor Principal (ex: #d4af37)</label><input type="color" id="cor" value="#d4af37" style="width:100%; height:45px;"></div>
+                    <div><label>Link do Instagram</label><input type="url" id="instagram" style="width:100%; padding:0.8rem;"></div>
+                    <div><label>Link do WhatsApp</label><input type="url" id="whatsapp" style="width:100%; padding:0.8rem;"></div>
+                    <div><label>Chave PIX</label><input type="text" id="pix" style="width:100%; padding:0.8rem;"></div>
+                    <div><label>Senha do Wi-Fi</label><input type="text" id="wifi" style="width:100%; padding:0.8rem;"></div>
+                </div>
+
+                <label>Logo do Negócio</label>
+                <div class="drag-zone" id="drop-logo" onclick="document.getElementById('logoFile').click()">
+                    <p>Arraste a Logo aqui ou Clique para selecionar</p>
+                    <input type="file" id="logoFile" accept="image/*">
+                </div>
             </div>
 
-            <hr style="border-color: #333; margin: 2rem 0;">
+            <!-- ================= ABA CATÁLOGO ================= -->
+            <div id="tab-catalogo" class="tab-content">
+                <h2 style="margin-bottom: 1rem;">Gerenciar Catálogo</h2>
+                <div class="catalog-grid" id="admin-catalog-grid">
+                    <!-- Preenchido via JS -->
+                </div>
 
-            <!-- Temporizadores -->
-            <h2 style="margin-bottom: 1rem;">Configuração da TV</h2>
-            <div style="margin-bottom: 1.5rem;">
-                <label style="display:block; margin-bottom:0.5rem;">Link do Canal (YouTube ou IPTV .m3u8)</label>
-                <input type="text" id="tvVideo" style="width:100%; padding: 0.8rem; background: rgba(0,0,0,0.5); color:white;" placeholder="Ex: youtube.com/watch ou http://.../canal.m3u8">
-                <small style="color:#aaa; font-size:0.8rem;">Cole um link do YouTube ao Vivo ou um link de canal IPTV (formato .m3u8).</small>
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                <div><label>Tempo do Vídeo (Minutos)</label><input type="number" id="tvTempoVideo" value="5" min="1" required style="width:100%; padding:0.8rem;"></div>
-                <div><label>Duração do Comercial (Segundos)</label><input type="number" id="tvTempoAnuncio" value="30" min="5" required style="width:100%; padding:0.8rem;"></div>
-            </div>
-
-            <hr style="border-color: #333; margin: 2rem 0;">
-
-            <!-- Uploads Drag & Drop -->
-            <h2 style="margin-bottom: 1rem;">Fotos (Com Compressão Automática)</h2>
-            
-            <label>Logo do Negócio</label>
-            <div class="drag-zone" id="drop-logo" onclick="document.getElementById('logoFile').click()">
-                <p>Arraste a Logo aqui ou Clique para selecionar</p>
-                <input type="file" id="logoFile" accept="image/*">
-            </div>
-
-            <label>Fotos do Catálogo (Serviços/Produtos/Pratos)</label>
-            <div class="drag-zone" id="drop-cortes" onclick="document.getElementById('cortesFiles').click()">
-                <p>Arraste as fotos do catálogo aqui (Pode selecionar várias)</p>
-                <input type="file" id="cortesFiles" accept="image/*" multiple>
+                <h3 style="margin-top:2rem; margin-bottom:1rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:1rem;">Adicionar Novo Item</h3>
+                <div class="add-item-form">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div><label>Nome do Produto/Serviço</label><input type="text" id="novoItemNome" style="width:100%; padding:0.8rem;"></div>
+                        <div><label>Preço (Ex: R$ 45,00)</label><input type="text" id="novoItemPreco" style="width:100%; padding:0.8rem;"></div>
+                    </div>
+                    <label>Foto do Item</label>
+                    <div class="drag-zone" id="drop-novo-item" onclick="document.getElementById('novoItemFile').click()" style="margin-bottom:0; padding:1rem;">
+                        <p id="txt-novo-item">Clique para selecionar a foto</p>
+                        <input type="file" id="novoItemFile" accept="image/*">
+                    </div>
+                    <button type="button" class="btn btn-outline" id="btn-add-item" style="border-color: var(--accent-gold); color: var(--accent-gold);">
+                        + Adicionar ao Catálogo
+                    </button>
+                </div>
             </div>
 
-            <label>Fotos para os Comerciais da TV (Use imagens na horizontal)</label>
-            <div class="drag-zone" id="drop-tv" onclick="document.getElementById('tvAdsFiles').click()">
-                <p>Arraste as fotos dos anúncios aqui (Pode selecionar várias)</p>
-                <input type="file" id="tvAdsFiles" accept="image/*" multiple>
+            <!-- ================= ABA TV ================= -->
+            <div id="tab-tv" class="tab-content">
+                <h2 style="margin-bottom: 1rem;">Configuração da TV e Anúncios</h2>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display:block; margin-bottom:0.5rem;">Link do Canal (YouTube ou IPTV .m3u8)</label>
+                    <input type="text" id="tvVideo" style="width:100%; padding: 0.8rem; background: rgba(0,0,0,0.5); color:white;" placeholder="Ex: youtube.com/watch ou http://.../canal.m3u8">
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div><label>Tempo do Vídeo (Minutos)</label><input type="number" id="tvTempoVideo" value="5" min="1" required style="width:100%; padding:0.8rem;"></div>
+                    <div><label>Duração do Comercial (Segundos)</label><input type="number" id="tvTempoAnuncio" value="30" min="5" required style="width:100%; padding:0.8rem;"></div>
+                </div>
+
+                <label>Fotos para os Comerciais da TV (Use imagens na horizontal)</label>
+                <div class="drag-zone" id="drop-tv" onclick="document.getElementById('tvAdsFiles').click()">
+                    <p>Arraste as fotos dos anúncios aqui (Pode selecionar várias)</p>
+                    <input type="file" id="tvAdsFiles" accept="image/*" multiple>
+                </div>
             </div>
 
             <button type="submit" class="btn" style="width:100%; padding: 1.2rem; font-size:1.1rem; margin-top:2rem;" id="btn-salvar">
@@ -102,8 +122,17 @@
         </div>
     </div>
 
-    <!-- Script de Geração de QR Code Local -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        // Função para trocar as abas (chamada no onclick dos botões HTML)
+        window.openTab = function(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        };
+    </script>
     <script type="module" src="js/admin.js"></script>
 </body>
 </html>

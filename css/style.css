@@ -327,3 +327,99 @@ body {
     opacity: 1;
     z-index: 1;
 }
+
+/* Abas (Tabs) Admin */
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 1rem;
+    overflow-x: auto;
+}
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: #888;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+.tab-btn:hover {
+    color: white;
+    background: rgba(255,255,255,0.05);
+}
+.tab-btn.active {
+    color: var(--accent-gold);
+    background: rgba(212, 175, 55, 0.1);
+    font-weight: bold;
+}
+.tab-content {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+.tab-content.active {
+    display: block;
+}
+
+/* CRUD Catálogo Admin */
+.catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.catalog-item-admin {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+.catalog-item-admin img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+}
+.catalog-item-admin .info {
+    padding: 0.5rem;
+}
+.catalog-item-admin .info p {
+    margin: 0;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.catalog-item-admin .info small {
+    color: var(--accent-gold);
+    font-weight: bold;
+}
+.btn-remove-item {
+    position: absolute;
+    top: 5px; right: 5px;
+    background: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px; height: 25px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    display: flex; align-items: center; justify-content: center;
+}
+.add-item-form {
+    background: rgba(255,255,255,0.02);
+    border: 1px dashed rgba(255,255,255,0.2);
+    padding: 1.5rem;
+    border-radius: 8px;
+    display: grid;
+    gap: 1rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
