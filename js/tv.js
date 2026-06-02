@@ -32,10 +32,22 @@ function montarTV(config) {
     document.title = config.nome + " - TV";
 
     // Puxa o link do vídeo (garantindo que tem autoplay e mute se for youtube)
-    let videoUrl = config.tvVideo || "https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&loop=1&playlist=jfKfPfyJRdk";
-    if (videoUrl.includes('youtube.com') && !videoUrl.includes('autoplay')) {
-        videoUrl += videoUrl.includes('?') ? '&autoplay=1&mute=1' : '?autoplay=1&mute=1';
+    let videoUrl = config.tvVideo || "https://www.youtube.com/embed/jfKfPfyJRdk";
+    
+    // Conversor automático de links normais para Embed
+    if (videoUrl.includes('youtu.be/')) {
+        const videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
+        videoUrl = `https://www.youtube.com/embed/${videoId}`;
+    } else if (videoUrl.includes('youtube.com/watch?v=')) {
+        const videoId = videoUrl.split('v=')[1].split('&')[0];
+        videoUrl = `https://www.youtube.com/embed/${videoId}`;
     }
+
+    // Adiciona os parâmetros obrigatórios para a TV tocar sozinha sem erro
+    if (videoUrl.includes('youtube.com/embed') && !videoUrl.includes('autoplay')) {
+        videoUrl += videoUrl.includes('?') ? '&autoplay=1&mute=1&loop=1' : '?autoplay=1&mute=1&loop=1';
+    }
+    
     document.getElementById('tv-video-frame').src = videoUrl;
     
     // Configura os slides de anúncio
