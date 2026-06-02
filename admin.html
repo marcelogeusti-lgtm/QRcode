@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Dono - Criar QR Code</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: rgba(255,255,255,0.05);
+            padding: 2rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .form-group {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .form-group label {
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+        .form-group input {
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-size: 1rem;
+        }
+        #qrcode-container {
+            margin-top: 2rem;
+            text-align: center;
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #qrcode-container canvas, #qrcode-container img {
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <h1 style="text-align: center; margin-bottom: 2rem;">Painel da Barbearia</h1>
+        
+        <form id="admin-form">
+            <div class="form-group">
+                <label>ID da Barbearia (ex: marcelo-barber)</label>
+                <input type="text" id="barberId" placeholder="nome-da-sua-barbearia" required pattern="[a-z0-9-]+">
+                <small style="color: gray;">Não use espaços, apenas letras minúsculas e hifens.</small>
+            </div>
+
+            <div class="form-group">
+                <label>Nome Oficial da Barbearia</label>
+                <input type="text" id="nome" placeholder="Barbearia do Marcelo" required>
+            </div>
+
+            <div class="form-group">
+                <label>Chave PIX</label>
+                <input type="text" id="pixKey" placeholder="Seu CPF, CNPJ ou Celular" required>
+            </div>
+
+            <div class="form-group">
+                <label>Senha do Wi-Fi</label>
+                <input type="text" id="wifiPassword" placeholder="Senha123" required>
+            </div>
+
+            <div class="form-group">
+                <label>Cor Principal (Hexadecimal)</label>
+                <input type="color" id="corPrincipal" value="#d4af37" style="height: 50px;">
+            </div>
+
+            <div class="form-group">
+                <label>Link do Instagram</label>
+                <input type="url" id="instagramUrl" placeholder="https://instagram.com/seu.perfil">
+            </div>
+
+            <div class="form-group">
+                <label>Link do WhatsApp</label>
+                <input type="url" id="whatsappUrl" placeholder="https://wa.me/5511999999999">
+            </div>
+
+            <button type="submit" class="btn" id="btn-salvar" style="margin-top: 1rem; width: 100%;">
+                <i class="fas fa-save"></i> Salvar e Gerar QR Code
+            </button>
+        </form>
+
+        <div id="qrcode-container">
+            <h3 style="color: black; margin-bottom: 1rem;">O seu QR Code</h3>
+            <div id="qrcode"></div>
+            <p style="color: gray; font-size: 0.9rem; margin-top: 1rem;">Clique com o botão direito para salvar a imagem.</p>
+            <a id="link-preview" href="#" target="_blank" style="color: blue; display: block; margin-top: 1rem;">Abrir página gerada</a>
+        </div>
+    </div>
+
+    <!-- Script de geração de QR Code nativo (biblioteca confiável) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Módulo Admin (Firebase) -->
+    <script type="module" src="js/admin.js"></script>
+</body>
+</html>
