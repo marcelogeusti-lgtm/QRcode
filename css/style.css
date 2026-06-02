@@ -62,9 +62,9 @@ body {
 }
 
 .header h1 {
-    font-size: 2rem;
-    font-weight: 800;
-    letter-spacing: 1px;
+    font-size: 2.2rem;
+    font-weight: 300; /* Fonte mais fina, estilo Tapref */
+    letter-spacing: -0.02em;
     margin-bottom: 0.2rem;
 }
 
@@ -74,25 +74,42 @@ body {
     font-weight: 300;
 }
 
-/* Cards (Glassmorphism Luxo) */
+/* Cards (Estilo Premium TapRef + Vidro) */
 .glass-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 2rem;
+    background: rgba(17, 17, 17, 0.6); /* Mais escuro, estilo Tapref */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.04); /* Borda quase invisível */
+    border-radius: 24px; /* Cantos bem arredondados */
+    padding: 2.5rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Textura de Ruído (Noise) super premium no fundo do card */
+.glass-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+}
+
+.glass-card > * {
+    position: relative;
+    z-index: 1;
 }
 
 .glass-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
-    border-color: rgba(212, 175, 55, 0.3);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 40px rgba(212, 175, 55, 0.05);
+    border-color: rgba(212, 175, 55, 0.2); /* Brilho dourado na borda */
 }
 
 .card-title {
