@@ -1,15 +1,55 @@
-import { db, doc, setDoc, storage, ref, uploadBytes, getDownloadURL, auth, onAuthStateChanged, signOut, getDoc } from './firebase-config.js';
+import { db, doc, setDoc, storage, ref, uploadBytes, getDownloadURL, auth, onAuthStateChanged, signOut, getDoc, collection, query, where, getDocs } from './firebase-config.js';
 
 let currentUser = null;
 
 // Proteção da Rota
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (!user) {
         window.location.href = "login.html";
     } else {
         currentUser = user;
+        // Se o usuário logou, puxa os dados dele do banco de dados e preenche o painel
+        await carregarDadosDoUsuario(user.uid);
     }
 });
+
+// Busca se a pessoa já tem barbearia cadastrada
+async function carregarDadosDoUsuario(uid) {
+    try {
+        const q = query(collection(db, "barbearias"), where("ownerUid", "==", uid));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+            const docData = querySnapshot.docs[0];
+            const data = docData.data();
+            
+            // Preenche os campos de texto
+            document.getElementById('barberId').value = docData.id;
+            document.getElementById('barberId').readOnly = true; // Impede que ele mude o ID depois que criar
+            document.getElementById('barberId').style.opacity = '0.7';
+            
+            if(data.nome) document.getElementById('nome').value = data.nome;
+            if(data.slogan) document.getElementById('slogan').value = data.slogan;
+            if(data.corPrincipal) document.getElementById('cor').value = data.corPrincipal;
+            if(data.instagramUrl) document.getElementById('instagram').value = data.instagramUrl;
+            if(data.whatsappUrl) document.getElementById('whatsapp').value = data.whatsappUrl;
+            if(data.pixKey) document.getElementById('pix').value = data.pixKey;
+            if(data.wifiPassword) document.getElementById('wifi').value = data.wifiPassword;
+            if(data.tvVideo) document.getElementById('tvVideo').value = data.tvVideo;
+            if(data.tvTempoVideo) document.getElementById('tvTempoVideo').value = data.tvTempoVideo;
+            if(data.tvTempoAnuncio) document.getElementById('tvTempoAnuncio').value = data.tvTempoAnuncio;
+            
+            // Mostra texto de que tem foto salva
+            if(data.logoUrl) document.querySelector('#drop-logo p').innerText = "✅ Logo atual salva no sistema. Envie outra para substituir.";
+            if(data.catalogo && data.catalogo.length > 0) document.querySelector('#drop-cortes p').innerText = `✅ ${data.catalogo.length} fotos de cortes salvas. Envie novas para substituir.`;
+            if(data.tvAds && data.tvAds.length > 0) document.querySelector('#drop-tv p').innerText = `✅ ${data.tvAds.length} anúncios de TV salvos. Envie novas para substituir.`;
+            
+            // Já mostra o QR code e link sem precisar apertar salvar de novo
+            gerarQRCode(docData.id);
+        }
+    } catch(e) {
+        console.error("Erro ao carregar dados antigos:", e);
+    }
+}
 
 document.getElementById('btn-logout').addEventListener('click', () => {
     signOut(auth);
