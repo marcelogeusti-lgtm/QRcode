@@ -49,8 +49,9 @@
             <!-- Temporizadores -->
             <h2 style="margin-bottom: 1rem;">Configuração da TV</h2>
             <div style="margin-bottom: 1.5rem;">
-                <label style="display:block; margin-bottom:0.5rem;">Link do Vídeo do YouTube</label>
-                <input type="text" id="tvVideo" style="width:100%; padding: 0.8rem; background: rgba(0,0,0,0.5); color:white;">
+                <label style="display:block; margin-bottom:0.5rem;">Link do Canal (YouTube ou IPTV .m3u8)</label>
+                <input type="text" id="tvVideo" style="width:100%; padding: 0.8rem; background: rgba(0,0,0,0.5); color:white;" placeholder="Ex: youtube.com/watch ou http://.../canal.m3u8">
+                <small style="color:#aaa; font-size:0.8rem;">Cole um link do YouTube ao Vivo ou um link de canal IPTV (formato .m3u8).</small>
             </div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
                 <div><label>Tempo do Vídeo (Minutos)</label><input type="number" id="tvTempoVideo" value="5" min="1" required style="width:100%; padding:0.8rem;"></div>

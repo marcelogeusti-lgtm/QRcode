@@ -31,21 +31,44 @@ function montarTV(config) {
     // Puxa o link do vídeo (garantindo que tem autoplay e mute se for youtube)
     let videoUrl = config.tvVideo || "https://www.youtube.com/embed/jfKfPfyJRdk";
     
-    // Conversor automático de links normais para Embed
-    if (videoUrl.includes('youtu.be/')) {
-        const videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
-        videoUrl = `https://www.youtube.com/embed/${videoId}`;
-    } else if (videoUrl.includes('youtube.com/watch?v=')) {
-        const videoId = videoUrl.split('v=')[1].split('&')[0];
-        videoUrl = `https://www.youtube.com/embed/${videoId}`;
-    }
+    // Lógica do Player: Decide se é IPTV ou YouTube
+    if (videoUrl.includes('.m3u8')) {
+        const videoElement = document.getElementById('tv-iptv-player');
+        videoElement.style.display = 'block';
+        
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(videoUrl);
+            hls.attachMedia(videoElement);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                videoElement.play();
+            });
+        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+            videoElement.src = videoUrl;
+            videoElement.addEventListener('loadedmetadata', function() {
+                videoElement.play();
+            });
+        }
+    } else {
+        const iframeElement = document.getElementById('tv-youtube-frame');
+        iframeElement.style.display = 'block';
+        
+        // Conversor automático de links normais para Embed
+        if (videoUrl.includes('youtu.be/')) {
+            const videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
+            videoUrl = `https://www.youtube.com/embed/${videoId}`;
+        } else if (videoUrl.includes('youtube.com/watch?v=')) {
+            const videoId = videoUrl.split('v=')[1].split('&')[0];
+            videoUrl = `https://www.youtube.com/embed/${videoId}`;
+        }
 
-    // Adiciona os parâmetros obrigatórios para a TV tocar sozinha sem erro
-    if (videoUrl.includes('youtube.com/embed') && !videoUrl.includes('autoplay')) {
-        videoUrl += videoUrl.includes('?') ? '&autoplay=1&mute=1&loop=1' : '?autoplay=1&mute=1&loop=1';
+        // Adiciona os parâmetros obrigatórios para a TV tocar sozinha sem erro
+        if (videoUrl.includes('youtube.com/embed') && !videoUrl.includes('autoplay')) {
+            videoUrl += videoUrl.includes('?') ? '&autoplay=1&mute=1&loop=1' : '?autoplay=1&mute=1&loop=1';
+        }
+        
+        iframeElement.src = videoUrl;
     }
-    
-    document.getElementById('tv-video-frame').src = videoUrl;
     
     // Configura os slides de anúncio
     const slider = document.getElementById('tv-slider');

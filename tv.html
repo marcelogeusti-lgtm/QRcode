@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SaaS TV</title>
+    <title>TV - SaaS Barbearia</title>
     <link rel="stylesheet" href="css/style.css">
+    <!-- Biblioteca para rodar IPTV -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
         
@@ -12,9 +14,7 @@
         #video-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
         }
-        #tv-video-frame {
-            width: 100%; height: 100%; border: none; pointer-events: none;
-        }
+        .tv-video { width: 100%; height: 100%; border: none; }
 
         /* Camada 2: Os Anúncios (escondidos por padrão, cobrem a tela toda quando ativados) */
         #ad-layer {
@@ -45,8 +45,11 @@
 
     <!-- O "Programa Normal" -->
     <div id="video-layer">
-        <!-- O YouTube não permite autoplay com som, então mute=1 é obrigatório na maioria das vezes para tocar sozinho -->
-        <iframe id="tv-video-frame" src="" allow="autoplay; encrypted-media"></iframe>
+        <!-- Player do YouTube (Escondido por padrão) -->
+        <iframe id="tv-youtube-frame" class="tv-video" allow="autoplay; encrypted-media" style="display:none;"></iframe>
+        
+        <!-- Player de IPTV Nativo (Escondido por padrão) -->
+        <video id="tv-iptv-player" class="tv-video" autoplay muted loop playsinline style="display:none; object-fit: cover;"></video>
     </div>
 
     <!-- O "Comercial da Barbearia" -->
