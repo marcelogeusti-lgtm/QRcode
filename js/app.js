@@ -5,7 +5,7 @@ async function carregarDados() {
     const barberId = urlParams.get('id');
 
     if (!barberId) {
-        mostrarErro("Nenhuma barbearia selecionada. O link precisa ter ?id=nome-da-barbearia");
+        window.location.href = "login.html";
         return;
     }
 
