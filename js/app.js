@@ -17,11 +17,11 @@ async function carregarDados() {
             const config = docSnap.data();
             aplicarConfiguracoes(config);
         } else {
-            mostrarErro(`A barbearia "${barberId}" não foi encontrada. O dono precisa salvar as configurações no Painel primeiro.`);
+            mostrarErro(`A página "${barberId}" não foi encontrada. O dono precisa salvar as configurações no Painel primeiro.`);
         }
     } catch (error) {
         console.error("Erro ao buscar dados:", error);
-        mostrarErro("Erro ao conectar com o servidor. O dono da barbearia precisa liberar o Banco de Dados (Firestore) no painel do Google.");
+        mostrarErro("Erro ao conectar com o servidor. O dono do negócio precisa liberar o Banco de Dados (Firestore) no painel do Google.");
     }
 }
 
@@ -41,9 +41,13 @@ function aplicarConfiguracoes(config) {
     }
     
     // Textos e Logo
-    document.getElementById('wl-nome').innerText = config.nome || "Barbearia";
+    document.getElementById('wl-nome').innerText = config.nome || "Meu Negócio";
     if(config.logoUrl) document.getElementById('wl-logo').src = config.logoUrl;
-    document.title = config.nome || "App Barbearia";
+    document.title = config.nome || "App Digital";
+
+    if (config.tituloCatalogo) {
+        document.getElementById('wl-titulo-catalogo').innerText = config.tituloCatalogo;
+    }
 
     // Links Sociais
     document.getElementById('wl-instagram').href = config.instagramUrl || "#";
@@ -70,7 +74,7 @@ function aplicarConfiguracoes(config) {
             catalogoContainer.appendChild(div);
         });
     } else {
-         catalogoContainer.innerHTML = '<p style="color:gray; text-align:center; width:100%;">Nenhum corte cadastrado.</p>';
+         catalogoContainer.innerHTML = '<p style="color:gray; text-align:center; width:100%;">Nenhum item no catálogo.</p>';
     }
 }
 

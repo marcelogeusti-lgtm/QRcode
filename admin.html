@@ -22,21 +22,22 @@
 
     <div style="max-width: 800px; margin: 0 auto; background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 12px;">
         <div class="header-painel">
-            <h1 style="color: var(--accent-gold);">Painel da Barbearia</h1>
+            <h1 style="color: var(--accent-gold);">Painel de Controle</h1>
             <button id="btn-logout">Sair</button>
         </div>
 
         <form id="admin-form">
             <!-- ID Único -->
             <div style="margin-bottom: 1.5rem;">
-                <label style="display:block; margin-bottom:0.5rem;">ID da Barbearia (Apenas minúsculas e sem acentos, ex: marcelo-vip)</label>
+                <label style="display:block; margin-bottom:0.5rem;">ID do Negócio (Apenas minúsculas e sem acentos, ex: marcelo-vip)</label>
                 <input type="text" id="barberId" required style="width:100%; padding: 0.8rem; border-radius: 4px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
             </div>
 
             <!-- Dados Básicos -->
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                <div><label>Nome da Barbearia</label><input type="text" id="nome" required style="width:100%; padding:0.8rem;"></div>
+                <div><label>Nome do Negócio</label><input type="text" id="nome" required style="width:100%; padding:0.8rem;"></div>
                 <div><label>Slogan</label><input type="text" id="slogan" style="width:100%; padding:0.8rem;"></div>
+                <div style="grid-column: span 2;"><label>Título do Catálogo (Ex: Nossos Cortes, Nossos Pratos, Nossos Serviços)</label><input type="text" id="tituloCatalogo" value="Nosso Catálogo" style="width:100%; padding:0.8rem;"></div>
                 <div><label>Cor Principal (ex: #d4af37)</label><input type="color" id="cor" value="#d4af37" style="width:100%; height:45px;"></div>
                 <div><label>Link do Instagram</label><input type="url" id="instagram" style="width:100%; padding:0.8rem;"></div>
                 <div><label>Link do WhatsApp</label><input type="url" id="whatsapp" style="width:100%; padding:0.8rem;"></div>
@@ -63,15 +64,15 @@
             <!-- Uploads Drag & Drop -->
             <h2 style="margin-bottom: 1rem;">Fotos (Com Compressão Automática)</h2>
             
-            <label>Logo da Barbearia</label>
+            <label>Logo do Negócio</label>
             <div class="drag-zone" id="drop-logo" onclick="document.getElementById('logoFile').click()">
                 <p>Arraste a Logo aqui ou Clique para selecionar</p>
                 <input type="file" id="logoFile" accept="image/*">
             </div>
 
-            <label>Fotos dos Cortes (Catálogo)</label>
+            <label>Fotos do Catálogo (Serviços/Produtos/Pratos)</label>
             <div class="drag-zone" id="drop-cortes" onclick="document.getElementById('cortesFiles').click()">
-                <p>Arraste as fotos dos cortes aqui (Pode selecionar várias)</p>
+                <p>Arraste as fotos do catálogo aqui (Pode selecionar várias)</p>
                 <input type="file" id="cortesFiles" accept="image/*" multiple>
             </div>
 
@@ -82,13 +83,13 @@
             </div>
 
             <button type="submit" class="btn" style="width:100%; padding: 1.2rem; font-size:1.1rem; margin-top:2rem;" id="btn-salvar">
-                Salvar Barbearia
+                Salvar Configurações
             </button>
             <p id="loading-msg" style="text-align:center; display:none; margin-top:1rem; color: var(--accent-gold);">Processando imagens, comprimindo e salvando dados... Aguarde!</p>
         </form>
 
         <div id="qrcode-container" style="display:none; text-align:center; margin-top: 3rem; background:white; padding:2rem; border-radius:12px;">
-            <h2 style="color:black; margin-bottom:1rem;">O QR Code da sua Barbearia</h2>
+            <h2 style="color:black; margin-bottom:1rem;">O QR Code do seu Negócio</h2>
             <div id="qrcode" style="display:inline-block; padding: 10px; border: 4px solid var(--accent-gold); border-radius: 8px;"></div>
             <p style="color:black; margin-top:1rem; font-size:14px;">Imprima este QR Code e coloque na sua bancada!</p>
             <p style="margin-top:1rem;"><a id="link-cliente" href="#" target="_blank" style="color: var(--accent-gold); font-weight:bold;">Acessar Site do Cliente</a></p>

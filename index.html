@@ -31,7 +31,7 @@
             <div class="card-title">
                 <i class="fas fa-wifi"></i> Rede Wi-Fi
             </div>
-            <p class="text-muted">Conecte-se na nossa rede enquanto espera o seu corte.</p>
+            <p class="text-muted">Conecte-se na nossa rede enquanto espera.</p>
             <div class="info-row">
                 <span class="info-text" id="wl-wifi">...</span>
                 <button class="copy-btn" onclick="copyToClipboard('wl-wifi', 'Senha copiada!')" title="Copiar senha">
@@ -45,7 +45,7 @@
             <div class="card-title">
                 <i class="fab fa-pix"></i> Pagamento PIX
             </div>
-            <p class="text-muted">Pague seu corte de forma rápida e segura.</p>
+            <p class="text-muted">Pague de forma rápida e segura.</p>
             <div class="info-row">
                 <span class="info-text" id="wl-pix">...</span>
                 <button class="copy-btn" onclick="copyToClipboard('wl-pix', 'Chave Pix copiada!')" title="Copiar Pix">
@@ -57,10 +57,10 @@
             </button>
         </div>
 
-        <!-- Catálogo de Cortes -->
+        <!-- Catálogo Dinâmico -->
         <div class="glass-card">
             <div class="card-title">
-                <i class="fas fa-cut"></i> Nossos Cortes
+                <i class="fas fa-star"></i> <span id="wl-titulo-catalogo">Nosso Catálogo</span>
             </div>
             <div class="catalog-container" id="wl-catalogo">
                 <!-- Preenchido dinamicamente via JS -->

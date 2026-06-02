@@ -29,6 +29,7 @@ async function carregarDadosDoUsuario(uid) {
             
             if(data.nome) document.getElementById('nome').value = data.nome;
             if(data.slogan) document.getElementById('slogan').value = data.slogan;
+            if(data.tituloCatalogo) document.getElementById('tituloCatalogo').value = data.tituloCatalogo;
             if(data.corPrincipal) document.getElementById('cor').value = data.corPrincipal;
             if(data.instagramUrl) document.getElementById('instagram').value = data.instagramUrl;
             if(data.whatsappUrl) document.getElementById('whatsapp').value = data.whatsappUrl;
@@ -186,6 +187,7 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
             ownerUid: currentUser.uid,
             nome: document.getElementById('nome').value,
             slogan: document.getElementById('slogan').value,
+            tituloCatalogo: document.getElementById('tituloCatalogo').value,
             corPrincipal: document.getElementById('cor').value,
             instagramUrl: document.getElementById('instagram').value,
             whatsappUrl: document.getElementById('whatsapp').value,
@@ -203,12 +205,14 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
 
         await setDoc(docRef, barbeariaData, { merge: true });
         
-        loadingMsg.innerText = "Salvo com sucesso!";
-        loadingMsg.style.color = "#28a745";
+        alert('Dados salvos com sucesso!');
+        loadingMsg.style.display = 'none';
+        btn.disabled = false;
         gerarQRCode(barberId);
 
     } catch (error) {
-        console.error("Erro no processo:", error);
+        console.error("Erro ao salvar negócio: ", error);
+        alert('Erro ao salvar os dados.');
         loadingMsg.innerText = error.message.includes("pertence a outro") ? error.message : "Erro ao salvar. Verifique se o Firebase Storage está ativo.";
         loadingMsg.style.color = "red";
     } finally {
