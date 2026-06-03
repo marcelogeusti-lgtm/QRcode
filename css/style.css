@@ -517,6 +517,7 @@ body {
     height: 100%;
     object-fit: cover;
     pointer-events: none;
+    transform: scale(1.15);
 }
 
 .tv-overlay {

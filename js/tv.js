@@ -97,7 +97,8 @@ function montarTV(config) {
 
         // Adiciona os parâmetros obrigatórios para a TV tocar sozinha sem erro
         if (videoUrl.includes('youtube.com/embed') && !videoUrl.includes('autoplay')) {
-            videoUrl += videoUrl.includes('?') ? '&autoplay=1&mute=1&loop=1' : '?autoplay=1&mute=1&loop=1';
+            const vidId = videoUrl.split('/embed/')[1].split('?')[0];
+            videoUrl += videoUrl.includes('?') ? `&autoplay=1&mute=1&loop=1&playlist=${vidId}&controls=0&showinfo=0` : `?autoplay=1&mute=1&loop=1&playlist=${vidId}&controls=0&showinfo=0`;
         }
         
         iframeElement.src = videoUrl;
