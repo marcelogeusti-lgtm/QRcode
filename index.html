@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <div class="cursor-glow" id="cursor-glow"></div>
+
     <div class="mobile-container">
         <!-- Header -->
         <header class="header">
@@ -77,6 +79,14 @@
     <div id="toast" class="toast">Copiado!</div>
 
     <!-- Scripts -->
+    <script>
+        // Cursor Glow Logic (Lanterna de Vidro)
+        const glow = document.getElementById('cursor-glow');
+        window.addEventListener('mousemove', (e) => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+    </script>
     <script type="module" src="js/app.js"></script>
 </body>
 </html>

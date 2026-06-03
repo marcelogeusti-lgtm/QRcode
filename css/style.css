@@ -39,11 +39,20 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Efeito Radial no Fundo para o Vidro ter o que Desfocar */
-    background-image: 
-        radial-gradient(circle at top left, color-mix(in srgb, var(--accent-gold) 8%, transparent) 0%, transparent 40%),
-        radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
-    background-attachment: fixed;
+}
+
+/* Efeito Lanterna (Cursor Glow) que passa por trás do vidro */
+.cursor-glow {
+    position: fixed;
+    top: -1000px; left: -1000px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent-gold) 15%, transparent) 0%, transparent 60%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    transform: translate(-50%, -50%);
+    filter: blur(40px);
 }
 
 .text-muted {
@@ -89,20 +98,21 @@ body {
 
 /* Shadcn Card Style + Premium Glassmorphism (Tapref Style) */
 .glass-card, .card {
-    background-color: rgba(17, 17, 17, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background-color: rgba(9, 9, 11, 0.65); /* Mais transparente para a luz passar */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     color: var(--card-foreground);
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    border-radius: 24px; /* Cantos mais arredondados como Tapref */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.4s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, border-color 0.3s ease;
     position: relative;
     overflow: hidden;
+    z-index: 10; /* Fica acima da lanterna */
 }
 
 /* Textura de Ruído (Noise) super premium no fundo do card */
@@ -110,7 +120,7 @@ body {
     content: "";
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
     pointer-events: none;
     z-index: 0;
 }
@@ -121,9 +131,7 @@ body {
 }
 
 .glass-card:hover, .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 40px var(--accent-gold);
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15); /* Apenas ilumina levemente a borda, sem glow exagerado */
 }
 
 .card-title {
@@ -270,15 +278,16 @@ body {
 
 .admin-main {
     flex: 1;
-    background: rgba(17, 17, 17, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.04);
+    background: rgba(9, 9, 11, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     padding: 2rem;
-    border-radius: 24px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     position: relative;
     overflow: hidden;
+    z-index: 10;
 }
 
 .admin-main::before {
