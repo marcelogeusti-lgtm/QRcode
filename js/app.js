@@ -106,25 +106,37 @@ function aplicarConfiguracoes(config) {
                 
                 // Assincronamente renderiza o PDF (com fallback para icone caso falhe o CORS)
                 if (typeof window.pdfjsLib !== 'undefined') {
-                    // Usa um proxy CORS gratuito e desativa Range requests para evitar bloqueios do Firebase Storage
-                    const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(itemUrl);
-                    window.pdfjsLib.getDocument({ url: proxyUrl, disableRange: true }).promise.then(pdf => {
-                        return pdf.getPage(1);
-                    }).then(page => {
-                        const canvas = document.getElementById(uniqueId);
-                        if(!canvas) return;
-                        const ctx = canvas.getContext('2d');
-                        const viewport = page.getViewport({ scale: 1.0 });
-                        const scale = 300 / viewport.width;
-                        const scaledViewport = page.getViewport({ scale: scale });
-                        canvas.width = scaledViewport.width;
-                        canvas.height = scaledViewport.height;
-                        page.render({ canvasContext: ctx, viewport: scaledViewport });
-                    }).catch(err => {
-                        console.error("Erro PDF:", err);
-                        const canvas = document.getElementById(uniqueId);
-                        if(canvas) canvas.outerHTML = '<i class="fas fa-file-pdf" style="font-size:3rem; color:var(--accent-gold); margin: 3rem auto;"></i>';
-                    });
+                    const fetchPdf = async () => {
+                        let pdfData = itemUrl;
+                        try {
+                            if (itemUrl.startsWith('http')) {
+                                let res = await fetch("https://api.codetabs.com/v1/proxy?quest=" + itemUrl).catch(()=>null);
+                                if (!res || !res.ok) {
+                                    res = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(itemUrl)).catch(()=>null);
+                                }
+                                if (res && res.ok) {
+                                    const buffer = await res.arrayBuffer();
+                                    pdfData = new Uint8Array(buffer);
+                                }
+                            }
+                            const pdf = await window.pdfjsLib.getDocument(pdfData).promise;
+                            const page = await pdf.getPage(1);
+                            const canvas = document.getElementById(uniqueId);
+                            if(!canvas) return;
+                            const ctx = canvas.getContext('2d');
+                            const viewport = page.getViewport({ scale: 1.0 });
+                            const scale = 300 / viewport.width;
+                            const scaledViewport = page.getViewport({ scale: scale });
+                            canvas.width = scaledViewport.width;
+                            canvas.height = scaledViewport.height;
+                            await page.render({ canvasContext: ctx, viewport: scaledViewport }).promise;
+                        } catch (err) {
+                            console.error("Erro PDF:", err);
+                            const canvas = document.getElementById(uniqueId);
+                            if(canvas) canvas.outerHTML = '<i class="fas fa-file-pdf" style="font-size:3rem; color:var(--accent-gold); margin: 3rem auto;"></i>';
+                        }
+                    };
+                    fetchPdf();
                 }
             } else {
                 div.innerHTML = `<img src="${itemUrl}" alt="Foto da Galeria">`;

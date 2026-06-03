@@ -281,26 +281,36 @@ window.renderCatalogAdmin = function() {
         grid.appendChild(div);
 
         if (isPdf && typeof window.pdfjsLib !== 'undefined') {
-            let proxyUrl = src;
-            if (src.startsWith('http')) {
-                proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(src);
-            }
-            window.pdfjsLib.getDocument({ url: proxyUrl, disableRange: true }).promise.then(pdf => {
-                return pdf.getPage(1);
-            }).then(page => {
-                const canvas = document.getElementById(uniqueId);
-                if(!canvas) return;
-                const ctx = canvas.getContext('2d');
-                const viewport = page.getViewport({ scale: 1.0 });
-                const scale = 200 / viewport.width;
-                const scaledViewport = page.getViewport({ scale: scale });
-                canvas.width = scaledViewport.width;
-                canvas.height = scaledViewport.height;
-                page.render({ canvasContext: ctx, viewport: scaledViewport });
-            }).catch(err => {
-                const canvas = document.getElementById(uniqueId);
-                if(canvas) canvas.outerHTML = '<div style="font-size:2rem; margin-top:2rem;">📄</div>';
-            });
+            const fetchPdf = async () => {
+                let pdfData = src;
+                try {
+                    if (src.startsWith('http') && !src.startsWith('blob:')) {
+                        let res = await fetch("https://api.codetabs.com/v1/proxy?quest=" + src).catch(()=>null);
+                        if (!res || !res.ok) {
+                            res = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(src)).catch(()=>null);
+                        }
+                        if (res && res.ok) {
+                            const buffer = await res.arrayBuffer();
+                            pdfData = new Uint8Array(buffer);
+                        }
+                    }
+                    const pdf = await window.pdfjsLib.getDocument(pdfData).promise;
+                    const page = await pdf.getPage(1);
+                    const canvas = document.getElementById(uniqueId);
+                    if(!canvas) return;
+                    const ctx = canvas.getContext('2d');
+                    const viewport = page.getViewport({ scale: 1.0 });
+                    const scale = 200 / viewport.width;
+                    const scaledViewport = page.getViewport({ scale: scale });
+                    canvas.width = scaledViewport.width;
+                    canvas.height = scaledViewport.height;
+                    await page.render({ canvasContext: ctx, viewport: scaledViewport }).promise;
+                } catch (err) {
+                    const canvas = document.getElementById(uniqueId);
+                    if(canvas) canvas.outerHTML = '<div style="font-size:2rem; margin-top:2rem;">📄</div>';
+                }
+            };
+            fetchPdf();
         }
     });
 };
