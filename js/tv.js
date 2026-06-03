@@ -271,16 +271,22 @@ function tocarIPTV(streamUrl, videoElement) {
 
 function setupZapping(videoElement) {
     window.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            if (m3uChannels.length === 0) {
+                alert("Aviso: A lista de canais ainda está carregando ou ocorreu um erro de conexão com seu servidor IPTV. Verifique se o DNS, Usuário e Senha estão corretos no Painel.");
+                return;
+            }
+            toggleMenuIPTV();
+        } else if (e.key === 'Escape') {
+            fecharMenuIPTV();
+        }
+
         if (m3uChannels.length === 0) return;
 
         // Resetar timer do menu a cada clique se estiver aberto
         if (iptvMenuOpen) resetMenuTimeout();
 
-        if (e.key === 'Enter') {
-            toggleMenuIPTV();
-        } else if (e.key === 'Escape') {
-            fecharMenuIPTV();
-        } else if (e.key === 'ArrowUp' && !iptvMenuOpen) {
+        if (e.key === 'ArrowUp' && !iptvMenuOpen) {
             currentChannelIndex = (currentChannelIndex + 1) % m3uChannels.length;
             mudarDeCanal(videoElement);
         } else if (e.key === 'ArrowDown' && !iptvMenuOpen) {
