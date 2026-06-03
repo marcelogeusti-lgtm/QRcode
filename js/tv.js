@@ -213,7 +213,7 @@ function mostrarComercial() {
         ytPlayer.pauseVideo();
     } else {
         const iptv = document.getElementById('tv-iptv-player');
-        if(iptv) iptv.pause();
+        if(iptv) iptv.muted = true;
     }
 
     const currentUrl = tvAdsArray[currentAdIndex];
@@ -263,7 +263,7 @@ function encerrarComercial() {
         ytPlayer.playVideo();
     } else {
         const iptv = document.getElementById('tv-iptv-player');
-        if(iptv) iptv.play();
+        if(iptv) iptv.muted = false;
     }
 
     // Agenda o próximo
