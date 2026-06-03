@@ -184,7 +184,8 @@ function iniciarPlayer(videoUrl) {
 
 async function carregarListaM3U(url, videoElement) {
     try {
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+        // Usa nosso proxy Vercel invés do allorigins
+        const proxyUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
         const response = await fetch(proxyUrl);
         const data = await response.text();
         
