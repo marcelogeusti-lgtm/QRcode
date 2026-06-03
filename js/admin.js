@@ -283,9 +283,9 @@ window.renderCatalogAdmin = function() {
         if (isPdf && typeof window.pdfjsLib !== 'undefined') {
             let proxyUrl = src;
             if (src.startsWith('http')) {
-                proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(src);
+                proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(src);
             }
-            window.pdfjsLib.getDocument(proxyUrl).promise.then(pdf => {
+            window.pdfjsLib.getDocument({ url: proxyUrl, disableRange: true }).promise.then(pdf => {
                 return pdf.getPage(1);
             }).then(page => {
                 const canvas = document.getElementById(uniqueId);

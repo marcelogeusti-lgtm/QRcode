@@ -106,9 +106,9 @@ function aplicarConfiguracoes(config) {
                 
                 // Assincronamente renderiza o PDF (com fallback para icone caso falhe o CORS)
                 if (typeof window.pdfjsLib !== 'undefined') {
-                    // Usa um proxy CORS gratuito para evitar bloqueios do Firebase Storage no Canvas
-                    const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(itemUrl);
-                    window.pdfjsLib.getDocument(proxyUrl).promise.then(pdf => {
+                    // Usa um proxy CORS gratuito e desativa Range requests para evitar bloqueios do Firebase Storage
+                    const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(itemUrl);
+                    window.pdfjsLib.getDocument({ url: proxyUrl, disableRange: true }).promise.then(pdf => {
                         return pdf.getPage(1);
                     }).then(page => {
                         const canvas = document.getElementById(uniqueId);
