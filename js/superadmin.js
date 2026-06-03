@@ -1,31 +1,25 @@
-import { db, doc, updateDoc, collection, getDocs, auth, onAuthStateChanged, signOut } from './firebase-config.js';
+import { db, doc, updateDoc, collection, getDocs } from './firebase-config.js';
 
-let currentUser = null;
 let allClients = [];
 
-// 1. Proteção de Rota (Apenas o email Mestre entra)
-onAuthStateChanged(auth, async (user) => {
-    const overlay = document.getElementById('auth-overlay');
-    const errorMsg = document.getElementById('auth-error');
+// 1. Lógica de Login Mestre (Independente do Firebase Auth)
+const loginForm = document.getElementById('superadmin-login-form');
+const overlay = document.getElementById('auth-overlay');
+const errorMsg = document.getElementById('auth-error');
 
-    if (!user) {
-        window.location.href = "login.html";
-        return;
-    }
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('sa-email').value.trim();
+    const password = document.getElementById('sa-password').value.trim();
 
-    // Verificação de Segurança Hardcoded para o Dono
-    if (user.email !== "marcelogeusti@gmail.com") {
+    if (email === 'marcelogeusti@gmail.com' && password === 'G@usti8826') {
+        // Acesso Concedido
+        overlay.style.display = 'none';
+        await loadClients();
+    } else {
+        // Acesso Negado
         errorMsg.style.display = 'block';
-        setTimeout(() => {
-            window.location.href = "login.html";
-        }, 2000);
-        return;
     }
-
-    // Acesso Concedido!
-    currentUser = user;
-    overlay.style.display = 'none'; // Esconde a tela de bloqueio
-    await loadClients();
 });
 
 // 2. Carregar Clientes do Banco de Dados
@@ -152,9 +146,10 @@ document.getElementById('search-input').addEventListener('input', (e) => {
     renderTable(filtered);
 });
 
-// 6. Logout
+// 6. Logout Simples
 document.getElementById('btn-logout').addEventListener('click', () => {
-    signOut(auth).then(() => {
-        window.location.href = "login.html";
-    });
+    overlay.style.display = 'flex';
+    document.getElementById('sa-password').value = "";
+    document.getElementById('clients-tbody').innerHTML = "";
+    errorMsg.style.display = 'none';
 });
