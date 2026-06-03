@@ -20,9 +20,15 @@
 </head>
 <body style="background: var(--bg-dark); padding: 2rem; color: white;">
     <!-- Top Bar -->
-    <div style="background: var(--bg-dark); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 2rem; padding-bottom: 1rem;">
-        <h2 style="margin: 0; color: var(--accent-gold);">Painel de Controle</h2>
-        <button class="btn btn-outline" id="btn-logout" style="padding: 0.5rem 1rem; border-color: #ff4d4d; color: #ff4d4d;">Sair</button>
+    <div style="background: var(--background); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); margin-bottom: 2rem; padding-bottom: 1rem;">
+        <h2 style="margin: 0;">Painel de Controle</h2>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="background: var(--secondary); padding: 0.5rem 1rem; border-radius: var(--radius); font-size: 0.875rem; border: 1px solid var(--border); display: none;" id="plan-badge-container">
+                Plano: <strong id="user-plan-badge" style="color: var(--muted-foreground);">Gratuito</strong>
+            </div>
+            <button type="button" class="btn" id="btn-upgrade-top" onclick="window.showUpsellModal()" style="height: auto; padding: 0.5rem 1rem; background: white; color: black;">✨ Fazer Upgrade</button>
+            <button type="button" class="btn btn-outline" id="btn-logout" style="height: auto; padding: 0.5rem 1rem; border-color: var(--destructive); color: var(--destructive-foreground);">Sair</button>
+        </div>
     </div>
 
     <div class="admin-wrapper">
@@ -44,10 +50,17 @@
                     <input type="text" id="barberId" required style="width:100%; padding: 0.8rem; border-radius: 4px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
                 </div>
 
-                <div style="margin-bottom: 1.5rem; background: rgba(212, 175, 55, 0.1); padding: 1rem; border-radius: 8px; border: 1px dashed var(--accent-gold);">
-                    <label style="display:block; margin-bottom:0.5rem; color: var(--accent-gold); font-weight: bold;">Link de Avaliação do Google (Google Meu Negócio) ⭐</label>
-                    <input type="url" id="googleReviewUrl" style="width:100%; padding:0.8rem; background: rgba(0,0,0,0.5); color:white; border: 1px solid #444; border-radius: 4px;" placeholder="Ex: https://g.page/r/...">
-                    <small style="color: #aaa; margin-top: 0.5rem; display: block;">Se preenchido, os clientes verão um botão de 5 estrelas no celular para avaliar a barbearia.</small>
+                <div class="paywall-container" id="pw-google-review">
+                    <div class="paywall-overlay" onclick="window.showUpsellModal()">
+                        <h3>🔒 Função Premium</h3>
+                        <p>Receba dezenas de avaliações no Google 5 estrelas.</p>
+                        <button type="button" class="btn" style="width: auto;">Desbloquear</button>
+                    </div>
+                    <div style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius); border: 1px dashed var(--border);">
+                        <label style="display:block; margin-bottom:0.5rem; font-weight: bold;">Link de Avaliação do Google (Google Meu Negócio) ⭐</label>
+                        <input type="url" id="googleReviewUrl" style="width:100%;" placeholder="Ex: https://g.page/r/...">
+                        <small style="color: var(--muted-foreground); margin-top: 0.5rem; display: block;">Se preenchido, os clientes verão um botão de 5 estrelas no celular para avaliar a barbearia.</small>
+                    </div>
                 </div>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
@@ -89,30 +102,38 @@
 
             <!-- ================= ABA TV ================= -->
             <div id="tab-tv" class="tab-content">
-                <h2 style="margin-bottom: 1rem;">Configuração da TV e Anúncios</h2>
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display:block; margin-bottom:0.5rem;">Link do Vídeo Principal (Recomendado: YouTube Lofi/Esportes)</label>
-                    <input type="text" id="tvVideo" style="width:100%; padding: 0.8rem; background: rgba(0,0,0,0.5); color:white; border: 1px solid #444; border-radius: 4px;" placeholder="Ex: https://www.youtube.com/watch?v=jfKfPfyJRdk">
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                    <div><label>Velocidade do Carrossel (Tempo de cada Anúncio na tela - Segundos)</label><input type="number" id="tvTempoAnuncio" value="30" min="5" required style="width:100%; padding:0.8rem;"></div>
-                </div>
-
-                <h3 style="margin-top:2rem; margin-bottom:1rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:1rem;">Artes dos Comerciais da TV</h3>
-                <p style="color: #aaa; margin-bottom: 1rem; font-size: 0.9rem;">(Use imagens na horizontal para melhor encaixe na tela)</p>
-                
-                <div class="catalog-grid" id="admin-tv-grid">
-                    <!-- Preenchido via JS -->
-                </div>
-
-                <div class="add-item-form" style="margin-top: 1rem;">
-                    <div class="drag-zone" id="drop-novo-tv-ad" onclick="document.getElementById('novoTvAdFile').click()" style="margin-bottom:0; padding:1rem;">
-                        <p id="txt-novo-tv-ad">Clique para selecionar uma foto de anúncio</p>
-                        <input type="file" id="novoTvAdFile" accept="image/*">
+                <div class="paywall-container" id="pw-tv">
+                    <div class="paywall-overlay" onclick="window.showUpsellModal()">
+                        <h3>🔒 TV Corporativa</h3>
+                        <p>Transforme suas TVs em máquinas de fazer dinheiro com anunciantes.</p>
+                        <button type="button" class="btn" style="width: auto;">Desbloquear</button>
                     </div>
-                    <button type="button" class="btn btn-outline" id="btn-add-tv-ad" style="border-color: var(--accent-gold); color: var(--accent-gold);">
-                        + Enviar Comercial
-                    </button>
+
+                    <h2 style="margin-bottom: 1rem;">Configuração da TV e Anúncios</h2>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display:block; margin-bottom:0.5rem;">Link do Vídeo Principal (Recomendado: YouTube Lofi/Esportes)</label>
+                        <input type="text" id="tvVideo" style="width:100%;" placeholder="Ex: https://www.youtube.com/watch?v=jfKfPfyJRdk">
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div><label>Velocidade do Carrossel (Tempo de cada Anúncio na tela - Segundos)</label><input type="number" id="tvTempoAnuncio" value="30" min="5" required style="width:100%;"></div>
+                    </div>
+
+                    <h3 style="margin-top:2rem; margin-bottom:1rem; border-top:1px solid var(--border); padding-top:1rem;">Artes dos Comerciais da TV</h3>
+                    <p style="color: var(--muted-foreground); margin-bottom: 1rem; font-size: 0.9rem;">(Use imagens na horizontal para melhor encaixe na tela)</p>
+                    
+                    <div class="catalog-grid" id="admin-tv-grid">
+                        <!-- Preenchido via JS -->
+                    </div>
+
+                    <div class="add-item-form" style="margin-top: 1rem;">
+                        <div class="drag-zone" id="drop-novo-tv-ad" onclick="document.getElementById('novoTvAdFile').click()" style="margin-bottom:0; padding:1rem;">
+                            <p id="txt-novo-tv-ad">Clique para selecionar uma foto de anúncio</p>
+                            <input type="file" id="novoTvAdFile" accept="image/*">
+                        </div>
+                        <button type="button" class="btn btn-outline" id="btn-add-tv-ad">
+                            + Enviar Comercial
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -177,8 +198,42 @@
         </div> <!-- /admin-sidebar -->
     </div> <!-- /admin-wrapper -->
 
+    <!-- Upsell Modal Shadcn -->
+    <div class="dialog-overlay" id="upsell-modal">
+        <div class="dialog-content">
+            <div class="dialog-header">
+                <h2 class="dialog-title">🚀 Faça o Upgrade para o PRO</h2>
+                <p class="dialog-description">Destrave a TV Híbrida e as Avaliações do Google. Fature com anúncios locais e impulsione o seu ranqueamento!</p>
+            </div>
+            <div style="background: var(--secondary); padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; border: 1px solid var(--border);">
+                <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.875rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <li>✅ TV Híbrida (Vídeo + Anúncios)</li>
+                    <li>✅ Botão Google Reviews 5 Estrelas</li>
+                    <li>✅ Logo Animada na TV</li>
+                    <li>✅ Suporte Premium WhatsApp</li>
+                </ul>
+                <div style="margin-top: 1rem; font-size: 1.5rem; font-weight: bold; text-align: center;">
+                    R$ 49,90 <span style="font-size: 0.875rem; font-weight: normal; color: var(--muted-foreground);">/mês</span>
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <button type="button" class="btn btn-outline" onclick="window.closeUpsellModal()" style="width: auto;">Cancelar</button>
+                <a href="https://wa.me/5511999999999?text=Quero%20assinar%20o%20Plano%20PRO" target="_blank" class="btn" style="width: auto;">💳 Assinar Agora</a>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
+        // Modal Logic
+        window.showUpsellModal = function() {
+            document.getElementById('upsell-modal').classList.add('active');
+        };
+        window.closeUpsellModal = function() {
+            document.getElementById('upsell-modal').classList.remove('active');
+        };
+
+        // Tab Logic
         // Função para trocar as abas (chamada no onclick dos botões HTML)
         window.openTab = function(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
