@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin - Controle Geral SaaS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .clients-table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        th {
+            background-color: rgba(0, 0, 0, 0.2);
+            color: var(--muted-foreground);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-free {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ccc;
+        }
+
+        .badge-pro {
+            background-color: rgba(202, 255, 0, 0.2);
+            color: #caff00;
+            box-shadow: 0 0 10px rgba(202, 255, 0, 0.2);
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--foreground);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--foreground);
+            color: var(--background);
+        }
+        
+        .action-btn.btn-pro {
+            border-color: #caff00;
+            color: #caff00;
+        }
+        
+        .action-btn.btn-pro:hover {
+            background: #caff00;
+            color: #000;
+            box-shadow: 0 0 15px rgba(202, 255, 0, 0.4);
+        }
+
+        #auth-overlay {
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: var(--background);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body style="background: var(--background); padding: 2rem; color: white;">
+
+    <!-- Overlay de Proteção -->
+    <div id="auth-overlay">
+        <h2 style="font-size: 2rem; margin-bottom: 1rem;">Verificando Acesso...</h2>
+        <p style="color: var(--muted-foreground);">Apenas o Administrador Mestre tem acesso a esta página.</p>
+        <div id="auth-error" style="color: #ff4444; display: none; margin-top: 1rem;">
+            Acesso negado. Redirecionando...
+        </div>
+    </div>
+
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <!-- Top Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
+            <div>
+                <h1 style="margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    👑 Painel Super Admin
+                </h1>
+                <p style="color: var(--muted-foreground); margin-top: 0.25rem;">Gerenciamento de Clientes e Assinaturas</p>
+            </div>
+            <div>
+                <button type="button" id="btn-logout" class="action-btn" style="border-color: #ff4444; color: #ff4444;">Sair / Logout</button>
+            </div>
+        </div>
+
+        <!-- Metrics -->
+        <div class="metrics-grid">
+            <div class="glass-card metric-card">
+                <div class="metric-value" id="metric-total">0</div>
+                <div class="metric-label">Barbearias Cadastradas</div>
+            </div>
+            <div class="glass-card metric-card">
+                <div class="metric-value" id="metric-pro" style="color: #caff00; text-shadow: 0 0 20px rgba(202,255,0,0.3);">0</div>
+                <div class="metric-label">Assinantes PRO Ativos</div>
+            </div>
+            <div class="glass-card metric-card">
+                <div class="metric-value" id="metric-free" style="color: #ccc;">0</div>
+                <div class="metric-label">Usuários Gratuitos</div>
+            </div>
+        </div>
+
+        <!-- Clients Table -->
+        <div class="glass-card" style="padding: 0; overflow: hidden;">
+            <div style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0;">Lista de Clientes</h3>
+                <input type="text" id="search-input" placeholder="Buscar por nome ou ID..." style="width: 300px; height: 2rem; background: rgba(0,0,0,0.2);">
+            </div>
+            <div class="clients-table-wrapper">
+                <table id="clients-table">
+                    <thead>
+                        <tr>
+                            <th>Barbearia (ID)</th>
+                            <th>Contato (WhatsApp)</th>
+                            <th>Data de Criação</th>
+                            <th>Plano Atual</th>
+                            <th style="text-align: right;">Ações Mágicas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clients-tbody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--muted-foreground); padding: 3rem;">
+                                Carregando clientes do banco de dados...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Cursor Spotlight Logic
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+    <script type="module" src="js/superadmin.js"></script>
+</body>
+</html>
