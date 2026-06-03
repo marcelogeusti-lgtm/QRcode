@@ -18,8 +18,13 @@
         .header-painel { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
         #btn-logout { background: transparent; border: 1px solid #ff4444; color: #ff4444; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
     </style>
+    <style>
+        @media (min-width: 993px) {
+            #btn-toggle-sidebar-mobile { display: none !important; }
+        }
+    </style>
 </head>
-<body style="background: var(--background); padding: 2rem; color: white;">
+<body style="background: var(--background); margin: 0; padding: 0; font-family: 'Inter', sans-serif;">
     
     <!-- Overlay de Conta Suspensa -->
     <div id="suspended-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 99999; justify-content: center; align-items: center; flex-direction: column; text-align: center; padding: 2rem;">
@@ -58,17 +63,15 @@
         <main class="app-main" id="app-main">
             <!-- Top Bar -->
             <div class="container" style="max-width: 1200px; margin: 0 auto; width: 100%;">
-                <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 1.5rem;">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <div>
-                    <h1 style="color: var(--foreground); margin-bottom: 0.25rem; font-size: 1.5rem; letter-spacing: -0.02em;">Painel do Lojista</h1>
-                    <p style="color: var(--muted-foreground); font-size: 0.875rem;">Gerencie seu App e Mídia Indoor</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <button type="button" class="btn-toggle-sidebar-mobile" id="btn-toggle-sidebar-mobile" style="color:white; font-size:1.5rem; background:none; border:none; cursor:pointer;" onclick="document.getElementById('app-sidebar').classList.add('mobile-open')"><i class="fas fa-bars"></i></button>
+                        <h1 style="margin: 0; font-size: 1.5rem; color: var(--foreground); display: flex; align-items: center; gap: 0.5rem;">
+                            <span id="badge-plan" style="background: rgba(255,255,255,0.1); color:#ccc; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight:bold;">Plano: BÁSICO</span>
+                        </h1>
+                    </div>
                 </div>
-                <div id="badge-plan" style="background: rgba(255,255,255,0.1); color:#ccc; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight:bold; margin-left: 1rem;">Plano: BÁSICO</div>
             </div>
-            </div>
-        </div>
 
         <!-- Métricas (Resultados do Mídia Indoor) -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
@@ -391,21 +394,42 @@
         };
 
         // Tab Logic
-        // Função para trocar as abas (chamada no onclick dos botões HTML)
+        // Tab Logic
         window.openTab = function(tabId, element) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-btn, .sidebar-btn').forEach(btn => btn.classList.remove('active'));
-            
-            document.getElementById(tabId).classList.add('active');
-            if(element) {
-                element.classList.add('active');
+            try {
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                    tab.style.display = 'none'; // Force fallback
+                });
+                document.querySelectorAll('.tab-btn, .sidebar-btn').forEach(btn => btn.classList.remove('active'));
+                
+                const targetTab = document.getElementById(tabId);
+                if (targetTab) {
+                    targetTab.classList.add('active');
+                    targetTab.style.display = 'block'; // Force fallback
+                }
+                
+                if(element) {
+                    element.classList.add('active');
+                }
+
+                // Close sidebar on mobile
+                if (window.innerWidth <= 992) {
+                    document.getElementById('app-sidebar').classList.remove('mobile-open');
+                }
+            } catch (e) {
+                console.error("Error in openTab:", e);
             }
         };
 
         // Toggle Sidebar
         document.getElementById('btn-toggle-sidebar').addEventListener('click', () => {
-            document.getElementById('app-sidebar').classList.toggle('collapsed');
-            document.getElementById('app-main').classList.toggle('expanded');
+            if (window.innerWidth <= 992) {
+                document.getElementById('app-sidebar').classList.toggle('mobile-open');
+            } else {
+                document.getElementById('app-sidebar').classList.toggle('collapsed');
+                document.getElementById('app-main').classList.toggle('expanded');
+            }
         });
 
         // Cursor Spotlight Logic (Lanterna interna aos cards)
