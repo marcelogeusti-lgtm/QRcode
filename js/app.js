@@ -94,12 +94,36 @@ function aplicarConfiguracoes(config) {
             div.className = 'catalog-item';
             
             if (itemUrl.includes('.pdf')) {
+                const uniqueId = 'pdf-canvas-' + Math.random().toString(36).substr(2, 9);
                 div.innerHTML = `
-                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:rgba(255,255,255,0.05); padding:1rem; border-radius:8px; border: 1px solid var(--border);">
-                        <i class="fas fa-file-pdf" style="font-size:3rem; color:var(--accent-gold); margin-bottom:1rem;"></i>
-                        <a href="${itemUrl}" target="_blank" class="btn btn-outline" style="width:100%; text-align:center; font-size: 0.9rem;">Abrir PDF</a>
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:rgba(255,255,255,0.05); border-radius:8px; border: 1px solid var(--border); overflow: hidden; position: relative; min-height: 200px;">
+                        <canvas id="${uniqueId}" style="width: 100%; height: 100%; object-fit: cover;"></canvas>
+                        <div style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 0.5rem; background: rgba(0,0,0,0.8); text-align:center;">
+                            <a href="${itemUrl}" target="_blank" class="btn btn-outline" style="width:100%; text-align:center; font-size: 0.9rem; padding: 0.5rem;">Abrir PDF</a>
+                        </div>
                     </div>
                 `;
+                
+                // Assincronamente renderiza o PDF (com fallback para icone caso falhe o CORS)
+                if (typeof window.pdfjsLib !== 'undefined') {
+                    window.pdfjsLib.getDocument(itemUrl).promise.then(pdf => {
+                        return pdf.getPage(1);
+                    }).then(page => {
+                        const canvas = document.getElementById(uniqueId);
+                        if(!canvas) return;
+                        const ctx = canvas.getContext('2d');
+                        const viewport = page.getViewport({ scale: 1.0 });
+                        const scale = 300 / viewport.width;
+                        const scaledViewport = page.getViewport({ scale: scale });
+                        canvas.width = scaledViewport.width;
+                        canvas.height = scaledViewport.height;
+                        page.render({ canvasContext: ctx, viewport: scaledViewport });
+                    }).catch(err => {
+                        console.error("Erro PDF:", err);
+                        const canvas = document.getElementById(uniqueId);
+                        if(canvas) canvas.outerHTML = '<i class="fas fa-file-pdf" style="font-size:3rem; color:var(--accent-gold); margin: 3rem auto;"></i>';
+                    });
+                }
             } else {
                 div.innerHTML = `<img src="${itemUrl}" alt="Foto da Galeria">`;
             }

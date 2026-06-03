@@ -259,12 +259,15 @@ window.renderCatalogAdmin = function() {
             isPdf = item.url.includes('.pdf');
         }
         
+        const uniqueId = 'admin-pdf-' + Math.random().toString(36).substr(2, 9);
         let contentHtml = '';
         if (isPdf) {
             contentHtml = `
-                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:rgba(255,255,255,0.05); padding:1rem; border-radius:8px;">
-                    <div style="font-size:2rem; margin-bottom:0.5rem;">📄</div>
-                    <span style="color:#ccc; font-size:0.8rem;">PDF</span>
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:rgba(255,255,255,0.05); border-radius:8px; overflow:hidden; position:relative;">
+                    <canvas id="${uniqueId}" style="width: 100%; height: 100%; object-fit: cover;"></canvas>
+                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 0.25rem; background: rgba(0,0,0,0.8); text-align:center;">
+                        <span style="color:#ccc; font-size:0.8rem;">PDF</span>
+                    </div>
                 </div>
             `;
         } else {
@@ -276,6 +279,25 @@ window.renderCatalogAdmin = function() {
             ${contentHtml}
         `;
         grid.appendChild(div);
+
+        if (isPdf && typeof window.pdfjsLib !== 'undefined') {
+            window.pdfjsLib.getDocument(src).promise.then(pdf => {
+                return pdf.getPage(1);
+            }).then(page => {
+                const canvas = document.getElementById(uniqueId);
+                if(!canvas) return;
+                const ctx = canvas.getContext('2d');
+                const viewport = page.getViewport({ scale: 1.0 });
+                const scale = 200 / viewport.width;
+                const scaledViewport = page.getViewport({ scale: scale });
+                canvas.width = scaledViewport.width;
+                canvas.height = scaledViewport.height;
+                page.render({ canvasContext: ctx, viewport: scaledViewport });
+            }).catch(err => {
+                const canvas = document.getElementById(uniqueId);
+                if(canvas) canvas.outerHTML = '<div style="font-size:2rem; margin-top:2rem;">📄</div>';
+            });
+        }
     });
 };
 
