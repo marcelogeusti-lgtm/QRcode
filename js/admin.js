@@ -40,6 +40,13 @@ async function carregarDadosDoUsuario(uid) {
             if(data.tvVideo) document.getElementById('tvVideo').value = data.tvVideo;
             if(data.tvTempoVideo) document.getElementById('tvTempoVideo').value = data.tvTempoVideo;
             if(data.tvTempoAnuncio) document.getElementById('tvTempoAnuncio').value = data.tvTempoAnuncio;
+            if(data.tvEstrategia) document.getElementById('tvEstrategia').value = data.tvEstrategia;
+            
+            // Dispara evento manual para atualizar o Preview inicial
+            document.getElementById('nome').dispatchEvent(new Event('input'));
+            document.getElementById('slogan').dispatchEvent(new Event('input'));
+            document.getElementById('tituloCatalogo').dispatchEvent(new Event('input'));
+            document.getElementById('cor').dispatchEvent(new Event('input'));
             
             // Mostra texto de que tem foto salva
             if(data.logoUrl) document.querySelector('#drop-logo p').innerText = "✅ Logo atual salva no sistema. Envie outra para substituir.";
@@ -282,8 +289,8 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
     try {
         // Validação de Segurança Básica: Tenta ler para ver se já existe e é de outro dono
         const docRef = doc(db, "barbearias", barberId);
-        const docSnap = await docRef.getDoc ? await getDoc(docRef) : null;
-        if (docSnap && docSnap.exists()) {
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
             if (docSnap.data().ownerUid !== currentUser.uid) {
                 throw new Error("Este ID de barbearia já pertence a outro usuário. Escolha um ID diferente.");
             }
@@ -319,17 +326,18 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
         // 4. Salvar Banco de Dados
         const barbeariaData = {
             ownerUid: currentUser.uid,
-            nome: document.getElementById('nome').value,
-            slogan: document.getElementById('slogan').value,
-            tituloCatalogo: document.getElementById('tituloCatalogo').value,
-            corPrincipal: document.getElementById('cor').value,
-            instagramUrl: document.getElementById('instagram').value,
-            whatsappUrl: document.getElementById('whatsapp').value,
-            pixKey: document.getElementById('pix').value,
-            wifiPassword: document.getElementById('wifi').value,
-            tvVideo: document.getElementById('tvVideo').value,
+            nome: document.getElementById('nome').value.trim(),
+            slogan: document.getElementById('slogan').value.trim(),
+            corPrincipal: document.getElementById('cor').value.trim(),
+            instagramUrl: document.getElementById('instagram').value.trim(),
+            whatsappUrl: document.getElementById('whatsapp').value.trim(),
+            pixKey: document.getElementById('pix').value.trim(),
+            wifiPassword: document.getElementById('wifi').value.trim(),
+            tituloCatalogo: document.getElementById('tituloCatalogo').value.trim() || 'Galeria',
+            tvVideo: document.getElementById('tvVideo').value.trim(),
             tvTempoVideo: parseInt(document.getElementById('tvTempoVideo').value) || 5,
             tvTempoAnuncio: parseInt(document.getElementById('tvTempoAnuncio').value) || 30,
+            tvEstrategia: document.getElementById('tvEstrategia').value || 'bloco',
             dataCriacao: new Date().toISOString()
         };
 
@@ -357,14 +365,14 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
 function gerarQRCode(id) {
     const container = document.getElementById('qrcode-container');
     const qrDiv = document.getElementById('qrcode');
-    const urlFinal = window.location.origin + "/?id=" + id;
-    const urlTv = window.location.origin + "/tv.html?id=" + id;
+    const urlFinal = `${window.location.origin}/index.html?id=${id}`;
+    const urlTv = `${window.location.origin}/tv.html?id=${id}`;
     
     qrDiv.innerHTML = "";
     new QRCode(qrDiv, {
         text: urlFinal,
-        width: 250,
-        height: 250,
+        width: 200,
+        height: 200,
         colorDark : "#000000",
         colorLight : "#ffffff",
         correctLevel : QRCode.CorrectLevel.H
@@ -374,6 +382,40 @@ function gerarQRCode(id) {
     document.getElementById('link-tv').href = urlTv;
     container.style.display = "block";
 }
+
+// ================= LÓGICA DO LIVE PREVIEW =================
+const rootStyles = document.documentElement.style;
+
+document.getElementById('nome').addEventListener('input', (e) => {
+    document.getElementById('prev-nome').innerText = e.target.value || "Seu Negócio";
+});
+
+document.getElementById('slogan').addEventListener('input', (e) => {
+    document.getElementById('prev-slogan').innerText = e.target.value || "Slogan do negócio";
+});
+
+document.getElementById('tituloCatalogo').addEventListener('input', (e) => {
+    document.getElementById('prev-galeria-titulo').innerText = e.target.value || "Galeria";
+});
+
+document.getElementById('cor').addEventListener('input', (e) => {
+    const color = e.target.value || "#d4af37";
+    // Atualiza variaveis do CSS pro preview
+    rootStyles.setProperty('--accent-gold', color);
+    
+    // Atualiza bordas dos cards no preview
+    document.getElementById('prev-logo').style.borderColor = color;
+    document.getElementById('prev-galeria-titulo').style.color = color;
+    document.getElementById('prev-wifi-title').style.color = color;
+    document.getElementById('prev-pix-title').style.color = color;
+});
+
+document.getElementById('logoFile').addEventListener('change', (e) => {
+    if(e.target.files && e.target.files[0]) {
+        const url = URL.createObjectURL(e.target.files[0]);
+        document.getElementById('prev-logo').src = url;
+    }
+});
 
 // Funcionalidade de Gravação NFC (Web NFC API)
 document.getElementById('btn-nfc').addEventListener('click', async () => {

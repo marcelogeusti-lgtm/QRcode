@@ -91,13 +91,16 @@ function montarTV(config) {
         
         const tempoAnuncioSecs = config.tvTempoAnuncio || 30;
         const tempoAnuncio = tempoAnuncioSecs * 1000;
+        
+        const estrategia = config.tvEstrategia || 'bloco';
 
-        iniciarCicloDaTV(tempoVideo, tempoAnuncio);
+        iniciarCicloDaTV(tempoVideo, tempoAnuncio, estrategia);
     }
 }
 
-function iniciarCicloDaTV(tempoVideo, tempoAnuncio) {
+function iniciarCicloDaTV(tempoVideo, tempoAnuncio, estrategia) {
     const adLayer = document.getElementById('ad-layer');
+    let rodizioIndex = 0;
     
     // Rotina principal (loop eterno)
     function rodarPrograma() {
@@ -111,18 +114,29 @@ function iniciarCicloDaTV(tempoVideo, tempoAnuncio) {
     function rodarComercial() {
         // Cobre a tela com o anúncio
         adLayer.classList.add('active');
-        
-        // Passa os slides do anúncio se tiver mais de 1
-        let currentSlide = 0;
         const slides = document.querySelectorAll('.tv-slide');
         let slideInterval;
 
-        if(slides.length > 1) {
-            slideInterval = setInterval(() => {
-                slides[currentSlide].classList.remove('active');
-                currentSlide = (currentSlide + 1) % slides.length;
-                slides[currentSlide].classList.add('active');
-            }, 8000); // Toca cada foto por 8 segundos
+        if (estrategia === 'rodizio') {
+            // MODO RODÍZIO: Exibe apenas 1 slide por intervalo e avança o índice
+            slides.forEach(s => s.classList.remove('active'));
+            if (slides[rodizioIndex]) {
+                slides[rodizioIndex].classList.add('active');
+            }
+            rodizioIndex = (rodizioIndex + 1) % slides.length;
+        } else {
+            // MODO BLOCO: Passa todos os slides sequencialmente (Carousel)
+            let currentSlide = 0;
+            slides.forEach(s => s.classList.remove('active'));
+            if (slides[0]) slides[0].classList.add('active');
+
+            if(slides.length > 1) {
+                slideInterval = setInterval(() => {
+                    slides[currentSlide].classList.remove('active');
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    slides[currentSlide].classList.add('active');
+                }, 8000); // Toca cada foto por 8 segundos
+            }
         }
 
         // Fim do comercial, volta pra programação
