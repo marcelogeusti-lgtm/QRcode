@@ -1,4 +1,4 @@
-import { db, doc, getDoc } from './firebase-config.js';
+import { db, doc, getDoc, updateDoc, increment } from './firebase-config.js';
 
 async function carregarDados() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -16,6 +16,13 @@ async function carregarDados() {
         if (docSnap.exists()) {
             const config = docSnap.data();
             aplicarConfiguracoes(config);
+
+            // [MÉTRICA] Registra +1 visualização na página (de forma assíncrona para não travar)
+            updateDoc(docRef, { metrics_views: increment(1) }).catch(e => console.error("Erro metricas views:", e));
+
+            // [MÉTRICA] Espiões de cliques (Google e Sociais)
+            setupMetricListeners(docRef);
+
         } else {
             mostrarErro(`A página "${barberId}" não foi encontrada. O dono precisa salvar as configurações no Painel primeiro.`);
         }
@@ -119,3 +126,28 @@ window.showToast = function(message) {
 }
 
 document.addEventListener('DOMContentLoaded', carregarDados);
+
+// ================= LÓGICA DE MÉTRICAS =================
+function setupMetricListeners(docRef) {
+    const googleBtn = document.getElementById('wl-google-review');
+    const instaBtn = document.getElementById('wl-instagram');
+    const zapBtn = document.getElementById('wl-whatsapp');
+
+    if (googleBtn) {
+        googleBtn.addEventListener('click', () => {
+            updateDoc(docRef, { metrics_google: increment(1) }).catch(()=>{});
+        });
+    }
+
+    if (instaBtn) {
+        instaBtn.addEventListener('click', () => {
+            updateDoc(docRef, { metrics_social: increment(1) }).catch(()=>{});
+        });
+    }
+
+    if (zapBtn) {
+        zapBtn.addEventListener('click', () => {
+            updateDoc(docRef, { metrics_social: increment(1) }).catch(()=>{});
+        });
+    }
+}

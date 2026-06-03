@@ -28,6 +28,11 @@ async function carregarDadosDoUsuario(uid) {
             document.getElementById('barberId').value = docData.id;
             document.getElementById('barberId').readOnly = true; // Impede que ele mude o ID depois que criar
             document.getElementById('barberId').style.opacity = '0.7';
+
+            // Preenche as Métricas
+            document.getElementById('met-views').innerText = data.metrics_views || 0;
+            document.getElementById('met-google').innerText = data.metrics_google || 0;
+            document.getElementById('met-social').innerText = data.metrics_social || 0;
             
             if(data.nome) document.getElementById('nome').value = data.nome;
             if(data.slogan) document.getElementById('slogan').value = data.slogan;

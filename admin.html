@@ -20,16 +20,32 @@
 </head>
 <body style="background: var(--background); padding: 2rem; color: white;">
     <!-- Top Bar -->
-    <div style="background: var(--background); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); margin-bottom: 2rem; padding-bottom: 1rem;">
-        <h2 style="margin: 0;">Painel de Controle</h2>
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <div style="background: var(--secondary); padding: 0.5rem 1rem; border-radius: var(--radius); font-size: 0.875rem; border: 1px solid var(--border); display: none;" id="plan-badge-container">
-                Plano: <strong id="user-plan-badge" style="color: var(--muted-foreground);">Gratuito</strong>
+    <div class="container">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div>
+                <h1 style="color: var(--accent-gold); margin-bottom: 0.5rem;">SaaS Barbearia</h1>
+                <p style="color: var(--muted-foreground); font-size: 0.875rem;">Painel de Controle</p>
+                <div id="badge-plan" style="display:inline-block; margin-top: 0.5rem; background: rgba(255,255,255,0.1); color:#ccc; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight:bold;">Plano: GRATUITO</div>
             </div>
-            <button type="button" class="btn" id="btn-upgrade-top" onclick="window.showUpsellModal()" style="height: auto; padding: 0.5rem 1rem; background: white; color: black;">✨ Fazer Upgrade</button>
-            <button type="button" class="btn btn-outline" id="btn-logout" style="height: auto; padding: 0.5rem 1rem; border-color: var(--destructive); color: var(--destructive-foreground);">Sair</button>
+            <button class="btn btn-outline" id="btn-logout">Sair da Conta</button>
         </div>
-    </div>
+
+        <!-- Métricas (Resultados do Mídia Indoor) -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+            <div class="glass-card" style="text-align: center; padding: 1.5rem;">
+                <div id="met-views" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-gold); line-height: 1; margin-bottom: 0.5rem;">0</div>
+                <div style="font-size: 0.75rem; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.05em;">QR Codes Escaneados</div>
+            </div>
+            <div class="glass-card" style="text-align: center; padding: 1.5rem;">
+                <div id="met-google" style="font-size: 2.5rem; font-weight: 700; color: #fff; line-height: 1; margin-bottom: 0.5rem;">0</div>
+                <div style="font-size: 0.75rem; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.05em;">Cliques no Google</div>
+            </div>
+            <div class="glass-card" style="text-align: center; padding: 1.5rem;">
+                <div id="met-social" style="font-size: 2.5rem; font-weight: 700; color: #fff; line-height: 1; margin-bottom: 0.5rem;">0</div>
+                <div style="font-size: 0.75rem; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.05em;">Cliques Sociais</div>
+            </div>
+        </div>
 
     <div class="admin-wrapper">
         <!-- Lado Esquerdo: Formulário -->
@@ -256,6 +272,7 @@
             });
         });
     </script>
+    </div>
     <script type="module" src="js/admin.js"></script>
 </body>
 </html>
