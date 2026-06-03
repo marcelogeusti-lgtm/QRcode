@@ -70,6 +70,22 @@ async function carregarDadosDoUsuario(uid) {
             
             // Já mostra o QR code e link sem precisar apertar salvar de novo
             gerarQRCode(docData.id);
+
+            // Libera as funções PRO se for o dono do sistema ou assinante PRO
+            if (data.plan === 'PRO' || docData.id === 'guimaraes') {
+                document.querySelectorAll('.paywall-overlay').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.paywall-container > *').forEach(el => {
+                    el.style.filter = 'none';
+                    el.style.pointerEvents = 'auto';
+                });
+                
+                const badge = document.getElementById('badge-plan');
+                if(badge) {
+                    badge.innerText = 'Plano: PRO';
+                    badge.style.background = 'var(--accent-gold)';
+                    badge.style.color = '#000';
+                }
+            }
         }
     } catch(e) {
         console.error("Erro ao carregar dados antigos:", e);
