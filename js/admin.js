@@ -49,6 +49,18 @@ async function carregarDadosDoUsuario(uid) {
                 }
             }
 
+            // Background Preview
+            if (data.backgroundUrl) {
+                const isVideo = data.backgroundType === 'video';
+                document.getElementById('preview-bg-video').style.display = isVideo ? 'block' : 'none';
+                document.getElementById('preview-bg-img').style.display = isVideo ? 'none' : 'block';
+                if (isVideo) {
+                    document.getElementById('preview-bg-video').src = data.backgroundUrl;
+                } else {
+                    document.getElementById('preview-bg-img').src = data.backgroundUrl;
+                }
+            }
+
             if(data.nome) document.getElementById('nome').value = data.nome;
             if(data.slogan) document.getElementById('slogan').value = data.slogan;
             if(data.tituloCatalogo) document.getElementById('tituloCatalogo').value = data.tituloCatalogo;
@@ -205,6 +217,7 @@ function setupDropZone(zoneId, inputId) {
     });
 }
 setupDropZone('drop-logo', 'logoFile');
+setupDropZone('drop-bg', 'bgFile');
 setupDropZone('drop-novo-item', 'novoItemFile');
 setupDropZone('drop-novo-tv-ad', 'novoTvAdFile');
 
@@ -483,9 +496,18 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
             }
         }
 
-        // 1. Upload Logo
+        // 1. Upload Logo e Fundo Animado
         const logoFile = document.getElementById('logoFile').files[0];
         const logoUrl = logoFile ? await uploadMedia(logoFile, `barbearias/${barberId}/logo.jpg`) : null;
+
+        const bgFile = document.getElementById('bgFile').files[0];
+        let backgroundUrl = null;
+        let backgroundType = null;
+        if (bgFile) {
+            const ext = bgFile.type.startsWith('video/') ? 'mp4' : 'jpg';
+            backgroundUrl = await uploadMedia(bgFile, `barbearias/${barberId}/background.${ext}`);
+            backgroundType = bgFile.type.startsWith('video/') ? 'video' : 'image';
+        }
 
         // 2. Upload Catálogo Visual (Sempre imagens ou PDF)
         const catalogToSave = [];
@@ -537,6 +559,10 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
         if (window.xtreamM3uUrl) barbeariaData.xtreamM3uUrl = window.xtreamM3uUrl;
 
         if (logoUrl) barbeariaData.logoUrl = logoUrl;
+        if (backgroundUrl) {
+            barbeariaData.backgroundUrl = backgroundUrl;
+            barbeariaData.backgroundType = backgroundType;
+        }
         
         // SEMPRE SALVA AS ARRAYS (mesmo se vazias) PARA PERMITIR EXCLUSÃO
         barbeariaData.catalogo = catalogToSave;
@@ -630,6 +656,21 @@ document.getElementById('logoFile').addEventListener('change', (e) => {
     if(e.target.files && e.target.files[0]) {
         const url = URL.createObjectURL(e.target.files[0]);
         document.getElementById('prev-logo').src = url;
+    }
+});
+
+document.getElementById('bgFile').addEventListener('change', (e) => {
+    if(e.target.files && e.target.files[0]) {
+        const file = e.target.files[0];
+        const url = URL.createObjectURL(file);
+        const isVideo = file.type.startsWith('video/');
+        document.getElementById('preview-bg-video').style.display = isVideo ? 'block' : 'none';
+        document.getElementById('preview-bg-img').style.display = isVideo ? 'none' : 'block';
+        if (isVideo) {
+            document.getElementById('preview-bg-video').src = url;
+        } else {
+            document.getElementById('preview-bg-img').src = url;
+        }
     }
 });
 

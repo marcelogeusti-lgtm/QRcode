@@ -58,6 +58,16 @@ function aplicarConfiguracoes(config) {
     if(config.logoUrl) document.getElementById('wl-logo').src = config.logoUrl;
     document.title = config.nome || "App Digital";
 
+    // Fundo Dinâmico (Media)
+    const bgContainer = document.getElementById('bg-media-container');
+    if (bgContainer && config.backgroundUrl) {
+        if (config.backgroundType === 'video') {
+            bgContainer.innerHTML = `<video autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8; filter: brightness(0.6);"><source src="${config.backgroundUrl}" type="video/mp4"></video>`;
+        } else {
+            bgContainer.innerHTML = `<img src="${config.backgroundUrl}" alt="Fundo" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8; filter: brightness(0.6);">`;
+        }
+    }
+
     if (config.tituloCatalogo) {
         document.getElementById('wl-titulo-catalogo').innerText = config.tituloCatalogo;
     }
