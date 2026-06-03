@@ -8,7 +8,7 @@
     --card-foreground: #fafafa;
     
     /* Legacy Variables - Agora o usuário pode mudar a cor via JS novamente */
-    --accent-gold: #caff00; /* Cor padrão Tapref (Lima) */
+    --accent-gold: #d4af37; /* Cor padrão Dourado */
     --primary: var(--accent-gold);
     --primary-foreground: #18181b;
     
