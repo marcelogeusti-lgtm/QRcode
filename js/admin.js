@@ -260,10 +260,12 @@ window.renderTvAdmin = function() {
         div.className = 'catalog-item-admin';
         
         let isVideo = false;
+        let src = '';
         if (item.file) {
             src = URL.createObjectURL(item.file);
             isVideo = item.file.type.includes('video');
         } else {
+            src = item.url;
             isVideo = item.url && item.url.includes('.mp4');
         }
         
