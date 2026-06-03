@@ -109,11 +109,10 @@ function renderTable(clientsArray) {
         // Dropdown Mágico
         const isBasic = client.plan !== 'PRO' && client.plan !== 'SUSPENDED';
         const actionBtn = `
-            <select onchange="window.togglePlan('${client.id}', this.value)" style="background:var(--secondary); color:white; border:1px solid var(--border); padding:0.4rem; border-radius:4px; outline:none; font-family:inherit; font-size:0.875rem;">
+            <select onchange="window.togglePlan('${client.id}', this.value)" style="padding:0.5rem; border-radius:4px; background:#222; color:white; border:1px solid #444; font-weight:bold;">
                 <option value="BASIC" ${isBasic ? 'selected' : ''}>Plano: Básico</option>
                 <option value="PRO" ${client.plan === 'PRO' ? 'selected' : ''}>Plano: PRO ✨</option>
                 <option value="SUSPENDED" ${client.plan === 'SUSPENDED' ? 'selected' : ''} style="color:#ff4444;">Bloquear/Suspender ⛔</option>
-                <option value="DELETE" style="color:#ff4444; font-weight:bold;">🗑️ Excluir Conta</option>
             </select>
         `;
 
