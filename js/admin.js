@@ -39,9 +39,13 @@ async function carregarDadosDoUsuario(uid) {
             // Logo Preview
             if (data.logoUrl) {
                 const previewLogo = document.getElementById('preview-logo');
+                const prevLogoPhone = document.getElementById('prev-logo');
                 if (previewLogo) {
                     previewLogo.src = data.logoUrl;
                     previewLogo.style.display = 'block';
+                }
+                if (prevLogoPhone) {
+                    prevLogoPhone.src = data.logoUrl;
                 }
             }
 
