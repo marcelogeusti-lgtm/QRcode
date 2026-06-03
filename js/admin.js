@@ -37,6 +37,7 @@ async function carregarDadosDoUsuario(uid) {
             if(data.whatsappUrl) document.getElementById('whatsapp').value = data.whatsappUrl;
             if(data.pixKey) document.getElementById('pix').value = data.pixKey;
             if(data.wifiPassword) document.getElementById('wifi').value = data.wifiPassword;
+            if(data.googleReviewUrl) document.getElementById('googleReviewUrl').value = data.googleReviewUrl;
             if(data.tvVideo) document.getElementById('tvVideo').value = data.tvVideo;
             if(data.tvTempoAnuncio) document.getElementById('tvTempoAnuncio').value = data.tvTempoAnuncio;
             
@@ -45,6 +46,7 @@ async function carregarDadosDoUsuario(uid) {
             document.getElementById('slogan').dispatchEvent(new Event('input'));
             document.getElementById('tituloCatalogo').dispatchEvent(new Event('input'));
             document.getElementById('cor').dispatchEvent(new Event('input'));
+            document.getElementById('googleReviewUrl').dispatchEvent(new Event('input'));
             
             // Mostra texto de que tem foto salva
             if(data.logoUrl) document.querySelector('#drop-logo p').innerText = "✅ Logo atual salva no sistema. Envie outra para substituir.";
@@ -331,6 +333,7 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
             whatsappUrl: document.getElementById('whatsapp').value.trim(),
             pixKey: document.getElementById('pix').value.trim(),
             wifiPassword: document.getElementById('wifi').value.trim(),
+            googleReviewUrl: document.getElementById('googleReviewUrl').value.trim(),
             tituloCatalogo: document.getElementById('tituloCatalogo').value.trim() || 'Galeria',
             tvVideo: document.getElementById('tvVideo').value.trim(),
             tvTempoAnuncio: parseInt(document.getElementById('tvTempoAnuncio').value) || 30,
@@ -410,6 +413,16 @@ document.getElementById('logoFile').addEventListener('change', (e) => {
     if(e.target.files && e.target.files[0]) {
         const url = URL.createObjectURL(e.target.files[0]);
         document.getElementById('prev-logo').src = url;
+    }
+});
+
+document.getElementById('googleReviewUrl').addEventListener('input', (e) => {
+    const btn = document.getElementById('prev-google-btn');
+    if (e.target.value) {
+        btn.style.display = 'flex';
+        btn.href = e.target.value;
+    } else {
+        btn.style.display = 'none';
     }
 });
 

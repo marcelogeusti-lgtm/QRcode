@@ -57,11 +57,22 @@ function aplicarConfiguracoes(config) {
     document.getElementById('wl-wifi').innerText = config.wifiPassword || "Sem Senha";
     document.getElementById('wl-pix').innerText = config.pixKey || "Não Cadastrado";
 
+    // Google Reviews
+    const reviewBtn = document.getElementById('wl-google-review');
+    if(config.googleReviewUrl) {
+        reviewBtn.style.display = 'flex';
+        reviewBtn.href = config.googleReviewUrl;
+    } else {
+        reviewBtn.style.display = 'none';
+    }
+
     // Catálogo Dinâmico
     const catalogoContainer = document.getElementById('wl-catalogo');
+    const catalogoCard = document.getElementById('wl-catalogo-card');
     catalogoContainer.innerHTML = ''; 
     
     if (config.catalogo && config.catalogo.length > 0) {
+        catalogoCard.style.display = 'flex';
         config.catalogo.forEach(itemUrl => {
             // Em caso de compatibilidade com objeto antigo, extrai a url
             if (typeof itemUrl === 'object') itemUrl = itemUrl.url;
@@ -72,7 +83,7 @@ function aplicarConfiguracoes(config) {
             catalogoContainer.appendChild(div);
         });
     } else {
-         catalogoContainer.innerHTML = '<p style="color:gray; text-align:center; width:100%;">Nenhum item no catálogo.</p>';
+         catalogoCard.style.display = 'none';
     }
 }
 

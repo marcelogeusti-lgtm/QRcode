@@ -44,6 +44,12 @@
                     <input type="text" id="barberId" required style="width:100%; padding: 0.8rem; border-radius: 4px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
                 </div>
 
+                <div style="margin-bottom: 1.5rem; background: rgba(212, 175, 55, 0.1); padding: 1rem; border-radius: 8px; border: 1px dashed var(--accent-gold);">
+                    <label style="display:block; margin-bottom:0.5rem; color: var(--accent-gold); font-weight: bold;">Link de Avaliação do Google (Google Meu Negócio) ⭐</label>
+                    <input type="url" id="googleReviewUrl" style="width:100%; padding:0.8rem; background: rgba(0,0,0,0.5); color:white; border: 1px solid #444; border-radius: 4px;" placeholder="Ex: https://g.page/r/...">
+                    <small style="color: #aaa; margin-top: 0.5rem; display: block;">Se preenchido, os clientes verão um botão de 5 estrelas no celular para avaliar a barbearia.</small>
+                </div>
+
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
                     <div><label>Nome do Negócio</label><input type="text" id="nome" required style="width:100%; padding:0.8rem;"></div>
                     <div><label>Slogan</label><input type="text" id="slogan" style="width:100%; padding:0.8rem;"></div>
@@ -154,6 +160,11 @@
                         <button class="btn btn-outline" style="width: 100%; border-color: var(--accent-gold); color: var(--accent-gold);">Copiar Chave</button>
                     </div>
                     
+                    <!-- Botão de Avaliação (Invisível por padrão até preencher o link) -->
+                    <a href="#" class="btn" style="display: none; background: #fff; color: #333; border: 2px solid #ddd; gap: 0.5rem; justify-content: center; margin-bottom: 1rem;" id="prev-google-btn">
+                        <b>Avalie no Google</b> <span style="color: #fbbc05;">⭐⭐⭐⭐⭐</span>
+                    </a>
+
                     <!-- Galeria -->
                     <div style="margin-top: 2rem;">
                         <h2 id="prev-galeria-titulo" style="font-size: 1.2rem; margin-bottom: 1rem; color: var(--accent-gold);">Galeria</h2>
