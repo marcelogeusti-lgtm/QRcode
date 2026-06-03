@@ -41,20 +41,6 @@ body {
     align-items: center;
 }
 
-/* Efeito Lanterna (Cursor Glow) que passa por trás do vidro */
-.cursor-glow {
-    position: fixed;
-    top: -1000px; left: -1000px;
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, color-mix(in srgb, var(--accent-gold) 15%, transparent) 0%, transparent 60%);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 0;
-    transform: translate(-50%, -50%);
-    filter: blur(40px);
-}
-
 .text-muted {
     color: var(--muted-foreground);
     font-size: 0.875rem;
@@ -112,11 +98,31 @@ body {
     transition: transform 0.3s ease, border-color 0.3s ease;
     position: relative;
     overflow: hidden;
-    z-index: 10; /* Fica acima da lanterna */
+    z-index: 10; /* Fica acima de outros elementos */
+}
+
+/* Lanterna Interna (Spotlight) restrita aos cards */
+.glass-card::before, .card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(
+        500px circle at var(--mouse-x, -500px) var(--mouse-y, -500px),
+        color-mix(in srgb, var(--accent-gold) 15%, transparent),
+        transparent 40%
+    );
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.glass-card:hover::before, .card:hover::before {
+    opacity: 1;
 }
 
 /* Textura de Ruído (Noise) super premium no fundo do card */
-.glass-card::before, .card::before {
+.glass-card::after, .card::after {
     content: "";
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -291,6 +297,25 @@ body {
 }
 
 .admin-main::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(
+        600px circle at var(--mouse-x, -600px) var(--mouse-y, -600px),
+        color-mix(in srgb, var(--accent-gold) 12%, transparent),
+        transparent 50%
+    );
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.admin-main:hover::before {
+    opacity: 1;
+}
+
+.admin-main::after {
     content: "";
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;

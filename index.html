@@ -8,8 +8,6 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="cursor-glow" id="cursor-glow"></div>
-
     <div class="mobile-container">
         <!-- Header -->
         <header class="header">
@@ -80,11 +78,15 @@
 
     <!-- Scripts -->
     <script>
-        // Cursor Glow Logic (Lanterna de Vidro)
-        const glow = document.getElementById('cursor-glow');
-        window.addEventListener('mousemove', (e) => {
-            glow.style.left = e.clientX + 'px';
-            glow.style.top = e.clientY + 'px';
+        // Cursor Spotlight Logic (Lanterna interna aos cards)
+        document.querySelectorAll('.card, .glass-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
         });
     </script>
     <script type="module" src="js/app.js"></script>
