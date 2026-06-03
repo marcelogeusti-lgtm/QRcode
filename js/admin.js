@@ -258,14 +258,21 @@ window.renderTvAdmin = function() {
         const div = document.createElement('div');
         div.className = 'catalog-item-admin';
         
-        let src = item.url;
+        let isVideo = false;
         if (item.file) {
             src = URL.createObjectURL(item.file);
+            isVideo = item.file.type.includes('video');
+        } else {
+            isVideo = item.url && item.url.includes('.mp4');
         }
         
+        let mediaHtml = isVideo 
+            ? `<video src="${src}" style="width:100%; height:100%; object-fit:cover;" muted autoplay loop></video>`
+            : `<img src="${src}" alt="Anúncio TV">`;
+
         div.innerHTML = `
             <button type="button" class="btn-remove-item" onclick="removerItemTv(${index})">X</button>
-            <img src="${src}" alt="Anúncio TV">
+            ${mediaHtml}
         `;
         grid.appendChild(div);
     });
@@ -338,12 +345,18 @@ function compressImage(file, maxWidth = 1080) {
     });
 }
 
-// Upload com Compressão
-async function uploadImage(file, path) {
+// Upload Híbrido (Vídeo Passa Direto, Imagem Comprime)
+async function uploadMedia(file, path) {
     if (!file) return null;
-    const compressed = await compressImage(file);
+    let finalFile = file;
+
+    // Se for vídeo, ignora compressão
+    if (!file.type.includes('video')) {
+        finalFile = await compressImage(file);
+    }
+
     const storageRef = ref(storage, path);
-    await uploadBytes(storageRef, compressed);
+    await uploadBytes(storageRef, finalFile);
     return await getDownloadURL(storageRef);
 }
 
@@ -371,27 +384,27 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
 
         // 1. Upload Logo
         const logoFile = document.getElementById('logoFile').files[0];
-        const logoUrl = logoFile ? await uploadImage(logoFile, `barbearias/${barberId}/logo.jpg`) : null;
+        const logoUrl = logoFile ? await uploadMedia(logoFile, `barbearias/${barberId}/logo.jpg`) : null;
 
-        // 2. Upload Catálogo Visual (Processando array misto de arquivos novos e urls antigas)
+        // 2. Upload Catálogo Visual (Sempre imagens)
         const catalogToSave = [];
         for (let i = 0; i < window.localCatalog.length; i++) {
             const item = window.localCatalog[i];
             let finalUrl = item.url;
             if (item.file) {
-                // Se tem '.file', é um upload novo
-                finalUrl = await uploadImage(item.file, `barbearias/${barberId}/cat_${Date.now()}_${i}.jpg`);
+                finalUrl = await uploadMedia(item.file, `barbearias/${barberId}/cat_${Date.now()}_${i}.jpg`);
             }
             catalogToSave.push(finalUrl);
         }
 
-        // 3. Upload Anúncios TV Visual
+        // 3. Upload Anúncios TV Visual (Pode ser Vídeo ou Imagem)
         const tvAdsToSave = [];
         for (let i = 0; i < window.localTvAds.length; i++) {
             const ad = window.localTvAds[i];
             let finalUrl = ad.url;
             if (ad.file) {
-                finalUrl = await uploadImage(ad.file, `barbearias/${barberId}/tvAds/ad_${Date.now()}_${i}.jpg`);
+                const ext = ad.file.type.includes('video') ? 'mp4' : 'jpg';
+                finalUrl = await uploadMedia(ad.file, `barbearias/${barberId}/tvAds/ad_${Date.now()}_${i}.${ext}`);
             }
             tvAdsToSave.push(finalUrl);
         }

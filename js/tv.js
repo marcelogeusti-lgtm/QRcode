@@ -81,10 +81,16 @@ function montarTV(config) {
     if ((layout === 'l-shape' || layout === 'bottom') && tvAdsArray.length > 0) {
         const slider = document.getElementById('tv-slider');
         slider.innerHTML = '';
-        tvAdsArray.forEach((imgUrl, index) => {
+        tvAdsArray.forEach((url, index) => {
             const slide = document.createElement('div');
             slide.className = 'tv-slide' + (index === 0 ? ' active' : '');
-            slide.style.backgroundImage = `url('${imgUrl}')`;
+            
+            if (url.includes('.mp4')) {
+                slide.innerHTML = `<video src="${url}" style="width:100%; height:100%; object-fit:cover;" muted autoplay loop></video>`;
+            } else {
+                slide.style.backgroundImage = `url('${url}')`;
+            }
+            
             slider.appendChild(slide);
         });
 
@@ -187,11 +193,12 @@ function iniciarComerciaisDeTelaCheia() {
     const layout = tvConfig.tvLayout || 'l-shape';
     if (layout !== 'fullscreen' || tvAdsArray.length === 0) return;
 
+    agendarProximoComercial();
+}
+
+function agendarProximoComercial() {
     const tempoAnuncio = (tvConfig.tvTempoAnuncio || 30) * 1000;
-    
-    // Executa a primeira vez logo de cara ou espera o tempo?
-    // Vamos esperar o tempo para o primeiro vídeo tocar um pouco.
-    setInterval(() => {
+    setTimeout(() => {
         mostrarComercial();
     }, tempoAnuncio);
 }
@@ -199,8 +206,9 @@ function iniciarComerciaisDeTelaCheia() {
 function mostrarComercial() {
     const overlay = document.getElementById('fullscreen-ad-overlay');
     const img = document.getElementById('fullscreen-ad-img');
+    const video = document.getElementById('fullscreen-ad-video');
     
-    // Pausa ou Abaixa o Youtube
+    // Pausa o Youtube
     if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
         ytPlayer.pauseVideo();
     } else {
@@ -208,23 +216,58 @@ function mostrarComercial() {
         if(iptv) iptv.pause();
     }
 
-    img.src = tvAdsArray[currentAdIndex];
+    const currentUrl = tvAdsArray[currentAdIndex];
     overlay.style.display = 'flex';
-    
     currentAdIndex = (currentAdIndex + 1) % tvAdsArray.length;
 
-    // Fica na tela por 10 segundos
-    setTimeout(() => {
-        overlay.style.display = 'none';
+    if (currentUrl.includes('.mp4')) {
+        img.style.display = 'none';
+        video.style.display = 'block';
+        video.src = currentUrl;
         
-        // Retoma o Youtube
-        if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
-            ytPlayer.playVideo();
-        } else {
-            const iptv = document.getElementById('tv-iptv-player');
-            if(iptv) iptv.play();
-        }
-    }, 10000);
+        // Toca o vídeo com som no talo
+        video.volume = 1;
+        video.muted = false;
+        video.play().catch(e => console.log("Erro Play Vídeo", e));
+
+        // Quando o vídeo acabar, retoma o Youtube e agenda o próximo
+        video.onended = () => {
+            encerrarComercial();
+        };
+
+        // Fallback de segurança caso o vídeo não toque
+        video.onerror = () => {
+            encerrarComercial();
+        };
+    } else {
+        // É Imagem
+        video.style.display = 'none';
+        video.pause();
+        img.style.display = 'block';
+        img.src = currentUrl;
+
+        // Fica na tela por 10 segundos
+        setTimeout(() => {
+            encerrarComercial();
+        }, 10000);
+    }
+}
+
+function encerrarComercial() {
+    document.getElementById('fullscreen-ad-overlay').style.display = 'none';
+    const video = document.getElementById('fullscreen-ad-video');
+    video.pause();
+    
+    // Retoma o Youtube
+    if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+        ytPlayer.playVideo();
+    } else {
+        const iptv = document.getElementById('tv-iptv-player');
+        if(iptv) iptv.play();
+    }
+
+    // Agenda o próximo
+    agendarProximoComercial();
 }
 
 function updateClock() {
