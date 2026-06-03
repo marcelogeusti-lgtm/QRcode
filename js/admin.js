@@ -449,6 +449,9 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
             }
         }
 
+        // Recarrega a página para destravar recursos (ex: Modo PRO)
+        window.location.reload();
+
         gerarQRCode(barberId);
 
     } catch (error) {
