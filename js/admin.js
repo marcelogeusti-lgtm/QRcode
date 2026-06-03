@@ -281,7 +281,11 @@ window.renderCatalogAdmin = function() {
         grid.appendChild(div);
 
         if (isPdf && typeof window.pdfjsLib !== 'undefined') {
-            window.pdfjsLib.getDocument(src).promise.then(pdf => {
+            let proxyUrl = src;
+            if (src.startsWith('http')) {
+                proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(src);
+            }
+            window.pdfjsLib.getDocument(proxyUrl).promise.then(pdf => {
                 return pdf.getPage(1);
             }).then(page => {
                 const canvas = document.getElementById(uniqueId);
