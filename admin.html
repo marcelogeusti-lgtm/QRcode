@@ -301,7 +301,14 @@
             <p id="loading-msg" style="text-align:center; display:none; margin-top:1rem; color: var(--accent-gold);">Processando imagens, comprimindo e salvando dados... Aguarde!</p>
         </form>
 
-        <div id="qrcode" style="display:none;"></div>
+        <div id="qrcode-container" style="display:none; text-align:center; padding:1.5rem; background:rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius:var(--radius); margin-top: 2rem;">
+            <h3 style="margin-bottom:1rem; color:var(--accent-gold);">Seu Link e QR Code</h3>
+            <div id="qrcode" style="display:flex; justify-content:center; margin-bottom:1rem; background:white; padding: 1rem; border-radius: 8px; width: max-content; margin-left: auto; margin-right: auto;"></div>
+            <div style="display:flex; flex-direction:column; gap:0.5rem; align-items:center;">
+                <a id="link-cliente" href="#" target="_blank" style="color:#caff00; text-decoration:none; font-weight:bold; border-bottom: 1px dashed #caff00;">Acessar Aplicativo / Catálogo</a>
+                <a id="link-tv" href="#" target="_blank" style="color:var(--muted-foreground); text-decoration:none; font-size:0.875rem;">Abrir Link da TV Indoor</a>
+            </div>
+        </div>
         </div> <!-- /admin-main -->
 
         <!-- Lado Direito: Celular Preview -->
