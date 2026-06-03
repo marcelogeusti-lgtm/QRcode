@@ -101,12 +101,14 @@ function aplicarConfiguracoes(config) {
     document.getElementById('wl-pix').innerText = config.pixKey || "Não Cadastrado";
 
     // Google Reviews
-    const reviewBtn = document.getElementById('wl-google-review');
+    const reviewContainer = document.getElementById('google-review-container');
+    const reviewBtn = document.getElementById('wl-google');
+    
     if(config.googleReviewUrl) {
-        reviewBtn.style.display = 'flex';
-        reviewBtn.href = config.googleReviewUrl;
+        if(reviewContainer) reviewContainer.style.display = 'block';
+        if(reviewBtn) reviewBtn.href = config.googleReviewUrl;
     } else {
-        reviewBtn.style.display = 'none';
+        if(reviewContainer) reviewContainer.style.display = 'none';
     }
 
     // Catálogo Dinâmico
@@ -214,7 +216,7 @@ document.addEventListener('DOMContentLoaded', carregarDados);
 
 // ================= LÓGICA DE MÉTRICAS =================
 function setupMetricListeners(docRef) {
-    const googleBtn = document.getElementById('wl-google-review');
+    const googleBtn = document.getElementById('wl-google');
     const instaBtn = document.getElementById('wl-instagram');
     const zapBtn = document.getElementById('wl-whatsapp');
 
