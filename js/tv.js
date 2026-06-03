@@ -184,8 +184,8 @@ function iniciarPlayer(videoUrl) {
 
 async function carregarListaM3U(url, videoElement) {
     try {
-        // Usa nosso proxy Vercel invés do allorigins
-        const proxyUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
+        // Usa corsproxy.io (otimizado para client-side e bypass de Cloudflare)
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
         const response = await fetch(proxyUrl);
         const data = await response.text();
         
