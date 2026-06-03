@@ -30,7 +30,7 @@
             <!-- Abas de Navegação -->
             <div class="tabs">
                 <button type="button" class="tab-btn active" onclick="openTab('tab-loja')">🏠 Início</button>
-                <button type="button" class="tab-btn" onclick="openTab('tab-catalogo')">📦 Catálogo</button>
+                <button type="button" class="tab-btn" onclick="openTab('tab-catalogo')">📸 Galeria de Fotos</button>
                 <button type="button" class="tab-btn" onclick="openTab('tab-tv')">📺 TV & Mídia</button>
             </div>
 
@@ -44,7 +44,7 @@
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
                     <div><label>Nome do Negócio</label><input type="text" id="nome" required style="width:100%; padding:0.8rem;"></div>
                     <div><label>Slogan</label><input type="text" id="slogan" style="width:100%; padding:0.8rem;"></div>
-                    <div style="grid-column: span 2;"><label>Título do Catálogo (Ex: Nossos Cortes, Nossos Pratos)</label><input type="text" id="tituloCatalogo" value="Nosso Catálogo" style="width:100%; padding:0.8rem;"></div>
+                    <div style="grid-column: span 2;"><label>Título da Galeria (Ex: Nosso Espaço, Nossos Trabalhos)</label><input type="text" id="tituloCatalogo" value="Galeria" style="width:100%; padding:0.8rem;"></div>
                     <div><label>Cor Principal (ex: #d4af37)</label><input type="color" id="cor" value="#d4af37" style="width:100%; height:45px;"></div>
                     <div><label>Link do Instagram</label><input type="url" id="instagram" style="width:100%; padding:0.8rem;"></div>
                     <div><label>Link do WhatsApp</label><input type="url" id="whatsapp" style="width:100%; padding:0.8rem;"></div>
@@ -59,26 +59,21 @@
                 </div>
             </div>
 
-            <!-- ================= ABA CATÁLOGO ================= -->
+            <!-- ================= ABA GALERIA ================= -->
             <div id="tab-catalogo" class="tab-content">
-                <h2 style="margin-bottom: 1rem;">Gerenciar Catálogo</h2>
+                <h2 style="margin-bottom: 1rem;">Galeria de Imagens</h2>
                 <div class="catalog-grid" id="admin-catalog-grid">
                     <!-- Preenchido via JS -->
                 </div>
 
-                <h3 style="margin-top:2rem; margin-bottom:1rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:1rem;">Adicionar Novo Item</h3>
+                <h3 style="margin-top:2rem; margin-bottom:1rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:1rem;">Adicionar Foto à Galeria</h3>
                 <div class="add-item-form">
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div><label>Nome do Produto/Serviço</label><input type="text" id="novoItemNome" style="width:100%; padding:0.8rem;"></div>
-                        <div><label>Preço (Ex: R$ 45,00)</label><input type="text" id="novoItemPreco" style="width:100%; padding:0.8rem;"></div>
-                    </div>
-                    <label>Foto do Item</label>
                     <div class="drag-zone" id="drop-novo-item" onclick="document.getElementById('novoItemFile').click()" style="margin-bottom:0; padding:1rem;">
-                        <p id="txt-novo-item">Clique para selecionar a foto</p>
+                        <p id="txt-novo-item">Clique para selecionar uma foto</p>
                         <input type="file" id="novoItemFile" accept="image/*">
                     </div>
                     <button type="button" class="btn btn-outline" id="btn-add-item" style="border-color: var(--accent-gold); color: var(--accent-gold);">
-                        + Adicionar ao Catálogo
+                        + Enviar Foto
                     </button>
                 </div>
             </div>

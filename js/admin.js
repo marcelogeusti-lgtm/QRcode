@@ -123,10 +123,6 @@ window.renderCatalogAdmin = function() {
         div.innerHTML = `
             <button type="button" class="btn-remove-item" onclick="removerItemCatalogo(${index})">X</button>
             <img src="${src}" alt="Item">
-            <div class="info">
-                <p title="${item.nome}">${item.nome || 'Sem Nome'}</p>
-                <small>${item.preco || ''}</small>
-            </div>
         `;
         grid.appendChild(div);
     });
@@ -141,30 +137,20 @@ window.removerItemCatalogo = function(index) {
 
 document.getElementById('btn-add-item').addEventListener('click', () => {
     const fileInput = document.getElementById('novoItemFile');
-    const nomeInput = document.getElementById('novoItemNome');
-    const precoInput = document.getElementById('novoItemPreco');
     
     if (!fileInput.files[0]) {
-        alert("Por favor, selecione uma foto para o item.");
-        return;
-    }
-    if (!nomeInput.value.trim()) {
-        alert("Por favor, dê um nome ao item.");
+        alert("Por favor, selecione uma foto.");
         return;
     }
     
     window.localCatalog.push({
-        nome: nomeInput.value.trim(),
-        preco: precoInput.value.trim(),
         file: fileInput.files[0],
         url: "" // será preenchido no upload
     });
     
     // Limpa form
     fileInput.value = "";
-    nomeInput.value = "";
-    precoInput.value = "";
-    document.getElementById('txt-novo-item').innerText = "Clique para selecionar a foto";
+    document.getElementById('txt-novo-item').innerText = "Clique para selecionar uma foto";
     document.getElementById('txt-novo-item').style.color = "#aaa";
     
     renderCatalogAdmin();
@@ -253,11 +239,7 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
                 // Se tem '.file', é um upload novo
                 finalUrl = await uploadImage(item.file, `barbearias/${barberId}/cat_${Date.now()}_${i}.jpg`);
             }
-            catalogToSave.push({
-                nome: item.nome || "",
-                preco: item.preco || "",
-                url: finalUrl
-            });
+            catalogToSave.push(finalUrl);
         }
 
         // 3. Upload Anúncios TV

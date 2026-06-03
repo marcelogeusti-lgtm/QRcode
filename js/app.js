@@ -62,32 +62,13 @@ function aplicarConfiguracoes(config) {
     catalogoContainer.innerHTML = ''; 
     
     if (config.catalogo && config.catalogo.length > 0) {
-        config.catalogo.forEach(item => {
+        config.catalogo.forEach(itemUrl => {
+            // Em caso de compatibilidade com objeto antigo, extrai a url
+            if (typeof itemUrl === 'object') itemUrl = itemUrl.url;
+            
             const div = document.createElement('div');
             div.className = 'catalog-item';
-            
-            // Tratamento para manter compatibilidade com dados antigos (onde item era apenas a URL da string)
-            let itemUrl = item;
-            let itemNome = "";
-            let itemPreco = "";
-            
-            if (typeof item === 'object') {
-                itemUrl = item.url;
-                itemNome = item.nome || "";
-                itemPreco = item.preco || "";
-            }
-
-            let html = `<img src="${itemUrl}" alt="Item do Catálogo">`;
-            
-            if (itemNome || itemPreco) {
-                html += `
-                <div class="catalog-info">
-                    <p style="color:white; margin-bottom:2px; font-size:1rem;">${itemNome}</p>
-                    <span style="color:var(--accent-gold); font-weight:bold; font-size:0.9rem;">${itemPreco}</span>
-                </div>`;
-            }
-            
-            div.innerHTML = html;
+            div.innerHTML = `<img src="${itemUrl}" alt="Foto da Galeria">`;
             catalogoContainer.appendChild(div);
         });
     } else {
