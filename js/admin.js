@@ -275,8 +275,8 @@ window.renderCatalogAdmin = function() {
         }
         
         div.innerHTML = `
-            <button type="button" class="btn-remove-item" onclick="removerItemCatalogo(${index})">X</button>
             ${contentHtml}
+            <button type="button" class="btn-remove-item" onclick="window.removerItemCatalogo(${index})"><i class="fas fa-trash"></i></button>
         `;
         grid.appendChild(div);
 
@@ -358,8 +358,8 @@ window.renderTvAdmin = function() {
             : `<img src="${src}" alt="Anúncio TV">`;
 
         div.innerHTML = `
-            <button type="button" class="btn-remove-item" onclick="removerItemTv(${index})">X</button>
             ${mediaHtml}
+            <button type="button" class="btn-remove-item" onclick="removerItemTv(${index})"><i class="fas fa-trash"></i></button>
         `;
         grid.appendChild(div);
     });
