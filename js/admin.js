@@ -23,9 +23,10 @@ async function carregarDadosDoUsuario(uid) {
         if (!querySnapshot.empty) {
             const docData = querySnapshot.docs[0];
             const data = docData.data();
+            const barberId = docData.id;
             
             // Preenche os campos de texto
-            document.getElementById('barberId').value = docData.id;
+            document.getElementById('barberId').value = barberId;
             document.getElementById('barberId').readOnly = true; // Impede que ele mude o ID depois que criar
             document.getElementById('barberId').style.opacity = '0.7';
 
