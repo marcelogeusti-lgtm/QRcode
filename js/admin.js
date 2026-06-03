@@ -1,8 +1,9 @@
-import { db, doc, setDoc, storage, ref, uploadBytes, getDownloadURL, auth, onAuthStateChanged, signOut, getDoc, collection, query, where, getDocs } from './firebase-config.js';
+﻿import { db, doc, setDoc, storage, ref, uploadBytes, getDownloadURL, auth, onAuthStateChanged, signOut, getDoc, collection, query, where, getDocs } from './firebase-config.js';
 
 let currentUser = null;
 window.localCatalog = [];
 window.localTvAds = [];
+window.localCustomLinks = [];
 window.xtreamM3uUrl = null;
 
 // Proteção da Rota
@@ -112,6 +113,12 @@ async function carregarDadosDoUsuario(uid) {
                     return item;
                 });
                 renderCatalogAdmin();
+            }
+            
+            // Custom Links
+            if(data.customLinks && data.customLinks.length > 0) {
+                window.localCustomLinks = data.customLinks;
+                renderCustomLinks();
             }
             
             // Já mostra o QR code e link sem precisar apertar salvar de novo
@@ -567,6 +574,7 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
         // SEMPRE SALVA AS ARRAYS (mesmo se vazias) PARA PERMITIR EXCLUSÃO
         barbeariaData.catalogo = catalogToSave;
         barbeariaData.tvAds = tvAdsToSave;
+        barbeariaData.customLinks = window.localCustomLinks;
 
         await setDoc(docRef, barbeariaData, { merge: true });
         
@@ -827,3 +835,53 @@ document.getElementById('btn-download-qr-new').addEventListener('click', () => {
         }
     }, 500);
 });
+function renderCustomLinks() {
+    const container = document.getElementById('custom-links-container');
+    container.innerHTML = "";
+    if(window.localCustomLinks.length === 0) {
+        container.innerHTML = "<p style='color:gray;'>Nenhum link extra adicionado.</p>";
+        return;
+    }
+    window.localCustomLinks.forEach((link, index) => {
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.justifyContent = 'space-between';
+        div.style.alignItems = 'center';
+        div.style.padding = '0.8rem';
+        div.style.background = 'rgba(255,255,255,0.05)';
+        div.style.borderRadius = '8px';
+        div.style.border = '1px solid var(--border)';
+        
+        div.innerHTML = 
+            <div>
+                <strong>\</strong><br>
+                <small style="color:gray;">\</small>
+            </div>
+            <button type="button" class="btn btn-outline" style="padding:0.5rem; color:red; border-color:red;" onclick="window.removeCustomLink(\)">
+                <i class="fas fa-trash"></i>
+            </button>
+        ;
+        container.appendChild(div);
+    });
+}
+
+window.removeCustomLink = function(index) {
+    if(confirm("Remover este link?")) {
+        window.localCustomLinks.splice(index, 1);
+        renderCustomLinks();
+    }
+}
+
+window.addCustomLink = function() {
+    const title = document.getElementById('new-link-title').value;
+    const url = document.getElementById('new-link-url').value;
+    if(title && url) {
+        window.localCustomLinks.push({ title, url });
+        document.getElementById('new-link-title').value = '';
+        document.getElementById('new-link-url').value = '';
+        renderCustomLinks();
+    } else {
+        alert('Preencha t�tulo e URL');
+    }
+}
+

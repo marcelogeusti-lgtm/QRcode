@@ -73,8 +73,28 @@ function aplicarConfiguracoes(config) {
     }
 
     // Links Sociais
-    document.getElementById('wl-instagram').href = config.instagramUrl || "#";
-    document.getElementById('wl-whatsapp').href = config.whatsappUrl || "#";
+    const instaEl = document.getElementById('wl-instagram');
+    const whatsEl = document.getElementById('wl-whatsapp');
+    if(config.instagramUrl) { instaEl.href = config.instagramUrl; instaEl.style.display = 'inline-flex'; }
+    if(config.whatsappUrl) { whatsEl.href = config.whatsappUrl; whatsEl.style.display = 'inline-flex'; }
+
+    // Custom Links
+    const customLinksContainer = document.getElementById('wl-custom-links');
+    if (config.customLinks && config.customLinks.length > 0) {
+        config.customLinks.forEach(link => {
+            const a = document.createElement('a');
+            a.href = link.url;
+            a.target = "_blank";
+            a.className = "btn btn-outline glass-card";
+            a.style.width = "100%";
+            a.style.display = "flex";
+            a.style.justifyContent = "center";
+            a.style.border = "1px solid rgba(255,255,255,0.2)";
+            a.style.padding = "1rem";
+            a.innerHTML = `<strong>${link.title}</strong>`;
+            customLinksContainer.appendChild(a);
+        });
+    }
 
     // Copiar
     document.getElementById('wl-wifi').innerText = config.wifiPassword || "Sem Senha";

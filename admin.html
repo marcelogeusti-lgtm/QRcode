@@ -127,6 +127,22 @@
                     <div><label>Senha do Wi-Fi</label><input type="text" id="wifi" style="width:100%; padding:0.8rem;"></div>
                 </div>
 
+                <!-- Custom Links Section -->
+                <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                    <h3>Botões / Links Extras</h3>
+                    <p style="color: var(--muted-foreground); margin-bottom: 1rem; font-size: 0.9rem;">Adicione botões extras no estilo Linktree (Ex: Tabela de Preços, TikTok, Facebook).</p>
+                    
+                    <div id="custom-links-container" style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1rem;">
+                        <!-- Custom links injected here via JS -->
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem;">
+                        <input type="text" id="new-link-title" placeholder="Nome do Botão (Ex: Meu TikTok)" style="padding:0.8rem;">
+                        <input type="url" id="new-link-url" placeholder="URL do Link (https://...)" style="padding:0.8rem;">
+                        <button type="button" class="btn" onclick="addCustomLink()" style="padding: 0.8rem 1.5rem;"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+
                 <div style="margin-bottom: 1.5rem;">
                     <label>Logo do Negócio</label>
                     <div style="display: flex; gap: 1rem; align-items: center;">

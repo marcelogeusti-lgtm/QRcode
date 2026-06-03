@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+ï»¿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
     /* Shadcn Zinc Dark Theme */
@@ -227,26 +227,31 @@ body {
     color: var(--foreground);
 }
 
-/* Catalog */
+/* Catalog (Premium Carousel) */
 .catalog-container {
     display: flex;
     gap: 1rem;
     overflow-x: auto;
-    padding-bottom: 0.5rem;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
+    padding-bottom: 1rem;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 1rem;
 }
-
+.catalog-container::-webkit-scrollbar {
+    display: none;
+}
 .catalog-item {
-    min-width: 140px;
-    border-radius: var(--radius);
+    min-width: 85%;
+    border-radius: 12px;
     overflow: hidden;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    scroll-snap-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    position: relative;
 }
-
 .catalog-item img {
     width: 100%;
-    height: 140px;
+    aspect-ratio: 4/5;
     object-fit: cover;
     display: block;
 }
@@ -806,9 +811,33 @@ input:focus {
     }
 }
 
-/* Esconder .container padrão para não quebrar centralização com sidebar */
+/* Esconder .container padrï¿½o para nï¿½o quebrar centralizaï¿½ï¿½o com sidebar */
 .container {
     max-width: 1200px;
     width: 100%;
     margin: 0 auto;
 }
+/* Micro-Animaï¿½ï¿½es (Premium Fade-up Cascata) */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-up {
+    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+}
+
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+.stagger-6 { animation-delay: 0.6s; }
+
