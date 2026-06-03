@@ -30,7 +30,8 @@ async function loadClients() {
         
         let total = 0;
         let proCount = 0;
-        let freeCount = 0;
+        let basicCount = 0;
+        let suspendedCount = 0;
 
         querySnapshot.forEach((docSnap) => {
             const data = docSnap.data();
@@ -44,15 +45,18 @@ async function loadClients() {
             total++;
             if (client.plan === 'PRO') {
                 proCount++;
+            } else if (client.plan === 'SUSPENDED') {
+                suspendedCount++;
             } else {
-                freeCount++;
+                basicCount++;
             }
         });
 
         // Atualiza os Cards de Métricas
-        document.getElementById('metric-total').innerText = total;
-        document.getElementById('metric-pro').innerText = proCount;
-        document.getElementById('metric-free').innerText = freeCount;
+        if(document.getElementById('metric-total')) document.getElementById('metric-total').innerText = total;
+        if(document.getElementById('metric-pro')) document.getElementById('metric-pro').innerText = proCount;
+        if(document.getElementById('metric-free')) document.getElementById('metric-free').innerText = basicCount;
+        if(document.getElementById('metric-suspended')) document.getElementById('metric-suspended').innerText = suspendedCount;
 
         renderTable(allClients);
 
@@ -93,13 +97,24 @@ function renderTable(clientsArray) {
         }
 
         // Badge do Plano
-        const isPro = client.plan === 'PRO';
-        const badgeHtml = isPro ? `<span class="badge badge-pro">PRO</span>` : `<span class="badge badge-free">GRATUITO</span>`;
+        let badgeHtml = '';
+        if (client.plan === 'PRO') { 
+            badgeHtml = `<span class="badge badge-pro">PRO</span>`; 
+        } else if (client.plan === 'SUSPENDED') { 
+            badgeHtml = `<span class="badge" style="background:#ff444433; color:#ff4444; border:1px solid #ff4444; padding:0.25rem 0.75rem; border-radius:99px; font-size:0.75rem; font-weight:bold;">SUSPENSO</span>`; 
+        } else { 
+            badgeHtml = `<span class="badge" style="background:rgba(255,255,255,0.1); color:#ccc; border:1px solid var(--border); padding:0.25rem 0.75rem; border-radius:99px; font-size:0.75rem; font-weight:bold;">BÁSICO</span>`; 
+        }
 
-        // Botões Mágicos
-        const actionBtn = isPro 
-            ? `<button class="action-btn" onclick="window.togglePlan('${client.id}', 'FREE')">⬇️ Rebaixar para Grátis</button>`
-            : `<button class="action-btn btn-pro" onclick="window.togglePlan('${client.id}', 'PRO')">✨ Tornar PRO</button>`;
+        // Dropdown Mágico
+        const isBasic = client.plan !== 'PRO' && client.plan !== 'SUSPENDED';
+        const actionBtn = `
+            <select onchange="window.togglePlan('${client.id}', this.value)" style="background:var(--secondary); color:white; border:1px solid var(--border); padding:0.4rem; border-radius:4px; outline:none; font-family:inherit; font-size:0.875rem;">
+                <option value="BASIC" ${isBasic ? 'selected' : ''}>Plano: Básico</option>
+                <option value="PRO" ${client.plan === 'PRO' ? 'selected' : ''}>Plano: PRO ✨</option>
+                <option value="SUSPENDED" ${client.plan === 'SUSPENDED' ? 'selected' : ''} style="color:#ff4444;">Bloquear/Suspender ⛔</option>
+            </select>
+        `;
 
         tr.innerHTML = `
             <td>

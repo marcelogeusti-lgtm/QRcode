@@ -76,19 +76,37 @@ async function carregarDadosDoUsuario(uid) {
             // Já mostra o QR code e link sem precisar apertar salvar de novo
             gerarQRCode(docData.id);
 
-            // Libera as funções PRO se for o dono do sistema ou assinante PRO
-            if (data.plan === 'PRO' || docData.id === 'guimaraes') {
+            // 🔴 VERIFICAÇÃO DE SUSPENSÃO
+            if (data.plan === 'SUSPENDED') {
+                document.getElementById('suspended-overlay').style.display = 'flex';
+                // Impede clique em qualquer outra coisa
+                return;
+            }
+
+            // 🟡 Libera as funções PRO se for assinante PRO
+            const isPro = data.plan === 'PRO' || docData.id === 'guimaraes';
+            const badge = document.getElementById('badge-plan');
+
+            if (isPro) {
                 document.querySelectorAll('.paywall-overlay').forEach(el => el.style.display = 'none');
                 document.querySelectorAll('.paywall-container > *').forEach(el => {
                     el.style.filter = 'none';
                     el.style.pointerEvents = 'auto';
                 });
                 
-                const badge = document.getElementById('badge-plan');
                 if(badge) {
                     badge.innerText = 'Plano: PRO';
-                    badge.style.background = 'var(--accent-gold)';
-                    badge.style.color = '#000';
+                    badge.style.background = 'rgba(202, 255, 0, 0.2)';
+                    badge.style.color = '#caff00';
+                    badge.style.boxShadow = '0 0 10px rgba(202, 255, 0, 0.2)';
+                }
+            } else {
+                // É Básico (com cadeados)
+                if(badge) {
+                    badge.innerText = 'Plano: BÁSICO';
+                    badge.style.background = 'rgba(255,255,255,0.1)';
+                    badge.style.color = '#ccc';
+                    badge.style.boxShadow = 'none';
                 }
             }
         }

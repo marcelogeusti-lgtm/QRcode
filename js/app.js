@@ -15,6 +15,12 @@ async function carregarDados() {
 
         if (docSnap.exists()) {
             const config = docSnap.data();
+
+            if (config.plan === 'SUSPENDED') {
+                mostrarErro("Sistema temporariamente indisponível. O estabelecimento precisa regularizar o sistema.");
+                return;
+            }
+
             aplicarConfiguracoes(config);
 
             // [MÉTRICA] Registra +1 visualização na página (de forma assíncrona para não travar)

@@ -16,7 +16,14 @@ async function initTV() {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            montarTV(docSnap.data());
+            const config = docSnap.data();
+            
+            if (config.plan === 'SUSPENDED') {
+                document.body.innerHTML = "<div style='display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; background:black;'><h1 style='color:#ff4444; font-size:4rem; margin-bottom:1rem;'>SISTEMA INATIVO</h1><p style='color:#888; font-size:1.5rem;'>O serviço de Mídia Indoor foi temporariamente suspenso.</p></div>";
+                return;
+            }
+
+            montarTV(config);
         } else {
             document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:20vh'>Barbearia não encontrada!</h1>";
         }
