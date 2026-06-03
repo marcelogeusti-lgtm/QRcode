@@ -64,7 +64,17 @@ function montarTV(config) {
             hls.loadSource(videoUrl);
             hls.attachMedia(videoElement);
             hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                videoElement.play();
+                videoElement.play().catch(e => console.log("Erro no Autoplay", e));
+            });
+            hls.on(Hls.Events.ERROR, function (event, data) {
+                if (data.fatal) {
+                    console.error("Erro fatal HLS:", data);
+                    // Mostra erro na tela pra facilitar debug
+                    const errDiv = document.createElement('div');
+                    errDiv.style = "position:absolute; top:20px; left:20px; background:red; color:white; padding:10px; z-index:9999;";
+                    errDiv.innerText = "Erro ao carregar IPTV. Verifique se o link é M3U8 válido ou se o servidor bloqueia reprodução web (Erro de CORS / HTTP Misto). Detalhes: " + data.type;
+                    document.body.appendChild(errDiv);
+                }
             });
         } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
             videoElement.src = videoUrl;
