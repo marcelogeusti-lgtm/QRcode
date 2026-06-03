@@ -152,9 +152,48 @@
                         </select>
                     </div>
                     <div style="margin-bottom: 1.5rem;">
-                        <label style="display:block; margin-bottom:0.5rem;">Link da Programação (YouTube ou Lista IPTV .m3u8)</label>
-                        <input type="text" id="tvVideo" style="width:100%;" placeholder="Ex: https://youtube.com/... ou http://servidor.com/canal.m3u8">
+                        <label style="display:block; margin-bottom:0.5rem;">Método de Conexão de Mídia</label>
+                        <select id="tipoConexao" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid var(--border); color:white; border-radius:4px;" onchange="toggleConexaoFields()">
+                            <option value="youtube">Vídeo / Link Rápido (YouTube ou Link .m3u direto)</option>
+                            <option value="iptv">Login IPTV (Xtream Codes API)</option>
+                        </select>
                     </div>
+
+                    <div id="box-youtube" style="margin-bottom: 1.5rem;">
+                        <label style="display:block; margin-bottom:0.5rem;">Link da Programação</label>
+                        <input type="text" id="tvVideo" style="width:100%;" placeholder="Ex: https://youtube.com/watch?v=...">
+                    </div>
+
+                    <div id="box-iptv" style="margin-bottom: 1.5rem; display:none; padding: 1rem; border: 1px dashed var(--border); border-radius: 8px;">
+                        <h4 style="margin-bottom: 1rem; color: var(--accent-gold);">Credenciais do Servidor IPTV</h4>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display:block; margin-bottom:0.5rem;">URL do Servidor / DNS</label>
+                            <input type="text" id="xtreamDns" style="width:100%;" placeholder="Ex: http://agkcb3.me:80">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <label style="display:block; margin-bottom:0.5rem;">Usuário</label>
+                                <input type="text" id="xtreamUser" style="width:100%;">
+                            </div>
+                            <div>
+                                <label style="display:block; margin-bottom:0.5rem;">Senha</label>
+                                <input type="password" id="xtreamPass" style="width:100%;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        function toggleConexaoFields() {
+                            const val = document.getElementById('tipoConexao').value;
+                            if (val === 'iptv') {
+                                document.getElementById('box-youtube').style.display = 'none';
+                                document.getElementById('box-iptv').style.display = 'block';
+                            } else {
+                                document.getElementById('box-youtube').style.display = 'block';
+                                document.getElementById('box-iptv').style.display = 'none';
+                            }
+                        }
+                    </script>
                     <div style="display:grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem;">
                         <div><label>Velocidade do Carrossel (Tempo de cada Anúncio na tela - Segundos)</label><input type="number" id="tvTempoAnuncio" value="30" min="5" required style="width:100%;"></div>
                     </div>

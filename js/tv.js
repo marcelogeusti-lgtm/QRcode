@@ -112,7 +112,14 @@ function montarTV(config) {
     }
 
     // Iniciar Mídia
-    iniciarPlayer(config.tvVideo || "https://www.youtube.com/watch?v=jfKfPfyJRdk");
+    let finalVideoUrl = config.tvVideo || "https://www.youtube.com/watch?v=jfKfPfyJRdk";
+    if (config.tipoConexao === 'iptv' && config.xtreamDns && config.xtreamUser && config.xtreamPass) {
+        let dns = config.xtreamDns.trim();
+        if (dns.endsWith('/')) dns = dns.slice(0, -1);
+        finalVideoUrl = `${dns}/get.php?username=${config.xtreamUser.trim()}&password=${config.xtreamPass.trim()}&type=m3u_plus&output=m3u8`;
+    }
+
+    iniciarPlayer(finalVideoUrl);
 }
 
 function iniciarPlayer(videoUrl) {

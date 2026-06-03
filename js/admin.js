@@ -57,6 +57,14 @@ async function carregarDadosDoUsuario(uid) {
             if(data.tvTempoAnuncio) document.getElementById('tvTempoAnuncio').value = data.tvTempoAnuncio;
             if(data.tvLayout) document.getElementById('tvLayout').value = data.tvLayout;
             
+            if(data.tipoConexao) {
+                document.getElementById('tipoConexao').value = data.tipoConexao;
+                if(typeof toggleConexaoFields === 'function') toggleConexaoFields();
+            }
+            if(data.xtreamDns) document.getElementById('xtreamDns').value = data.xtreamDns;
+            if(data.xtreamUser) document.getElementById('xtreamUser').value = data.xtreamUser;
+            if(data.xtreamPass) document.getElementById('xtreamPass').value = data.xtreamPass;
+            
             // Dispara evento manual para atualizar o Preview inicial
             document.getElementById('nome').dispatchEvent(new Event('input'));
             document.getElementById('slogan').dispatchEvent(new Event('input'));
@@ -425,6 +433,10 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
             googleReviewUrl: document.getElementById('googleReviewUrl').value.trim(),
             tituloCatalogo: document.getElementById('tituloCatalogo').value.trim() || 'Galeria',
             tvLayout: document.getElementById('tvLayout').value || 'l-shape',
+            tipoConexao: document.getElementById('tipoConexao').value || 'youtube',
+            xtreamDns: document.getElementById('xtreamDns').value.trim(),
+            xtreamUser: document.getElementById('xtreamUser').value.trim(),
+            xtreamPass: document.getElementById('xtreamPass').value.trim(),
             tvVideo: document.getElementById('tvVideo').value.trim(),
             tvTempoAnuncio: parseInt(document.getElementById('tvTempoAnuncio').value) || 30,
             dataCriacao: new Date().toISOString()
