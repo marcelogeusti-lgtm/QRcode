@@ -630,43 +630,86 @@ document.getElementById('btn-nfc').addEventListener('click', async () => {
     }
 });
 
-// Funcionalidade de Download de QR Code em Alta Resolução (Para Placas)
+// Funcionalidade de Download de QR Code em Alta Resolução (Para Placas - Centralizado em A4)
 document.getElementById('btn-download-qr').addEventListener('click', () => {
     const urlFinal = document.getElementById('link-cliente').href;
     const barberId = document.getElementById('barberId').value.trim() || 'negocio';
     
+    const qrSize = 600; // Aproximadamente 5cm impresso a 300 DPI
+
     // Criar um container temporário invisível
     const tempDiv = document.createElement('div');
     new QRCode(tempDiv, {
         text: urlFinal,
-        width: 1024,
-        height: 1024,
+        width: qrSize,
+        height: qrSize,
         colorDark : "#000000",
         colorLight : "#ffffff",
         correctLevel : QRCode.CorrectLevel.H
     });
     
-    // Aguardar a renderização do QRCode.js (pode levar alguns milissegundos)
+    // Aguardar a renderização do QRCode.js
     setTimeout(() => {
-        const img = tempDiv.querySelector('img');
-        if (img && img.src) {
-            const a = document.createElement('a');
-            a.href = img.src;
-            a.download = `qrcode_${barberId}_placa.png`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        } else {
-            // Fallback caso ele só gere o canvas
-            const canvas = tempDiv.querySelector('canvas');
-            if (canvas) {
+        let sourceElement = tempDiv.querySelector('canvas') || tempDiv.querySelector('img');
+        
+        if (sourceElement) {
+            // Criar o canvas A4 (2480 x 3508 para 300 DPI)
+            const a4Canvas = document.createElement('canvas');
+            const a4Width = 2480;
+            const a4Height = 3508;
+            a4Canvas.width = a4Width;
+            a4Canvas.height = a4Height;
+            const ctx = a4Canvas.getContext('2d');
+            
+            // Fundo Branco
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, a4Width, a4Height);
+            
+            // Centralizando
+            const x = (a4Width - qrSize) / 2;
+            const y = (a4Height - qrSize) / 2;
+            
+            // Linha guia de recorte (opcional, ajuda na hora de cortar a plaquinha)
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.setLineDash([15, 15]);
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x - 40, y - 120, qrSize + 80, qrSize + 240);
+            ctx.setLineDash([]);
+            
+            // Textos
+            ctx.fillStyle = '#000000';
+            ctx.font = 'bold 70px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('AVALIE-NOS!', a4Width / 2, y - 40);
+
+            ctx.font = '40px sans-serif';
+            ctx.fillStyle = '#555555';
+            ctx.fillText('Aponte a câmera para acessar', a4Width / 2, y + qrSize + 70);
+
+            // Desenhar QR Code
+            const finalizar = () => {
                 const a = document.createElement('a');
-                a.href = canvas.toDataURL("image/png");
-                a.download = `qrcode_${barberId}_placa.png`;
+                a.href = a4Canvas.toDataURL("image/png");
+                a.download = `qrcode_${barberId}_FolhaA4.png`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
+            };
+
+            if (sourceElement.tagName === 'IMG') {
+                if (sourceElement.complete) {
+                    ctx.drawImage(sourceElement, x, y, qrSize, qrSize);
+                    finalizar();
+                } else {
+                    sourceElement.onload = () => {
+                        ctx.drawImage(sourceElement, x, y, qrSize, qrSize);
+                        finalizar();
+                    };
+                }
+            } else {
+                ctx.drawImage(sourceElement, x, y, qrSize, qrSize);
+                finalizar();
             }
         }
-    }, 300);
+    }, 500);
 });
