@@ -1,4 +1,4 @@
-import { db, doc, updateDoc, collection, getDocs } from './firebase-config.js';
+import { db, doc, updateDoc, deleteDoc, collection, getDocs } from './firebase-config.js';
 
 let allClients = [];
 
@@ -113,6 +113,7 @@ function renderTable(clientsArray) {
                 <option value="BASIC" ${isBasic ? 'selected' : ''}>Plano: Básico</option>
                 <option value="PRO" ${client.plan === 'PRO' ? 'selected' : ''}>Plano: PRO ✨</option>
                 <option value="SUSPENDED" ${client.plan === 'SUSPENDED' ? 'selected' : ''} style="color:#ff4444;">Bloquear/Suspender ⛔</option>
+                <option value="DELETE" style="color:#ff4444; font-weight:bold;">🗑️ Excluir Conta</option>
             </select>
         `;
 
@@ -131,10 +132,36 @@ function renderTable(clientsArray) {
     });
 }
 
-// 4. Função para Mudar o Plano (O Botão Mágico)
+// 4. Função para Mudar o Plano ou Excluir
 window.togglePlan = async function(barberId, newPlan) {
+    if (newPlan === 'DELETE') {
+        const confirmation1 = confirm(`ATENÇÃO: Você está prestes a EXCLUIR a barbearia [${barberId}] permanentemente. Isso apagará todos os dados dela no banco.`);
+        if (!confirmation1) {
+            await loadClients(); // Volta o select para o que era antes
+            return; 
+        }
+        const confirmation2 = confirm(`ÚLTIMO AVISO: Deseja mesmo deletar a conta [${barberId}]? Não há como reverter.`);
+        if (!confirmation2) {
+            await loadClients();
+            return;
+        }
+
+        try {
+            await deleteDoc(doc(db, "barbearias", barberId));
+            await loadClients();
+            alert(`A conta [${barberId}] foi excluída com sucesso.`);
+        } catch (e) {
+            console.error("Erro ao deletar:", e);
+            alert("Erro ao excluir a conta.");
+        }
+        return;
+    }
+
     const confirmation = confirm(`Tem certeza que deseja mudar o plano da barbearia [${barberId}] para ${newPlan}?`);
-    if (!confirmation) return;
+    if (!confirmation) {
+        await loadClients();
+        return;
+    }
 
     try {
         const docRef = doc(db, "barbearias", barberId);

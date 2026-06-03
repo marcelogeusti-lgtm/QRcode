@@ -34,6 +34,15 @@ async function carregarDadosDoUsuario(uid) {
             document.getElementById('met-google').innerText = data.metrics_google || 0;
             document.getElementById('met-social').innerText = data.metrics_social || 0;
             
+            // Logo Preview
+            if (data.logoUrl) {
+                const previewLogo = document.getElementById('preview-logo');
+                if (previewLogo) {
+                    previewLogo.src = data.logoUrl;
+                    previewLogo.style.display = 'block';
+                }
+            }
+
             if(data.nome) document.getElementById('nome').value = data.nome;
             if(data.slogan) document.getElementById('slogan').value = data.slogan;
             if(data.tituloCatalogo) document.getElementById('tituloCatalogo').value = data.tituloCatalogo;
@@ -118,6 +127,30 @@ async function carregarDadosDoUsuario(uid) {
 document.getElementById('btn-logout').addEventListener('click', () => {
     signOut(auth);
 });
+
+// Botão de Cancelar Assinatura (Auto-Suspensão)
+const btnCancelar = document.getElementById('btn-cancelar');
+if (btnCancelar) {
+    btnCancelar.addEventListener('click', async () => {
+        const barberId = document.getElementById('barberId').value.trim();
+        if (!barberId) return;
+
+        const confirmacao = confirm("CUIDADO: Tem certeza que deseja cancelar sua assinatura? Você perderá acesso ao painel e a TV da sua loja parará de funcionar imediatamente.");
+        
+        if (confirmacao) {
+            try {
+                const docRef = doc(db, "barbearias", barberId);
+                await updateDoc(docRef, { plan: 'SUSPENDED' });
+                alert("Assinatura cancelada com sucesso.");
+                // Força o recarregamento da página para engatilhar a Tela da Morte
+                window.location.reload();
+            } catch(e) {
+                console.error("Erro ao cancelar:", e);
+                alert("Erro ao tentar cancelar a assinatura.");
+            }
+        }
+    });
+}
 
 // Força minúsculas e remove acentos no ID
 document.getElementById('barberId').addEventListener('input', function(e) {
@@ -380,14 +413,26 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
         };
 
         if (logoUrl) barbeariaData.logoUrl = logoUrl;
-        if (catalogToSave.length > 0) barbeariaData.catalogo = catalogToSave;
-        if (tvAdsToSave.length > 0) barbeariaData.tvAds = tvAdsToSave;
+        
+        // SEMPRE SALVA AS ARRAYS (mesmo se vazias) PARA PERMITIR EXCLUSÃO
+        barbeariaData.catalogo = catalogToSave;
+        barbeariaData.tvAds = tvAdsToSave;
 
         await setDoc(docRef, barbeariaData, { merge: true });
         
         alert('Dados salvos com sucesso!');
         loadingMsg.style.display = 'none';
         btn.disabled = false;
+        
+        // Atualiza a logo preview se fez upload
+        if (logoUrl) {
+            const previewLogo = document.getElementById('preview-logo');
+            if (previewLogo) {
+                previewLogo.src = logoUrl;
+                previewLogo.style.display = 'block';
+            }
+        }
+
         gerarQRCode(barberId);
 
     } catch (error) {
