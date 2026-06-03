@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel do Dono - SaaS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
         .drag-zone {
@@ -28,9 +29,36 @@
         <p style="color: var(--muted-foreground); margin-top: 1rem;">Entre em contato com o suporte para reativar seu sistema.</p>
     </div>
 
-    <!-- Top Bar -->
-    <div class="container">
-        <!-- Header -->
+    <!-- Layout Wrapper -->
+    <div class="app-layout">
+        <!-- Sidebar Retrátil -->
+        <aside class="app-sidebar" id="app-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <span class="logo-icon" style="color:var(--accent-gold); font-size:1.5rem;">⚡</span>
+                    <span class="logo-text">Painel PRO</span>
+                </div>
+                <button type="button" class="btn-toggle-sidebar" id="btn-toggle-sidebar" style="color:white; font-size:1.5rem; background:none; border:none; cursor:pointer;">☰</button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button type="button" class="sidebar-btn active" onclick="openTab('tab-loja')"><span style="width:20px; text-align:center;">🏠</span> <span class="nav-text">Loja & Links</span></button>
+                <button type="button" class="sidebar-btn" onclick="openTab('tab-catalogo')"><span style="width:20px; text-align:center;">📸</span> <span class="nav-text">Galeria de Fotos</span></button>
+                <button type="button" class="sidebar-btn" onclick="openTab('tab-tv')"><span style="width:20px; text-align:center;">📺</span> <span class="nav-text">TV Corporativa</span></button>
+                <button type="button" class="sidebar-btn" onclick="openTab('tab-qr')"><span style="width:20px; text-align:center;">🖨️</span> <span class="nav-text">Ferramentas QR Code</span></button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button type="button" class="sidebar-btn text-danger" id="btn-cancelar" style="color: #ff4444;"><span style="width:20px; text-align:center;">⛔</span> <span class="nav-text">Cancelar Assinatura</span></button>
+                <button type="button" class="sidebar-btn" id="btn-logout"><span style="width:20px; text-align:center;">🚪</span> <span class="nav-text">Sair da Conta</span></button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="app-main" id="app-main">
+            <!-- Top Bar -->
+            <div class="container" style="max-width: 1200px; margin: 0 auto; width: 100%;">
+                <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 1.5rem;">
             <div style="display: flex; align-items: center; gap: 1rem;">
                 <div>
@@ -39,9 +67,6 @@
                 </div>
                 <div id="badge-plan" style="background: rgba(255,255,255,0.1); color:#ccc; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight:bold; margin-left: 1rem;">Plano: BÁSICO</div>
             </div>
-            <div>
-                <button class="btn btn-outline" id="btn-cancelar" style="width: auto; padding: 0.5rem 1.5rem; border-radius: 99px; font-size: 0.875rem; height: auto; border-color: #ff4444; color: #ff4444; margin-right: 1rem;">Cancelar Assinatura</button>
-                <button class="btn btn-outline" id="btn-logout" style="width: auto; padding: 0.5rem 1.5rem; border-radius: 99px; font-size: 0.875rem; height: auto;">Sair da Conta</button>
             </div>
         </div>
 
@@ -66,12 +91,7 @@
         <div class="admin-main">
 
         <form id="admin-form">
-            <!-- Abas de Navegação -->
-            <div class="tabs">
-                <button type="button" class="tab-btn active" onclick="openTab('tab-loja')">🏠 Início</button>
-                <button type="button" class="tab-btn" onclick="openTab('tab-catalogo')">📸 Galeria de Fotos</button>
-                <button type="button" class="tab-btn" onclick="openTab('tab-tv')">📺 TV & Mídia</button>
-            </div>
+            <!-- Abas de Navegação Antigas Removidas -->
 
             <!-- ================= ABA LOJA ================= -->
             <div id="tab-loja" class="tab-content active">
@@ -230,29 +250,58 @@
                 </div>
             </div>
 
+            <!-- ================= ABA QR CODE ================= -->
+            <div id="tab-qr" class="tab-content">
+                <div class="glass-card" style="margin-bottom: 1.5rem; padding: 1.5rem; border: 1px solid var(--border);">
+                    <h2 style="margin-bottom: 1rem; color: var(--accent-gold);">🖨️ Gerador de Display de Mesa</h2>
+                    <p style="color: var(--muted-foreground); margin-bottom: 1.5rem;">Personalize e imprima plaquinhas de avaliação ou cardápios.</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label>Formato de Impressão</label>
+                        <select id="qrTamanho" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid var(--border); color:white; border-radius:4px;">
+                            <option value="5">Plaquinha Pequena (5x5cm no A4)</option>
+                            <option value="10">Placa Média (10x10cm no A4)</option>
+                            <option value="15">Folha Inteira (15x15cm no A4)</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label>Título (Ex: AVALIE-NOS!)</label>
+                        <input type="text" id="qrTitulo" value="AVALIE-NOS!" style="width:100%;">
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label>Subtítulo (Ex: Aponte a câmera para acessar)</label>
+                        <input type="text" id="qrSubtitulo" value="Aponte a câmera para acessar" style="width:100%;">
+                    </div>
+                    
+                    <button type="button" id="btn-download-qr-new" class="btn" style="width: 100%; padding: 1rem;">
+                        📥 Baixar Arquivo para Impressão (A4)
+                    </button>
+                    
+                    <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center;">
+                        <a id="link-cliente" href="#" target="_blank" style="color: var(--accent-gold); font-weight:bold;">🔗 Acessar Link do Site</a>
+                        <a id="link-tv" href="#" target="_blank" style="color: var(--accent-gold); font-weight:bold;">🔗 Acessar Link da TV</a>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="padding: 1.5rem; border: 1px solid var(--border);">
+                    <h3 style="margin-bottom: 1rem; color: var(--accent-gold);">📶 Tecnologia NFC</h3>
+                    <p style="color: var(--muted-foreground); margin-bottom: 1rem;">Aproxime uma Tag NFC em branco do seu celular para gravar o link do seu negócio nela.</p>
+                    <button type="button" id="btn-nfc" class="btn btn-outline" style="width: 100%; padding: 1rem;">
+                        📶 Gravar Tag NFC
+                    </button>
+                    <p id="nfc-status" style="display:none; font-weight:bold; margin-top: 1rem; color: var(--accent-gold);"></p>
+                </div>
+            </div>
+
             <button type="submit" class="btn" style="width:100%; padding: 1.2rem; font-size:1.1rem; margin-top:2rem;" id="btn-salvar">
-                Salvar Configurações
+                Salvar Configurações Gerais
             </button>
             <p id="loading-msg" style="text-align:center; display:none; margin-top:1rem; color: var(--accent-gold);">Processando imagens, comprimindo e salvando dados... Aguarde!</p>
         </form>
 
-        <div id="qrcode-container" class="card" style="display:none; text-align:center; margin-top: 3rem;">
-            <h2 style="margin-bottom:1rem;">O QR Code do seu Negócio</h2>
-            <div style="background: white; padding: 10px; display: inline-block; border-radius: 8px;">
-                <div id="qrcode" style="display:inline-block; border: 4px solid var(--accent-gold); border-radius: 8px;"></div>
-            </div>
-            <p style="color: var(--muted-foreground); margin-top:1rem; font-size:14px;">Imprima este QR Code e coloque na sua bancada!</p>
-            <p style="margin-top:1rem;"><a id="link-cliente" href="#" target="_blank" style="color: var(--accent-gold); font-weight:bold;">Acessar Site do Cliente</a></p>
-            <p><a id="link-tv" href="#" target="_blank" style="color: var(--accent-gold); font-weight:bold;">Acessar Link da TV</a></p>
-            <hr style="border-color: var(--border); margin: 1.5rem 0; width: 100%;">
-            <button type="button" id="btn-download-qr" class="btn" style="width: 100%; padding: 1rem; margin-bottom: 1rem;">
-                📥 Baixar QR Code (Pronto para Imprimir na Folha A4)
-            </button>
-            <button type="button" id="btn-nfc" class="btn btn-outline" style="width: 100%; padding: 1rem;">
-                📶 Gravar Tag NFC
-            </button>
-            <p id="nfc-status" style="display:none; font-weight:bold; margin-top: 1rem; color: var(--accent-gold);"></p>
-        </div>
+        <div id="qrcode" style="display:none;"></div>
         </div> <!-- /admin-main -->
 
         <!-- Lado Direito: Celular Preview -->
@@ -295,6 +344,9 @@
             </div>
         </div> <!-- /admin-sidebar -->
     </div> <!-- /admin-wrapper -->
+    </div> <!-- /container -->
+    </main>
+    </div> <!-- /app-layout -->
 
     <!-- Upsell Modal Shadcn -->
     <div class="dialog-overlay" id="upsell-modal">
@@ -335,10 +387,19 @@
         // Função para trocar as abas (chamada no onclick dos botões HTML)
         window.openTab = function(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-btn, .sidebar-btn').forEach(btn => btn.classList.remove('active'));
             
             document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+            if(event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
+        };
+
+        // Toggle Sidebar
+        document.getElementById('btn-toggle-sidebar').addEventListener('click', () => {
+            document.getElementById('app-sidebar').classList.toggle('collapsed');
+            document.getElementById('app-main').classList.toggle('expanded');
+        });
         };
 
         // Cursor Spotlight Logic (Lanterna interna aos cards)
@@ -356,3 +417,4 @@
     <script type="module" src="js/admin.js"></script>
 </body>
 </html>
+

@@ -631,11 +631,18 @@ document.getElementById('btn-nfc').addEventListener('click', async () => {
 });
 
 // Funcionalidade de Download de QR Code em Alta Resolução (Para Placas - Centralizado em A4)
-document.getElementById('btn-download-qr').addEventListener('click', () => {
+// Funcionalidade de Download de QR Code Customizável
+document.getElementById('btn-download-qr-new').addEventListener('click', () => {
     const urlFinal = document.getElementById('link-cliente').href;
     const barberId = document.getElementById('barberId').value.trim() || 'negocio';
     
-    const qrSize = 600; // Aproximadamente 5cm impresso a 300 DPI
+    // Ler inputs do usuário
+    const cmValue = parseInt(document.getElementById('qrTamanho').value) || 5;
+    const customTitle = document.getElementById('qrTitulo').value || '';
+    const customSubtitle = document.getElementById('qrSubtitulo').value || '';
+
+    // Converter cm para pixels em 300 DPI (1cm ≈ 118px)
+    const qrSize = Math.round(cmValue * 118); 
 
     // Criar um container temporário invisível
     const tempDiv = document.createElement('div');
@@ -669,28 +676,48 @@ document.getElementById('btn-download-qr').addEventListener('click', () => {
             const x = (a4Width - qrSize) / 2;
             const y = (a4Height - qrSize) / 2;
             
-            // Linha guia de recorte (opcional, ajuda na hora de cortar a plaquinha)
+            // Linha guia de recorte ao redor do conteúdo
+            // Se for folha inteira (15cm), deixamos a guia maior ou menor
             ctx.strokeStyle = '#e0e0e0';
             ctx.setLineDash([15, 15]);
             ctx.lineWidth = 2;
-            ctx.strokeRect(x - 40, y - 120, qrSize + 80, qrSize + 240);
+            
+            const guidePaddingTop = customTitle ? 120 : 40;
+            const guidePaddingBottom = customSubtitle ? 120 : 40;
+            const guidePaddingX = 80;
+            
+            ctx.strokeRect(
+                x - guidePaddingX, 
+                y - guidePaddingTop, 
+                qrSize + (guidePaddingX * 2), 
+                qrSize + guidePaddingTop + guidePaddingBottom
+            );
             ctx.setLineDash([]);
             
             // Textos
             ctx.fillStyle = '#000000';
-            ctx.font = 'bold 70px sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('AVALIE-NOS!', a4Width / 2, y - 40);
 
-            ctx.font = '40px sans-serif';
-            ctx.fillStyle = '#555555';
-            ctx.fillText('Aponte a câmera para acessar', a4Width / 2, y + qrSize + 70);
+            if (customTitle) {
+                // Título em negrito e grande
+                const titleFontSize = Math.min(Math.max(qrSize * 0.12, 50), 120); 
+                ctx.font = `bold ${titleFontSize}px sans-serif`;
+                ctx.fillText(customTitle, a4Width / 2, y - 40);
+            }
+
+            if (customSubtitle) {
+                // Subtítulo um pouco menor
+                const subFontSize = Math.min(Math.max(qrSize * 0.07, 30), 80); 
+                ctx.font = `${subFontSize}px sans-serif`;
+                ctx.fillStyle = '#555555';
+                ctx.fillText(customSubtitle, a4Width / 2, y + qrSize + (subFontSize * 1.5));
+            }
 
             // Desenhar QR Code
             const finalizar = () => {
                 const a = document.createElement('a');
                 a.href = a4Canvas.toDataURL("image/png");
-                a.download = `qrcode_${barberId}_FolhaA4.png`;
+                a.download = `qrcode_${barberId}_Impressao.png`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
