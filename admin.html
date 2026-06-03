@@ -35,22 +35,22 @@
         <aside class="app-sidebar" id="app-sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-logo">
-                    <span class="logo-icon" style="color:var(--accent-gold); font-size:1.5rem;">⚡</span>
+                    <i class="fas fa-bolt" style="color:var(--accent-gold); font-size:1.5rem;"></i>
                     <span class="logo-text">Painel PRO</span>
                 </div>
-                <button type="button" class="btn-toggle-sidebar" id="btn-toggle-sidebar" style="color:white; font-size:1.5rem; background:none; border:none; cursor:pointer;">☰</button>
+                <button type="button" class="btn-toggle-sidebar" id="btn-toggle-sidebar" style="color:white; font-size:1.5rem; background:none; border:none; cursor:pointer;"><i class="fas fa-bars"></i></button>
             </div>
             
             <nav class="sidebar-nav">
-                <button type="button" class="sidebar-btn active" onclick="openTab('tab-loja')"><span style="width:20px; text-align:center;">🏠</span> <span class="nav-text">Loja & Links</span></button>
-                <button type="button" class="sidebar-btn" onclick="openTab('tab-catalogo')"><span style="width:20px; text-align:center;">📸</span> <span class="nav-text">Galeria de Fotos</span></button>
-                <button type="button" class="sidebar-btn" onclick="openTab('tab-tv')"><span style="width:20px; text-align:center;">📺</span> <span class="nav-text">TV Corporativa</span></button>
-                <button type="button" class="sidebar-btn" onclick="openTab('tab-qr')"><span style="width:20px; text-align:center;">🖨️</span> <span class="nav-text">Ferramentas QR Code</span></button>
+                <button type="button" class="sidebar-btn active" onclick="openTab('tab-loja', this)"><i class="fas fa-store" style="width:20px; text-align:center;"></i> <span class="nav-text">Loja & Links</span></button>
+                <button type="button" class="sidebar-btn" onclick="openTab('tab-catalogo', this)"><i class="fas fa-images" style="width:20px; text-align:center;"></i> <span class="nav-text">Galeria de Fotos</span></button>
+                <button type="button" class="sidebar-btn" onclick="openTab('tab-tv', this)"><i class="fas fa-tv" style="width:20px; text-align:center;"></i> <span class="nav-text">TV Corporativa</span></button>
+                <button type="button" class="sidebar-btn" onclick="openTab('tab-qr', this)"><i class="fas fa-qrcode" style="width:20px; text-align:center;"></i> <span class="nav-text">Ferramentas QR Code</span></button>
             </nav>
             
             <div class="sidebar-footer">
-                <button type="button" class="sidebar-btn text-danger" id="btn-cancelar" style="color: #ff4444;"><span style="width:20px; text-align:center;">⛔</span> <span class="nav-text">Cancelar Assinatura</span></button>
-                <button type="button" class="sidebar-btn" id="btn-logout"><span style="width:20px; text-align:center;">🚪</span> <span class="nav-text">Sair da Conta</span></button>
+                <button type="button" class="sidebar-btn text-danger" id="btn-cancelar" style="color: #ff4444;"><i class="fas fa-ban" style="width:20px; text-align:center;"></i> <span class="nav-text">Cancelar Assinatura</span></button>
+                <button type="button" class="sidebar-btn" id="btn-logout"><i class="fas fa-sign-out-alt" style="width:20px; text-align:center;"></i> <span class="nav-text">Sair da Conta</span></button>
             </div>
         </aside>
 
@@ -253,7 +253,7 @@
             <!-- ================= ABA QR CODE ================= -->
             <div id="tab-qr" class="tab-content">
                 <div class="glass-card" style="margin-bottom: 1.5rem; padding: 1.5rem; border: 1px solid var(--border);">
-                    <h2 style="margin-bottom: 1rem; color: var(--accent-gold);">🖨️ Gerador de Display de Mesa</h2>
+                    <h2 style="margin-bottom: 1rem; color: var(--accent-gold);"><i class="fas fa-print"></i> Gerador de Display de Mesa</h2>
                     <p style="color: var(--muted-foreground); margin-bottom: 1.5rem;">Personalize e imprima plaquinhas de avaliação ou cardápios.</p>
                     
                     <div style="margin-bottom: 1rem;">
@@ -286,10 +286,10 @@
                 </div>
 
                 <div class="glass-card" style="padding: 1.5rem; border: 1px solid var(--border);">
-                    <h3 style="margin-bottom: 1rem; color: var(--accent-gold);">📶 Tecnologia NFC</h3>
+                    <h3 style="margin-bottom: 1rem; color: var(--accent-gold);"><i class="fas fa-wifi"></i> Tecnologia NFC</h3>
                     <p style="color: var(--muted-foreground); margin-bottom: 1rem;">Aproxime uma Tag NFC em branco do seu celular para gravar o link do seu negócio nela.</p>
                     <button type="button" id="btn-nfc" class="btn btn-outline" style="width: 100%; padding: 1rem;">
-                        📶 Gravar Tag NFC
+                        <i class="fas fa-wifi"></i> Gravar Tag NFC
                     </button>
                     <p id="nfc-status" style="display:none; font-weight:bold; margin-top: 1rem; color: var(--accent-gold);"></p>
                 </div>
@@ -385,13 +385,13 @@
 
         // Tab Logic
         // Função para trocar as abas (chamada no onclick dos botões HTML)
-        window.openTab = function(tabId) {
+        window.openTab = function(tabId, element) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-btn, .sidebar-btn').forEach(btn => btn.classList.remove('active'));
             
             document.getElementById(tabId).classList.add('active');
-            if(event && event.currentTarget) {
-                event.currentTarget.classList.add('active');
+            if(element) {
+                element.classList.add('active');
             }
         };
 

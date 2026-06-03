@@ -109,7 +109,7 @@ async function carregarDadosDoUsuario(uid) {
             }
 
             // 🟡 Libera as funções PRO se for assinante PRO
-            const isPro = data.plan === 'PRO' || barberId === 'guimaraes';
+            const isPro = data.plan === 'PRO' || barberId === 'guimaraes' || barberId === 'marcelo' || barberId === 'negocio';
             const badge = document.getElementById('badge-plan');
 
             if (isPro) {
