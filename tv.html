@@ -9,12 +9,6 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body style="margin: 0; padding: 0; background: black; overflow: hidden; color: white; font-family: 'Inter', sans-serif;">
-    <div id="start-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-        <h1 style="color:var(--accent-gold); font-size:3rem; margin-bottom:1rem;">TV Pronta</h1>
-        <p style="color:#aaa; font-size:1.5rem; margin-bottom:3rem;">Pressione o botão para iniciar a transmissão com Áudio.</p>
-        <button id="btn-start-tv" style="background:var(--accent-gold); color:black; font-size:2rem; padding:1.5rem 4rem; border:none; border-radius:99px; cursor:pointer; font-weight:bold; box-shadow:0 0 30px rgba(212,175,55,0.4);">▶️ INICIAR TRANSMISSÃO</button>
-    </div>
-
     <!-- OSD (On Screen Display) de Troca de Canal -->
     <div id="channel-osd" style="position:fixed; top:20px; right:20px; background:rgba(0,0,0,0.8); color:var(--accent-gold); padding:1rem 2rem; border-radius:8px; font-size:2rem; font-weight:bold; z-index:9999; opacity:0; transition:opacity 0.3s ease; pointer-events:none;">
         <span id="channel-osd-name">Canal Atual</span>

@@ -10,6 +10,21 @@ let m3uChannels = [];
 let currentChannelIndex = 0;
 let tvConfig = null;
 
+// Lógica de Unmute Global
+let isMuted = true;
+function unmuteAll() {
+    if (!isMuted) return;
+    isMuted = false;
+    const iptv = document.getElementById('tv-iptv-player');
+    if (iptv) iptv.muted = false;
+    if (ytPlayer && typeof ytPlayer.unMute === 'function') {
+        ytPlayer.unMute();
+        ytPlayer.setVolume(100);
+    }
+}
+document.addEventListener('click', unmuteAll);
+document.addEventListener('keydown', unmuteAll);
+
 async function initTV() {
     const urlParams = new URLSearchParams(window.location.search);
     const barberId = urlParams.get('id');
@@ -137,12 +152,8 @@ function iniciarPlayer(videoUrl) {
             tocarIPTV(videoUrl, videoElement);
         }
 
-        // Lidar com o botão de start de som
-        document.getElementById('btn-start-tv').addEventListener('click', () => {
-            videoElement.muted = false;
-            document.getElementById('start-overlay').style.display = 'none';
-            iniciarComerciaisDeTelaCheia();
-        });
+        // Auto-play silencioso para contornar bloqueio de navegadores
+        iniciarComerciaisDeTelaCheia();
         
         setupZapping(videoElement);
     } else {
@@ -277,14 +288,9 @@ function criarYouTubePlayer(videoId) {
 
 function onPlayerReady(event) {
     event.target.playVideo();
-
-    document.getElementById('btn-start-tv').addEventListener('click', () => {
-        event.target.unMute();
-        event.target.setVolume(100);
-        document.getElementById('start-overlay').style.display = 'none';
-        
-        iniciarComerciaisDeTelaCheia();
-    });
+    
+    // Auto-play silencioso
+    iniciarComerciaisDeTelaCheia();
 }
 
 // ----------------------------------------------------
