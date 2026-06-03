@@ -629,3 +629,44 @@ document.getElementById('btn-nfc').addEventListener('click', async () => {
         statusText.innerText = '❌ Erro ao gravar: ' + (error.message || 'Verifique se a tag é regravável e tente novamente.');
     }
 });
+
+// Funcionalidade de Download de QR Code em Alta Resolução (Para Placas)
+document.getElementById('btn-download-qr').addEventListener('click', () => {
+    const urlFinal = document.getElementById('link-cliente').href;
+    const barberId = document.getElementById('barberId').value.trim() || 'negocio';
+    
+    // Criar um container temporário invisível
+    const tempDiv = document.createElement('div');
+    new QRCode(tempDiv, {
+        text: urlFinal,
+        width: 1024,
+        height: 1024,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+    });
+    
+    // Aguardar a renderização do QRCode.js (pode levar alguns milissegundos)
+    setTimeout(() => {
+        const img = tempDiv.querySelector('img');
+        if (img && img.src) {
+            const a = document.createElement('a');
+            a.href = img.src;
+            a.download = `qrcode_${barberId}_placa.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        } else {
+            // Fallback caso ele só gere o canvas
+            const canvas = tempDiv.querySelector('canvas');
+            if (canvas) {
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL("image/png");
+                a.download = `qrcode_${barberId}_placa.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        }
+    }, 300);
+});
