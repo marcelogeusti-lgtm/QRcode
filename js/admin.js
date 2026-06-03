@@ -1,4 +1,4 @@
-﻿import { db, doc, setDoc, storage, ref, uploadBytes, getDownloadURL, auth, onAuthStateChanged, signOut, getDoc, collection, query, where, getDocs } from './firebase-config.js';
+import { db, doc, setDoc, storage, ref, uploadBytes, getDownloadURL, auth, onAuthStateChanged, signOut, getDoc, collection, query, where, getDocs } from './firebase-config.js';
 
 let currentUser = null;
 window.localCatalog = [];
@@ -852,15 +852,15 @@ function renderCustomLinks() {
         div.style.borderRadius = '8px';
         div.style.border = '1px solid var(--border)';
         
-        div.innerHTML = 
+        div.innerHTML = `
             <div>
-                <strong>\</strong><br>
-                <small style="color:gray;">\</small>
+                <strong>${link.title}</strong><br>
+                <small style="color:gray;">${link.url}</small>
             </div>
-            <button type="button" class="btn btn-outline" style="padding:0.5rem; color:red; border-color:red;" onclick="window.removeCustomLink(\)">
+            <button type="button" class="btn btn-outline" style="padding:0.5rem; color:red; border-color:red;" onclick="window.removeCustomLink(${index})">
                 <i class="fas fa-trash"></i>
             </button>
-        ;
+        `;
         container.appendChild(div);
     });
 }
@@ -881,7 +881,6 @@ window.addCustomLink = function() {
         document.getElementById('new-link-url').value = '';
         renderCustomLinks();
     } else {
-        alert('Preencha t�tulo e URL');
+        alert('Preencha título e URL');
     }
 }
-

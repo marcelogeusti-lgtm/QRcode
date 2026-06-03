@@ -36,6 +36,15 @@
 
     <!-- Layout Wrapper -->
     <div class="app-layout">
+        
+        <!-- Floating Hamburger for Mobile -->
+        <button type="button" id="fab-toggle-sidebar" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 56px; height: 56px; border-radius: 50%; background: var(--accent-gold); color: #000; border: none; font-size: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.5); cursor: pointer; display: none; align-items: center; justify-content: center;" onclick="document.getElementById('app-sidebar').classList.add('mobile-open')"><i class="fas fa-bars"></i></button>
+        <style>
+            @media (max-width: 992px) {
+                #fab-toggle-sidebar { display: flex !important; }
+            }
+        </style>
+
         <!-- Sidebar Retrátil -->
         <aside class="app-sidebar" id="app-sidebar">
             <div class="sidebar-header">
