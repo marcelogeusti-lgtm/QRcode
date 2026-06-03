@@ -9,10 +9,21 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body style="margin: 0; padding: 0; background: black; overflow: hidden; color: white; font-family: 'Inter', sans-serif;">
+    <div id="start-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+        <h1 style="color:var(--accent-gold); font-size:3rem; margin-bottom:1rem;">TV Pronta</h1>
+        <p style="color:#aaa; font-size:1.5rem; margin-bottom:3rem;">Pressione o botão para iniciar a transmissão com Áudio.</p>
+        <button id="btn-start-tv" style="background:var(--accent-gold); color:black; font-size:2rem; padding:1.5rem 4rem; border:none; border-radius:99px; cursor:pointer; font-weight:bold; box-shadow:0 0 30px rgba(212,175,55,0.4);">▶️ INICIAR TRANSMISSÃO</button>
+    </div>
+
+    <!-- Comercial Fullscreen Overlay -->
+    <div id="fullscreen-ad-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:9998; display:none; justify-content:center; align-items:center;">
+        <img id="fullscreen-ad-img" src="" style="max-width:100%; max-height:100%; object-fit:contain;">
+    </div>
+
     <div class="tv-container">
         <!-- 1. Background de Vídeo (Roda 100% do tempo) -->
         <div class="tv-background">
-            <iframe id="tv-youtube-frame" class="tv-video" allow="autoplay; encrypted-media" style="display:none;"></iframe>
+            <div id="player" class="tv-video" style="display:none; width:100%; height:100%;"></div>
             <video id="tv-iptv-player" class="tv-video" autoplay muted loop playsinline style="display:none; object-fit: cover;"></video>
         </div>
 
@@ -45,6 +56,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script type="module" src="js/tv.js"></script>
 </body>
 </html>

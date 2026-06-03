@@ -1,6 +1,9 @@
 import { db, doc, getDoc } from './firebase-config.js';
 
 let tvAdsArray = [];
+let tvConfig = null;
+let ytPlayer = null;
+let currentAdIndex = 0;
 
 async function initTV() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -16,14 +19,14 @@ async function initTV() {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            const config = docSnap.data();
+            tvConfig = docSnap.data();
             
-            if (config.plan === 'SUSPENDED') {
+            if (tvConfig.plan === 'SUSPENDED') {
                 document.body.innerHTML = "<div style='display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; background:black;'><h1 style='color:#ff4444; font-size:4rem; margin-bottom:1rem;'>SISTEMA INATIVO</h1><p style='color:#888; font-size:1.5rem;'>O serviço de Mídia Indoor foi temporariamente suspenso.</p></div>";
                 return;
             }
 
-            montarTV(config);
+            montarTV(tvConfig);
         } else {
             document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:20vh'>Barbearia não encontrada!</h1>";
         }
@@ -35,7 +38,7 @@ async function initTV() {
 function montarTV(config) {
     document.title = config.nome + " - TV";
     
-    // 1. Configura a Barra Lateral (Sidebar)
+    // Configura Cores e Info
     document.documentElement.style.setProperty('--accent-gold', config.corPrincipal || '#d4af37');
     document.getElementById('tv-nome').innerText = config.nome || "Bem-vindo";
     if (config.logoUrl) {
@@ -53,70 +56,31 @@ function montarTV(config) {
         correctLevel : QRCode.CorrectLevel.H
     });
 
-    // Mostra a Sidebar
-    document.getElementById('tv-sidebar').style.display = 'flex';
-
-    // Puxa o link do vídeo (garantindo que tem autoplay e mute se for youtube)
-    let videoUrl = config.tvVideo || "https://www.youtube.com/embed/jfKfPfyJRdk";
+    // ----------------------------------------------------
+    // Lógica de LAYOUTS (L-Shape, Bottom, Fullscreen)
+    // ----------------------------------------------------
+    const layout = config.tvLayout || 'l-shape';
     
-    // Lógica do Player: Decide se é IPTV ou YouTube
-    const isIPTV = videoUrl.includes('.m3u8') || videoUrl.includes('output=hls') || videoUrl.includes('type=m3u');
-    
-    if (isIPTV) {
-        const videoElement = document.getElementById('tv-iptv-player');
-        videoElement.style.display = 'block';
-        
-        if (Hls.isSupported()) {
-            const hls = new Hls();
-            hls.loadSource(videoUrl);
-            hls.attachMedia(videoElement);
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                videoElement.play().catch(e => console.log("Erro no Autoplay", e));
-            });
-            hls.on(Hls.Events.ERROR, function (event, data) {
-                if (data.fatal) {
-                    console.error("Erro fatal HLS:", data);
-                    // Mostra erro na tela pra facilitar debug
-                    const errDiv = document.createElement('div');
-                    errDiv.style = "position:absolute; top:20px; left:20px; background:red; color:white; padding:10px; z-index:9999;";
-                    errDiv.innerText = "Erro ao carregar IPTV. Verifique se o link é M3U8 válido ou se o servidor bloqueia reprodução web (Erro de CORS / HTTP Misto). Detalhes: " + data.type;
-                    document.body.appendChild(errDiv);
-                }
-            });
-        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-            videoElement.src = videoUrl;
-            videoElement.addEventListener('loadedmetadata', function() {
-                videoElement.play();
-            });
-        }
-    } else {
-        const iframeElement = document.getElementById('tv-youtube-frame');
-        iframeElement.style.display = 'block';
-        
-        // Conversor automático de links normais para Embed
-        if (videoUrl.includes('youtu.be/')) {
-            const videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
-            videoUrl = `https://www.youtube.com/embed/${videoId}`;
-        } else if (videoUrl.includes('youtube.com/watch?v=')) {
-            const videoId = videoUrl.split('v=')[1].split('&')[0];
-            videoUrl = `https://www.youtube.com/embed/${videoId}`;
-        }
-
-        // Adiciona os parâmetros obrigatórios para a TV tocar sozinha sem erro
-        if (videoUrl.includes('youtube.com/embed') && !videoUrl.includes('autoplay')) {
-            const vidId = videoUrl.split('/embed/')[1].split('?')[0];
-            videoUrl += videoUrl.includes('?') ? `&autoplay=1&mute=1&loop=1&playlist=${vidId}&controls=0&showinfo=0` : `?autoplay=1&mute=1&loop=1&playlist=${vidId}&controls=0&showinfo=0`;
-        }
-        
-        iframeElement.src = videoUrl;
+    if (layout === 'l-shape') {
+        document.getElementById('tv-sidebar').style.display = 'flex';
+        document.getElementById('tv-bottom-banner').style.display = 'block';
+        document.getElementById('tv-bottom-banner').style.width = '50%';
+    } 
+    else if (layout === 'bottom') {
+        document.getElementById('tv-sidebar').style.display = 'none';
+        document.getElementById('tv-bottom-banner').style.display = 'block';
+        document.getElementById('tv-bottom-banner').style.width = '100%';
+    } 
+    else if (layout === 'fullscreen') {
+        document.getElementById('tv-sidebar').style.display = 'none';
+        document.getElementById('tv-bottom-banner').style.display = 'none';
     }
-    
-    // Configura os slides de anúncio
-    const slider = document.getElementById('tv-slider');
-    slider.innerHTML = '';
+
+    // Preparar Banners para L-Shape ou Bottom
     tvAdsArray = config.tvAds || [];
-    
-    if (tvAdsArray.length > 0) {
+    if ((layout === 'l-shape' || layout === 'bottom') && tvAdsArray.length > 0) {
+        const slider = document.getElementById('tv-slider');
+        slider.innerHTML = '';
         tvAdsArray.forEach((imgUrl, index) => {
             const slide = document.createElement('div');
             slide.className = 'tv-slide' + (index === 0 ? ' active' : '');
@@ -124,12 +88,7 @@ function montarTV(config) {
             slider.appendChild(slide);
         });
 
-        // 3. Inicia o Carrossel da Barra Inferior
-        const tempoAnuncioSecs = config.tvTempoAnuncio || 30;
-        const tempoAnuncio = tempoAnuncioSecs * 1000;
-        
-        document.getElementById('tv-bottom-banner').style.display = 'block';
-
+        const tempoAnuncio = (config.tvTempoAnuncio || 30) * 1000;
         if (tvAdsArray.length > 1) {
             let currentSlide = 0;
             const slides = document.querySelectorAll('.tv-slide');
@@ -140,12 +99,140 @@ function montarTV(config) {
             }, tempoAnuncio);
         }
     }
+
+    // Iniciar Mídia
+    iniciarPlayer(config.tvVideo || "https://www.youtube.com/watch?v=jfKfPfyJRdk");
+}
+
+function iniciarPlayer(videoUrl) {
+    const isIPTV = videoUrl.includes('.m3u8') || videoUrl.includes('output=hls') || videoUrl.includes('type=m3u');
+    
+    if (isIPTV) {
+        // IPTV Player Logic
+        document.getElementById('player').style.display = 'none';
+        const videoElement = document.getElementById('tv-iptv-player');
+        videoElement.style.display = 'block';
+        
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(videoUrl);
+            hls.attachMedia(videoElement);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => videoElement.play());
+        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+            videoElement.src = videoUrl;
+            videoElement.addEventListener('loadedmetadata', () => videoElement.play());
+        }
+
+        // Lidar com o botão de start de som
+        document.getElementById('btn-start-tv').addEventListener('click', () => {
+            videoElement.muted = false;
+            document.getElementById('start-overlay').style.display = 'none';
+            iniciarComerciaisDeTelaCheia();
+        });
+    } else {
+        // YouTube API Logic
+        document.getElementById('tv-iptv-player').style.display = 'none';
+        document.getElementById('player').style.display = 'block';
+
+        let videoId = 'jfKfPfyJRdk';
+        if (videoUrl.includes('youtu.be/')) videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
+        else if (videoUrl.includes('watch?v=')) videoId = videoUrl.split('v=')[1].split('&')[0];
+        else if (videoUrl.includes('embed/')) videoId = videoUrl.split('embed/')[1].split('?')[0];
+
+        // Aguarda API do YouTube carregar
+        if (window.YT && window.YT.Player) {
+            criarYouTubePlayer(videoId);
+        } else {
+            window.onYouTubeIframeAPIReady = () => criarYouTubePlayer(videoId);
+        }
+    }
+}
+
+function criarYouTubePlayer(videoId) {
+    ytPlayer = new YT.Player('player', {
+        height: '100%',
+        width: '100%',
+        videoId: videoId,
+        playerVars: {
+            'autoplay': 1,
+            'controls': 0,
+            'showinfo': 0,
+            'rel': 0,
+            'loop': 1,
+            'playlist': videoId,
+            'mute': 1 // Inicializa mutado para o autoplay funcionar
+        },
+        events: {
+            'onReady': onPlayerReady
+        }
+    });
+}
+
+function onPlayerReady(event) {
+    event.target.playVideo();
+
+    document.getElementById('btn-start-tv').addEventListener('click', () => {
+        event.target.unMute();
+        event.target.setVolume(100);
+        document.getElementById('start-overlay').style.display = 'none';
+        
+        iniciarComerciaisDeTelaCheia();
+    });
+}
+
+// ----------------------------------------------------
+// MÁGICA: O INTERVALO COMERCIAL (FULLSCREEN LAYOUT)
+// ----------------------------------------------------
+function iniciarComerciaisDeTelaCheia() {
+    const layout = tvConfig.tvLayout || 'l-shape';
+    if (layout !== 'fullscreen' || tvAdsArray.length === 0) return;
+
+    const tempoAnuncio = (tvConfig.tvTempoAnuncio || 30) * 1000;
+    
+    // Executa a primeira vez logo de cara ou espera o tempo?
+    // Vamos esperar o tempo para o primeiro vídeo tocar um pouco.
+    setInterval(() => {
+        mostrarComercial();
+    }, tempoAnuncio);
+}
+
+function mostrarComercial() {
+    const overlay = document.getElementById('fullscreen-ad-overlay');
+    const img = document.getElementById('fullscreen-ad-img');
+    
+    // Pausa ou Abaixa o Youtube
+    if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+        ytPlayer.pauseVideo();
+    } else {
+        const iptv = document.getElementById('tv-iptv-player');
+        if(iptv) iptv.pause();
+    }
+
+    img.src = tvAdsArray[currentAdIndex];
+    overlay.style.display = 'flex';
+    
+    currentAdIndex = (currentAdIndex + 1) % tvAdsArray.length;
+
+    // Fica na tela por 10 segundos
+    setTimeout(() => {
+        overlay.style.display = 'none';
+        
+        // Retoma o Youtube
+        if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+            ytPlayer.playVideo();
+        } else {
+            const iptv = document.getElementById('tv-iptv-player');
+            if(iptv) iptv.play();
+        }
+    }, 10000);
 }
 
 function updateClock() {
     const clockElement = document.getElementById('clock');
-    const now = new Date();
-    clockElement.innerText = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    if(clockElement) {
+        const now = new Date();
+        clockElement.innerText = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -144,6 +144,14 @@
 
                     <h2 style="margin-bottom: 1rem;">Configuração da TV e Anúncios</h2>
                     <div style="margin-bottom: 1.5rem;">
+                        <label style="display:block; margin-bottom:0.5rem;">Estilo / Layout da TV</label>
+                        <select id="tvLayout" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid var(--border); color:white; border-radius:4px;">
+                            <option value="l-shape">Tela Dividida (Vídeo + Sidebar + Banner Embaixo)</option>
+                            <option value="bottom">Rodapé Discreto (Vídeo Tela Cheia + Banner Fino Embaixo)</option>
+                            <option value="fullscreen">Intervalo Comercial (Vídeo Tela Cheia com Som + Anúncio Interrompe em Tela Cheia)</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
                         <label style="display:block; margin-bottom:0.5rem;">Link do Vídeo Principal (Recomendado: YouTube Lofi/Esportes)</label>
                         <input type="text" id="tvVideo" style="width:100%;" placeholder="Ex: https://www.youtube.com/watch?v=jfKfPfyJRdk">
                     </div>

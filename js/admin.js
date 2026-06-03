@@ -54,6 +54,7 @@ async function carregarDadosDoUsuario(uid) {
             if(data.googleReviewUrl) document.getElementById('googleReviewUrl').value = data.googleReviewUrl;
             if(data.tvVideo) document.getElementById('tvVideo').value = data.tvVideo;
             if(data.tvTempoAnuncio) document.getElementById('tvTempoAnuncio').value = data.tvTempoAnuncio;
+            if(data.tvLayout) document.getElementById('tvLayout').value = data.tvLayout;
             
             // Dispara evento manual para atualizar o Preview inicial
             document.getElementById('nome').dispatchEvent(new Event('input'));
@@ -407,6 +408,7 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
             wifiPassword: document.getElementById('wifi').value.trim(),
             googleReviewUrl: document.getElementById('googleReviewUrl').value.trim(),
             tituloCatalogo: document.getElementById('tituloCatalogo').value.trim() || 'Galeria',
+            tvLayout: document.getElementById('tvLayout').value || 'l-shape',
             tvVideo: document.getElementById('tvVideo').value.trim(),
             tvTempoAnuncio: parseInt(document.getElementById('tvTempoAnuncio').value) || 30,
             dataCriacao: new Date().toISOString()
