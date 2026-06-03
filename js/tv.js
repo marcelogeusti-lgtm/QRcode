@@ -192,12 +192,8 @@ function iniciarPlayer(videoUrl) {
 
 async function carregarListaM3U(url, videoElement) {
     try {
-        let fetchUrl = url;
-        
-        // Se NÃO for um link do nosso Firebase, usamos o proxy para tentar burlar o bloqueio
-        if (!url.includes('firebasestorage.googleapis.com')) {
-            fetchUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-        }
+        // Usa corsproxy.io para adicionar headers CORS, seja para links diretos ou do Firebase Storage
+        const fetchUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
 
         const response = await fetch(fetchUrl);
         const data = await response.text();
