@@ -2,6 +2,7 @@ import { db, doc, setDoc, storage, ref, uploadBytes, getDownloadURL, auth, onAut
 
 let currentUser = null;
 window.localCatalog = [];
+window.localTvAds = [];
 
 // Proteção da Rota
 onAuthStateChanged(auth, async (user) => {
@@ -42,7 +43,14 @@ async function carregarDadosDoUsuario(uid) {
             
             // Mostra texto de que tem foto salva
             if(data.logoUrl) document.querySelector('#drop-logo p').innerText = "✅ Logo atual salva no sistema. Envie outra para substituir.";
-            if(data.tvAds && data.tvAds.length > 0) document.querySelector('#drop-tv p').innerText = `✅ ${data.tvAds.length} anúncios de TV salvos. Envie novas para substituir.`;
+            
+            // TV Ads
+            if(data.tvAds && data.tvAds.length > 0) {
+                window.localTvAds = data.tvAds.map(item => {
+                    return { file: null, url: item };
+                });
+                renderTvAdmin();
+            }
             
             // Catálogo (Tratando dados antigos vs novos)
             if(data.catalogo && data.catalogo.length > 0) {
@@ -98,8 +106,8 @@ function setupDropZone(zoneId, inputId) {
     });
 }
 setupDropZone('drop-logo', 'logoFile');
-setupDropZone('drop-tv', 'tvAdsFiles');
 setupDropZone('drop-novo-item', 'novoItemFile');
+setupDropZone('drop-novo-tv-ad', 'novoTvAdFile');
 
 // Lógica de Renderização do Catálogo Local
 window.renderCatalogAdmin = function() {
@@ -154,6 +162,61 @@ document.getElementById('btn-add-item').addEventListener('click', () => {
     document.getElementById('txt-novo-item').style.color = "#aaa";
     
     renderCatalogAdmin();
+});
+
+// Lógica de Renderização de TV Local
+window.renderTvAdmin = function() {
+    const grid = document.getElementById('admin-tv-grid');
+    grid.innerHTML = "";
+    
+    if (window.localTvAds.length === 0) {
+        grid.innerHTML = "<p style='color:gray; grid-column: 1 / -1;'>Nenhum anúncio de TV cadastrado ainda.</p>";
+        return;
+    }
+    
+    window.localTvAds.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'catalog-item-admin';
+        
+        let src = item.url;
+        if (item.file) {
+            src = URL.createObjectURL(item.file);
+        }
+        
+        div.innerHTML = `
+            <button type="button" class="btn-remove-item" onclick="removerItemTv(${index})">X</button>
+            <img src="${src}" alt="Anúncio TV">
+        `;
+        grid.appendChild(div);
+    });
+};
+
+window.removerItemTv = function(index) {
+    if(confirm("Tem certeza que deseja remover este anúncio da TV?")) {
+        window.localTvAds.splice(index, 1);
+        renderTvAdmin();
+    }
+};
+
+document.getElementById('btn-add-tv-ad').addEventListener('click', () => {
+    const fileInput = document.getElementById('novoTvAdFile');
+    
+    if (!fileInput.files[0]) {
+        alert("Por favor, selecione uma arte para o anúncio.");
+        return;
+    }
+    
+    window.localTvAds.push({
+        file: fileInput.files[0],
+        url: ""
+    });
+    
+    // Limpa form
+    fileInput.value = "";
+    document.getElementById('txt-novo-tv-ad').innerText = "Clique para selecionar uma foto de anúncio";
+    document.getElementById('txt-novo-tv-ad').style.color = "#aaa";
+    
+    renderTvAdmin();
 });
 
 // MÁGICA: Compressor de Imagem com Canvas (Reduz 5MB para ~100KB)
@@ -242,12 +305,15 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
             catalogToSave.push(finalUrl);
         }
 
-        // 3. Upload Anúncios TV
-        const tvAdsFiles = document.getElementById('tvAdsFiles').files;
-        const tvAdsUrls = [];
-        for (let i = 0; i < tvAdsFiles.length; i++) {
-            const url = await uploadImage(tvAdsFiles[i], `barbearias/${barberId}/tvAds/ad_${i}.jpg`);
-            tvAdsUrls.push(url);
+        // 3. Upload Anúncios TV Visual
+        const tvAdsToSave = [];
+        for (let i = 0; i < window.localTvAds.length; i++) {
+            const ad = window.localTvAds[i];
+            let finalUrl = ad.url;
+            if (ad.file) {
+                finalUrl = await uploadImage(ad.file, `barbearias/${barberId}/tvAds/ad_${Date.now()}_${i}.jpg`);
+            }
+            tvAdsToSave.push(finalUrl);
         }
 
         // 4. Salvar Banco de Dados
@@ -269,7 +335,7 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
 
         if (logoUrl) barbeariaData.logoUrl = logoUrl;
         if (catalogToSave.length > 0) barbeariaData.catalogo = catalogToSave;
-        if (tvAdsUrls.length > 0) barbeariaData.tvAds = tvAdsUrls;
+        if (tvAdsToSave.length > 0) barbeariaData.tvAds = tvAdsToSave;
 
         await setDoc(docRef, barbeariaData, { merge: true });
         

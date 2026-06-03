@@ -90,10 +90,21 @@
                     <div><label>Duração do Comercial (Segundos)</label><input type="number" id="tvTempoAnuncio" value="30" min="5" required style="width:100%; padding:0.8rem;"></div>
                 </div>
 
-                <label>Fotos para os Comerciais da TV (Use imagens na horizontal)</label>
-                <div class="drag-zone" id="drop-tv" onclick="document.getElementById('tvAdsFiles').click()">
-                    <p>Arraste as fotos dos anúncios aqui (Pode selecionar várias)</p>
-                    <input type="file" id="tvAdsFiles" accept="image/*" multiple>
+                <h3 style="margin-top:2rem; margin-bottom:1rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:1rem;">Artes dos Comerciais da TV</h3>
+                <p style="color: #aaa; margin-bottom: 1rem; font-size: 0.9rem;">(Use imagens na horizontal para melhor encaixe na tela)</p>
+                
+                <div class="catalog-grid" id="admin-tv-grid">
+                    <!-- Preenchido via JS -->
+                </div>
+
+                <div class="add-item-form" style="margin-top: 1rem;">
+                    <div class="drag-zone" id="drop-novo-tv-ad" onclick="document.getElementById('novoTvAdFile').click()" style="margin-bottom:0; padding:1rem;">
+                        <p id="txt-novo-tv-ad">Clique para selecionar uma foto de anúncio</p>
+                        <input type="file" id="novoTvAdFile" accept="image/*">
+                    </div>
+                    <button type="button" class="btn btn-outline" id="btn-add-tv-ad" style="border-color: var(--accent-gold); color: var(--accent-gold);">
+                        + Enviar Comercial
+                    </button>
                 </div>
             </div>
 
