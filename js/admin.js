@@ -554,6 +554,12 @@ function gerarQRCode(id) {
     
     document.getElementById('link-cliente').href = urlFinal;
     document.getElementById('link-tv').href = urlTv;
+    
+    const linkClienteQr = document.getElementById('link-cliente-qr');
+    const linkTvQr = document.getElementById('link-tv-qr');
+    if(linkClienteQr) linkClienteQr.href = urlFinal;
+    if(linkTvQr) linkTvQr.href = urlTv;
+
     container.style.display = "block";
 }
 
