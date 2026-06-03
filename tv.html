@@ -11,54 +11,64 @@
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
         
         /* Camada 1: O Vídeo rodando no fundo (programação normal) */
-        #video-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
-        }
-        .tv-video { width: 100%; height: 100%; border: none; }
-
-        /* Camada 2: Os Anúncios (escondidos por padrão, cobrem a tela toda quando ativados) */
-        #ad-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;
-            background: #000; opacity: 0; transition: opacity 1s ease-in-out; pointer-events: none;
-        }
-        #ad-layer.active {
-            opacity: 1; pointer-events: all;
-        }
+        .tv-container { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
         
-        .tv-slider { width: 100%; height: 100%; position: relative; }
+        .tv-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        
+        .tv-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; display: flex; flex-direction: column; }
+        
+        .tv-transparent-zone { flex: 1; display: flex; justify-content: flex-end; }
+        
+        .tv-sidebar { width: 350px; background: rgba(0,0,0,0.7); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+        
+        .tv-bottom-banner { height: 200px; background: #000; }
+
+        .tv-video { width: 100%; height: 100%; border: none; }
+        
         .tv-slide {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-size: cover; background-position: center; opacity: 0; transition: opacity 1s;
         }
         .tv-slide.active { opacity: 1; }
-
-        /* Relógio sobreposto sempre */
-        .tv-clock {
-            position: absolute; top: 2rem; right: 3rem; font-size: 3rem; font-weight: 800;
-            color: white; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); z-index: 10;
-        }
     </style>
 </head>
-<body>
+<body style="margin: 0; padding: 0; background: black; overflow: hidden; color: white; font-family: 'Inter', sans-serif;">
+    <div class="tv-container">
+        <!-- 1. Background de Vídeo (Roda 100% do tempo) -->
+        <div class="tv-background">
+            <iframe id="tv-youtube-frame" class="tv-video" allow="autoplay; encrypted-media" style="display:none;"></iframe>
+            <video id="tv-iptv-player" class="tv-video" autoplay muted loop playsinline style="display:none; object-fit: cover;"></video>
+        </div>
 
-    <div class="tv-clock" id="clock">00:00</div>
+        <!-- 2. Overlay Híbrido (L-Shape) -->
+        <div class="tv-overlay">
+            
+            <!-- Zona transparente superior com a barra lateral direita -->
+            <div class="tv-transparent-zone">
+                <div class="tv-sidebar" id="tv-sidebar">
+                    <div class="tv-sidebar-content">
+                        <img id="tv-logo" class="logo" src="https://via.placeholder.com/150" alt="Logo">
+                        <h2 id="tv-nome" style="margin-bottom: 0.5rem; font-size: 1.8rem; color: var(--accent-gold);">Nome</h2>
+                        
+                        <div id="qrcode-tv" style="margin: 2rem auto; background: white; padding: 10px; display: inline-block; border-radius: 8px;"></div>
+                        <p style="font-weight: bold; margin-bottom: 2rem;">Aponte a câmera para se conectar ao Wi-Fi</p>
+                        
+                        <h1 id="clock" style="font-size: 3rem; font-weight: 300; margin-top: auto; color: var(--accent-gold);">00:00</h1>
+                    </div>
+                </div>
+            </div>
 
-    <!-- O "Programa Normal" -->
-    <div id="video-layer">
-        <!-- Player do YouTube (Escondido por padrão) -->
-        <iframe id="tv-youtube-frame" class="tv-video" allow="autoplay; encrypted-media" style="display:none;"></iframe>
-        
-        <!-- Player de IPTV Nativo (Escondido por padrão) -->
-        <video id="tv-iptv-player" class="tv-video" autoplay muted loop playsinline style="display:none; object-fit: cover;"></video>
-    </div>
+            <!-- Banner Inferior para Propagandas -->
+            <div class="tv-bottom-banner" id="tv-bottom-banner">
+                <div id="tv-slider">
+                    <!-- Slides injetados pelo JS -->
+                </div>
+            </div>
 
-    <!-- O "Comercial da Barbearia" -->
-    <div id="ad-layer">
-        <div class="tv-slider" id="tv-slider">
-            <!-- Imagens injetadas via JS -->
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script type="module" src="js/tv.js"></script>
 </body>
 </html>

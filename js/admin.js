@@ -38,9 +38,7 @@ async function carregarDadosDoUsuario(uid) {
             if(data.pixKey) document.getElementById('pix').value = data.pixKey;
             if(data.wifiPassword) document.getElementById('wifi').value = data.wifiPassword;
             if(data.tvVideo) document.getElementById('tvVideo').value = data.tvVideo;
-            if(data.tvTempoVideo) document.getElementById('tvTempoVideo').value = data.tvTempoVideo;
             if(data.tvTempoAnuncio) document.getElementById('tvTempoAnuncio').value = data.tvTempoAnuncio;
-            if(data.tvEstrategia) document.getElementById('tvEstrategia').value = data.tvEstrategia;
             
             // Dispara evento manual para atualizar o Preview inicial
             document.getElementById('nome').dispatchEvent(new Event('input'));
@@ -335,9 +333,7 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
             wifiPassword: document.getElementById('wifi').value.trim(),
             tituloCatalogo: document.getElementById('tituloCatalogo').value.trim() || 'Galeria',
             tvVideo: document.getElementById('tvVideo').value.trim(),
-            tvTempoVideo: parseInt(document.getElementById('tvTempoVideo').value) || 5,
             tvTempoAnuncio: parseInt(document.getElementById('tvTempoAnuncio').value) || 30,
-            tvEstrategia: document.getElementById('tvEstrategia').value || 'bloco',
             dataCriacao: new Date().toISOString()
         };
 

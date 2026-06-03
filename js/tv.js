@@ -27,6 +27,27 @@ async function initTV() {
 
 function montarTV(config) {
     document.title = config.nome + " - TV";
+    
+    // 1. Configura a Barra Lateral (Sidebar)
+    document.documentElement.style.setProperty('--accent-gold', config.corPrincipal || '#d4af37');
+    document.getElementById('tv-nome').innerText = config.nome || "Bem-vindo";
+    if (config.logoUrl) {
+        document.getElementById('tv-logo').src = config.logoUrl;
+    }
+    
+    // Gerar QR Code na Sidebar
+    const urlFinal = `${window.location.origin}/index.html?id=${new URLSearchParams(window.location.search).get('id')}`;
+    new QRCode(document.getElementById('qrcode-tv'), {
+        text: urlFinal,
+        width: 150,
+        height: 150,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+    });
+
+    // Mostra a Sidebar
+    document.getElementById('tv-sidebar').style.display = 'flex';
 
     // Puxa o link do vídeo (garantindo que tem autoplay e mute se for youtube)
     let videoUrl = config.tvVideo || "https://www.youtube.com/embed/jfKfPfyJRdk";
@@ -85,69 +106,22 @@ function montarTV(config) {
             slider.appendChild(slide);
         });
 
-        // Inicia o ciclo: Assistir Vídeo -> Pausar para Comercial -> Assistir Vídeo
-        const tempoVideoMins = config.tvTempoVideo || 5;
-        const tempoVideo = tempoVideoMins * 60 * 1000;
-        
+        // 3. Inicia o Carrossel da Barra Inferior
         const tempoAnuncioSecs = config.tvTempoAnuncio || 30;
         const tempoAnuncio = tempoAnuncioSecs * 1000;
         
-        const estrategia = config.tvEstrategia || 'bloco';
+        document.getElementById('tv-bottom-banner').style.display = 'block';
 
-        iniciarCicloDaTV(tempoVideo, tempoAnuncio, estrategia);
-    }
-}
-
-function iniciarCicloDaTV(tempoVideo, tempoAnuncio, estrategia) {
-    const adLayer = document.getElementById('ad-layer');
-    let rodizioIndex = 0;
-    
-    // Rotina principal (loop eterno)
-    function rodarPrograma() {
-        // Esconde anúncios, mostra vídeo normal
-        adLayer.classList.remove('active');
-        
-        // Daqui a X minutos, puxa o comercial
-        setTimeout(rodarComercial, tempoVideo);
-    }
-
-    function rodarComercial() {
-        // Cobre a tela com o anúncio
-        adLayer.classList.add('active');
-        const slides = document.querySelectorAll('.tv-slide');
-        let slideInterval;
-
-        if (estrategia === 'rodizio') {
-            // MODO RODÍZIO: Exibe apenas 1 slide por intervalo e avança o índice
-            slides.forEach(s => s.classList.remove('active'));
-            if (slides[rodizioIndex]) {
-                slides[rodizioIndex].classList.add('active');
-            }
-            rodizioIndex = (rodizioIndex + 1) % slides.length;
-        } else {
-            // MODO BLOCO: Passa todos os slides sequencialmente (Carousel)
+        if (tvAdsArray.length > 1) {
             let currentSlide = 0;
-            slides.forEach(s => s.classList.remove('active'));
-            if (slides[0]) slides[0].classList.add('active');
-
-            if(slides.length > 1) {
-                slideInterval = setInterval(() => {
-                    slides[currentSlide].classList.remove('active');
-                    currentSlide = (currentSlide + 1) % slides.length;
-                    slides[currentSlide].classList.add('active');
-                }, 8000); // Toca cada foto por 8 segundos
-            }
+            const slides = document.querySelectorAll('.tv-slide');
+            setInterval(() => {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }, tempoAnuncio);
         }
-
-        // Fim do comercial, volta pra programação
-        setTimeout(() => {
-            if(slideInterval) clearInterval(slideInterval);
-            rodarPrograma();
-        }, tempoAnuncio);
     }
-
-    // Começa assistindo o programa normal
-    rodarPrograma();
 }
 
 function updateClock() {
