@@ -14,6 +14,28 @@
         <span id="channel-osd-name">Canal Atual</span>
     </div>
 
+    <!-- Menu Visual IPTV (Smarters Interface) -->
+    <div id="iptv-menu-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9995; display:none; flex-direction:row; color:white; font-family:'Inter', sans-serif;">
+        <!-- Sidebar Categorias -->
+        <div style="width:300px; background:rgba(20,20,20,0.95); border-right:2px solid var(--accent-gold); display:flex; flex-direction:column;">
+            <div style="padding:2rem 1rem; border-bottom:1px solid rgba(255,255,255,0.1); text-align:center;">
+                <h2 style="color:var(--accent-gold); margin:0;">Canais Ao Vivo</h2>
+                <p style="font-size:0.8rem; color:#aaa; margin-top:5px;">Aperte [ESC] para sair</p>
+            </div>
+            <div id="iptv-categories" style="flex:1; overflow-y:auto; padding:1rem;">
+                <!-- Categorias injetadas via JS -->
+            </div>
+        </div>
+        
+        <!-- Grid de Canais -->
+        <div style="flex:1; padding:2rem; display:flex; flex-direction:column; overflow:hidden;">
+            <h2 id="iptv-current-category-title" style="margin-top:0; margin-bottom:2rem; font-size:2.5rem; border-left:5px solid var(--accent-gold); padding-left:15px;">Categoria Selecionada</h2>
+            <div id="iptv-channels-grid" style="flex:1; overflow-y:auto; display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1.5rem; align-content:start;">
+                <!-- Canais injetadas via JS -->
+            </div>
+        </div>
+    </div>
+
     <!-- Comercial Fullscreen Overlay -->
     <div id="fullscreen-ad-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:9998; display:none; justify-content:center; align-items:center;">
         <img id="fullscreen-ad-img" src="" style="max-width:100%; max-height:100%; object-fit:contain; display:none;">

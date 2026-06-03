@@ -10,6 +10,13 @@ let m3uChannels = [];
 let currentChannelIndex = 0;
 let tvConfig = null;
 
+// Variáveis Menu Visual IPTV
+let iptvCategories = {};
+let iptvCategoriesArray = [];
+let currentCategoryName = "Todos";
+let iptvMenuOpen = false;
+let iptvMenuTimeout = null;
+
 // Lógica de Unmute Global
 let isMuted = true;
 function unmuteAll() {
@@ -177,7 +184,6 @@ function iniciarPlayer(videoUrl) {
 
 async function carregarListaM3U(url, videoElement) {
     try {
-        // Usa allorigins como proxy para evitar bloqueio de CORS ao baixar o texto da lista
         const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
         const response = await fetch(proxyUrl);
         const data = await response.text();
@@ -185,6 +191,10 @@ async function carregarListaM3U(url, videoElement) {
         m3uChannels = parseM3U(data);
         if (m3uChannels.length > 0) {
             console.log(`Lista M3U carregada: ${m3uChannels.length} canais encontrados.`);
+            
+            // Renderiza categorias iniciais
+            renderizarCategorias();
+
             tocarIPTV(m3uChannels[0].url, videoElement);
             mostrarOSD(m3uChannels[0].name);
         } else {
@@ -198,20 +208,49 @@ async function carregarListaM3U(url, videoElement) {
 function parseM3U(data) {
     const lines = data.split('\n');
     const channels = [];
+    iptvCategories = { "Todos": [] };
     let currentChannel = null;
 
     for (let line of lines) {
         line = line.trim();
         if (line.startsWith('#EXTINF:')) {
+            // Extrai a Categoria (group-title)
+            const groupMatch = line.match(/group-title="([^"]+)"/i);
+            const category = groupMatch ? groupMatch[1].trim() : "Outros";
+
+            // Extrai a Logo (tvg-logo)
+            const logoMatch = line.match(/tvg-logo="([^"]+)"/i);
+            const logo = logoMatch ? logoMatch[1] : "";
+
+            // Nome do canal
             const parts = line.split(',');
             const name = parts[parts.length - 1];
-            currentChannel = { name: name.trim() };
+            
+            currentChannel = { 
+                name: name.trim(),
+                category: category,
+                logo: logo,
+                index: channels.length 
+            };
         } else if (line.startsWith('http') && currentChannel) {
             currentChannel.url = line;
             channels.push(currentChannel);
+            
+            // Popula as Categorias
+            if (!iptvCategories[currentChannel.category]) {
+                iptvCategories[currentChannel.category] = [];
+            }
+            iptvCategories[currentChannel.category].push(currentChannel);
+            iptvCategories["Todos"].push(currentChannel);
+
             currentChannel = null;
         }
     }
+
+    iptvCategoriesArray = Object.keys(iptvCategories).sort();
+    // Garante que 'Todos' seja o primeiro
+    iptvCategoriesArray = ["Todos", ...iptvCategoriesArray.filter(c => c !== "Todos")];
+
     return channels;
 }
 
@@ -234,14 +273,154 @@ function setupZapping(videoElement) {
     window.addEventListener('keydown', (e) => {
         if (m3uChannels.length === 0) return;
 
-        if (e.key === 'ArrowUp') {
+        // Resetar timer do menu a cada clique se estiver aberto
+        if (iptvMenuOpen) resetMenuTimeout();
+
+        if (e.key === 'Enter') {
+            toggleMenuIPTV();
+        } else if (e.key === 'Escape') {
+            fecharMenuIPTV();
+        } else if (e.key === 'ArrowUp' && !iptvMenuOpen) {
             currentChannelIndex = (currentChannelIndex + 1) % m3uChannels.length;
             mudarDeCanal(videoElement);
-        } else if (e.key === 'ArrowDown') {
+        } else if (e.key === 'ArrowDown' && !iptvMenuOpen) {
             currentChannelIndex = (currentChannelIndex - 1 + m3uChannels.length) % m3uChannels.length;
             mudarDeCanal(videoElement);
         }
     });
+}
+
+// ================= Lógica do Menu Visual IPTV =================
+
+function renderizarCategorias() {
+    const catContainer = document.getElementById('iptv-categories');
+    if (!catContainer) return;
+    
+    catContainer.innerHTML = '';
+    iptvCategoriesArray.forEach(cat => {
+        const div = document.createElement('div');
+        div.innerText = cat;
+        div.style.padding = '15px';
+        div.style.cursor = 'pointer';
+        div.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+        div.style.transition = 'background 0.2s';
+        
+        if (cat === currentCategoryName) {
+            div.style.background = 'var(--accent-gold)';
+            div.style.color = 'black';
+            div.style.fontWeight = 'bold';
+            div.style.borderRadius = '4px';
+        }
+
+        div.onclick = () => {
+            currentCategoryName = cat;
+            renderizarCategorias(); // Atualiza a cor de seleção
+            renderizarCanaisDaCategoria(cat);
+            resetMenuTimeout();
+        };
+
+        div.onmouseover = () => { if(cat !== currentCategoryName) div.style.background = 'rgba(255,255,255,0.1)'; };
+        div.onmouseout = () => { if(cat !== currentCategoryName) div.style.background = 'transparent'; };
+
+        catContainer.appendChild(div);
+    });
+
+    // Renderiza os canais da primeira categoria ao abrir
+    renderizarCanaisDaCategoria(currentCategoryName);
+}
+
+function renderizarCanaisDaCategoria(categoria) {
+    const grid = document.getElementById('iptv-channels-grid');
+    const title = document.getElementById('iptv-current-category-title');
+    if (!grid || !title) return;
+
+    title.innerText = categoria;
+    grid.innerHTML = '';
+
+    const canais = iptvCategories[categoria] || [];
+    
+    canais.forEach(channel => {
+        const card = document.createElement('div');
+        card.style.background = 'rgba(0,0,0,0.6)';
+        card.style.border = '1px solid rgba(255,255,255,0.1)';
+        card.style.borderRadius = '8px';
+        card.style.padding = '1rem';
+        card.style.cursor = 'pointer';
+        card.style.textAlign = 'center';
+        card.style.transition = 'transform 0.2s, border 0.2s';
+
+        // Logo
+        const img = document.createElement('img');
+        img.src = channel.logo || 'https://via.placeholder.com/150x150/222/D4AF37?text=TV';
+        img.style.width = '100%';
+        img.style.height = '120px';
+        img.style.objectFit = 'contain';
+        img.style.marginBottom = '1rem';
+        // Erro na logo fallback
+        img.onerror = () => { img.src = 'https://via.placeholder.com/150x150/222/D4AF37?text=TV'; };
+
+        const name = document.createElement('div');
+        name.innerText = channel.name;
+        name.style.fontWeight = 'bold';
+        name.style.fontSize = '0.9rem';
+        name.style.whiteSpace = 'nowrap';
+        name.style.overflow = 'hidden';
+        name.style.textOverflow = 'ellipsis';
+
+        card.appendChild(img);
+        card.appendChild(name);
+
+        card.onclick = () => {
+            currentChannelIndex = channel.index;
+            mudarDeCanal(document.getElementById('tv-iptv-player'));
+            fecharMenuIPTV();
+        };
+
+        card.onmouseover = () => { 
+            card.style.transform = 'scale(1.05)'; 
+            card.style.borderColor = 'var(--accent-gold)';
+        };
+        card.onmouseout = () => { 
+            card.style.transform = 'scale(1)'; 
+            card.style.borderColor = 'rgba(255,255,255,0.1)';
+        };
+
+        grid.appendChild(card);
+    });
+}
+
+function toggleMenuIPTV() {
+    if (iptvMenuOpen) {
+        fecharMenuIPTV();
+    } else {
+        abrirMenuIPTV();
+    }
+}
+
+function abrirMenuIPTV() {
+    const menu = document.getElementById('iptv-menu-overlay');
+    if (menu) {
+        menu.style.display = 'flex';
+        iptvMenuOpen = true;
+        renderizarCategorias();
+        resetMenuTimeout();
+    }
+}
+
+function fecharMenuIPTV() {
+    const menu = document.getElementById('iptv-menu-overlay');
+    if (menu) {
+        menu.style.display = 'none';
+        iptvMenuOpen = false;
+        if (iptvMenuTimeout) clearTimeout(iptvMenuTimeout);
+    }
+}
+
+function resetMenuTimeout() {
+    if (iptvMenuTimeout) clearTimeout(iptvMenuTimeout);
+    iptvMenuTimeout = setTimeout(() => {
+        fecharMenuIPTV();
+    }, 10000); // 10 segundos de inatividade fecha o menu
 }
 
 function mudarDeCanal(videoElement) {
