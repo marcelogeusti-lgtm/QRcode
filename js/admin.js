@@ -84,7 +84,7 @@ async function carregarDadosDoUsuario(uid) {
             }
             
             // Já mostra o QR code e link sem precisar apertar salvar de novo
-            gerarQRCode(docData.id);
+            gerarQRCode(barberId);
 
             // 🔴 VERIFICAÇÃO DE SUSPENSÃO
             if (data.plan === 'SUSPENDED') {
@@ -94,7 +94,7 @@ async function carregarDadosDoUsuario(uid) {
             }
 
             // 🟡 Libera as funções PRO se for assinante PRO
-            const isPro = data.plan === 'PRO' || docData.id === 'guimaraes';
+            const isPro = data.plan === 'PRO' || barberId === 'guimaraes';
             const badge = document.getElementById('badge-plan');
 
             if (isPro) {
