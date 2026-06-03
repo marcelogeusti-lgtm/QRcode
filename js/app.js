@@ -92,7 +92,18 @@ function aplicarConfiguracoes(config) {
             
             const div = document.createElement('div');
             div.className = 'catalog-item';
-            div.innerHTML = `<img src="${itemUrl}" alt="Foto da Galeria">`;
+            
+            if (itemUrl.includes('.pdf')) {
+                div.innerHTML = `
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:rgba(255,255,255,0.05); padding:1rem; border-radius:8px; border: 1px solid var(--border);">
+                        <i class="fas fa-file-pdf" style="font-size:3rem; color:var(--accent-gold); margin-bottom:1rem;"></i>
+                        <a href="${itemUrl}" target="_blank" class="btn btn-outline" style="width:100%; text-align:center; font-size: 0.9rem;">Abrir PDF</a>
+                    </div>
+                `;
+            } else {
+                div.innerHTML = `<img src="${itemUrl}" alt="Foto da Galeria">`;
+            }
+            
             catalogoContainer.appendChild(div);
         });
     } else {

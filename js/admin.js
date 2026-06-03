@@ -246,13 +246,30 @@ window.renderCatalogAdmin = function() {
         div.className = 'catalog-item-admin';
         
         let src = item.url;
+        let isPdf = false;
+        
         if (item.file) {
             src = URL.createObjectURL(item.file);
+            isPdf = item.file.type === 'application/pdf';
+        } else if (item.url) {
+            isPdf = item.url.includes('.pdf');
+        }
+        
+        let contentHtml = '';
+        if (isPdf) {
+            contentHtml = `
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:rgba(255,255,255,0.05); padding:1rem; border-radius:8px;">
+                    <div style="font-size:2rem; margin-bottom:0.5rem;">📄</div>
+                    <span style="color:#ccc; font-size:0.8rem;">PDF</span>
+                </div>
+            `;
+        } else {
+            contentHtml = `<img src="${src}" alt="Item">`;
         }
         
         div.innerHTML = `
             <button type="button" class="btn-remove-item" onclick="removerItemCatalogo(${index})">X</button>
-            <img src="${src}" alt="Item">
+            ${contentHtml}
         `;
         grid.appendChild(div);
     });
@@ -269,7 +286,7 @@ document.getElementById('btn-add-item').addEventListener('click', () => {
     const fileInput = document.getElementById('novoItemFile');
     
     if (!fileInput.files[0]) {
-        alert("Por favor, selecione uma foto.");
+        alert("Por favor, selecione um arquivo.");
         return;
     }
     
@@ -280,7 +297,7 @@ document.getElementById('btn-add-item').addEventListener('click', () => {
     
     // Limpa form
     fileInput.value = "";
-    document.getElementById('txt-novo-item').innerText = "Clique para selecionar uma foto";
+    document.getElementById('txt-novo-item').innerText = "Clique para selecionar uma foto ou PDF";
     document.getElementById('txt-novo-item').style.color = "#aaa";
     
     renderCatalogAdmin();
@@ -430,13 +447,15 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
         const logoFile = document.getElementById('logoFile').files[0];
         const logoUrl = logoFile ? await uploadMedia(logoFile, `barbearias/${barberId}/logo.jpg`) : null;
 
-        // 2. Upload Catálogo Visual (Sempre imagens)
+        // 2. Upload Catálogo Visual (Sempre imagens ou PDF)
         const catalogToSave = [];
         for (let i = 0; i < window.localCatalog.length; i++) {
             const item = window.localCatalog[i];
             let finalUrl = item.url;
             if (item.file) {
-                finalUrl = await uploadMedia(item.file, `barbearias/${barberId}/cat_${Date.now()}_${i}.jpg`);
+                const isPdf = item.file.type === 'application/pdf';
+                const ext = isPdf ? 'pdf' : 'jpg';
+                finalUrl = await uploadMedia(item.file, `barbearias/${barberId}/cat_${Date.now()}_${i}.${ext}`);
             }
             catalogToSave.push(finalUrl);
         }
