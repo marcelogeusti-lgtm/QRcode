@@ -143,17 +143,19 @@
             <p id="loading-msg" style="text-align:center; display:none; margin-top:1rem; color: var(--accent-gold);">Processando imagens, comprimindo e salvando dados... Aguarde!</p>
         </form>
 
-        <div id="qrcode-container" style="display:none; text-align:center; margin-top: 3rem; background:white; padding:2rem; border-radius:12px;">
-            <h2 style="color:black; margin-bottom:1rem;">O QR Code do seu Negócio</h2>
-            <div id="qrcode" style="display:inline-block; padding: 10px; border: 4px solid var(--accent-gold); border-radius: 8px;"></div>
-            <p style="color:black; margin-top:1rem; font-size:14px;">Imprima este QR Code e coloque na sua bancada!</p>
+        <div id="qrcode-container" class="card" style="display:none; text-align:center; margin-top: 3rem;">
+            <h2 style="margin-bottom:1rem;">O QR Code do seu Negócio</h2>
+            <div style="background: white; padding: 10px; display: inline-block; border-radius: 8px;">
+                <div id="qrcode" style="display:inline-block; border: 4px solid var(--accent-gold); border-radius: 8px;"></div>
+            </div>
+            <p style="color: var(--muted-foreground); margin-top:1rem; font-size:14px;">Imprima este QR Code e coloque na sua bancada!</p>
             <p style="margin-top:1rem;"><a id="link-cliente" href="#" target="_blank" style="color: var(--accent-gold); font-weight:bold;">Acessar Site do Cliente</a></p>
             <p><a id="link-tv" href="#" target="_blank" style="color: var(--accent-gold); font-weight:bold;">Acessar Link da TV</a></p>
-            <hr style="border-color: #eee; margin: 1.5rem 0;">
-            <button type="button" id="btn-nfc" class="btn" style="background: #333; color: white; width: 100%; padding: 1rem;">
+            <hr style="border-color: var(--border); margin: 1.5rem 0; width: 100%;">
+            <button type="button" id="btn-nfc" class="btn btn-outline" style="width: 100%; padding: 1rem;">
                 📶 Gravar Tag NFC
             </button>
-            <p id="nfc-status" style="display:none; font-weight:bold; margin-top: 1rem; color: #333;"></p>
+            <p id="nfc-status" style="display:none; font-weight:bold; margin-top: 1rem; color: var(--accent-gold);"></p>
         </div>
         </div> <!-- /admin-main -->
 
