@@ -85,8 +85,14 @@
             <div id="tab-tv" class="tab-content">
                 <h2 style="margin-bottom: 1rem;">Configuração da TV e Anúncios</h2>
                 <div style="margin-bottom: 1.5rem;">
-                    <label style="display:block; margin-bottom:0.5rem;">Link do Canal (YouTube ou IPTV .m3u8)</label>
-                    <input type="text" id="tvVideo" style="width:100%; padding: 0.8rem; background: rgba(0,0,0,0.5); color:white;" placeholder="Ex: youtube.com/watch ou http://.../canal.m3u8">
+                    <label style="display:block; margin-bottom:0.5rem;">Canal da TV Principal</label>
+                    <select id="tvVideo" style="width:100%; padding: 0.8rem; background: rgba(0,0,0,0.5); color:white; border: 1px solid #444; border-radius: 4px;">
+                        <option value="https://www.youtube.com/embed/jfKfPfyJRdk">Lofi Girl (YouTube - Funciona na Web e TV Box)</option>
+                        <option value="http://agkcb3.me:80/r9GvjHTxM/9q7KZm/72237.m3u8">Premiere FHD (Requer Android TV Box)</option>
+                        <option value="http://agkcb3.me:80/r9GvjHTxM/9q7KZm/72321.m3u8">SporTV FHD (Requer Android TV Box)</option>
+                        <option value="http://agkcb3.me:80/r9GvjHTxM/9q7KZm/71911.m3u8">ESPN FHD (Requer Android TV Box)</option>
+                        <option value="http://agkcb3.me:80/r9GvjHTxM/9q7KZm/72040.m3u8">Globo SP FHD (Requer Android TV Box)</option>
+                    </select>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem;">
                     <div><label>Velocidade do Carrossel (Tempo de cada Anúncio na tela - Segundos)</label><input type="number" id="tvTempoAnuncio" value="30" min="5" required style="width:100%; padding:0.8rem;"></div>
