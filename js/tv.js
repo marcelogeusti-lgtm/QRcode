@@ -134,11 +134,19 @@ function montarTV(config) {
     }
 
     // Iniciar Mídia
+    // Iniciar Mídia
     let finalVideoUrl = config.tvVideo || "https://www.youtube.com/watch?v=jfKfPfyJRdk";
-    if (config.tipoConexao === 'iptv' && config.xtreamDns && config.xtreamUser && config.xtreamPass) {
-        let dns = config.xtreamDns.trim();
-        if (dns.endsWith('/')) dns = dns.slice(0, -1);
-        finalVideoUrl = `${dns}/get.php?username=${config.xtreamUser.trim()}&password=${config.xtreamPass.trim()}&type=m3u_plus&output=m3u8`;
+    
+    if (config.tipoConexao === 'iptv') {
+        if (config.xtreamM3uUrl) {
+            // Se o usuário fez upload do arquivo, usa o link direto do Firebase
+            finalVideoUrl = config.xtreamM3uUrl;
+        } else if (config.xtreamDns && config.xtreamUser && config.xtreamPass) {
+            // Fallback para o link dinâmico que sofre bloqueios
+            let dns = config.xtreamDns.trim();
+            if (dns.endsWith('/')) dns = dns.slice(0, -1);
+            finalVideoUrl = `${dns}/get.php?username=${config.xtreamUser.trim()}&password=${config.xtreamPass.trim()}&type=m3u_plus&output=m3u8`;
+        }
     }
 
     iniciarPlayer(finalVideoUrl);
@@ -184,9 +192,14 @@ function iniciarPlayer(videoUrl) {
 
 async function carregarListaM3U(url, videoElement) {
     try {
-        // Usa corsproxy.io (otimizado para client-side e bypass de Cloudflare)
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-        const response = await fetch(proxyUrl);
+        let fetchUrl = url;
+        
+        // Se NÃO for um link do nosso Firebase, usamos o proxy para tentar burlar o bloqueio
+        if (!url.includes('firebasestorage.googleapis.com')) {
+            fetchUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+        }
+
+        const response = await fetch(fetchUrl);
         const data = await response.text();
         
         m3uChannels = parseM3U(data);

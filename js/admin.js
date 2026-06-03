@@ -3,6 +3,7 @@ import { db, doc, setDoc, storage, ref, uploadBytes, getDownloadURL, auth, onAut
 let currentUser = null;
 window.localCatalog = [];
 window.localTvAds = [];
+window.xtreamM3uUrl = null;
 
 // Proteção da Rota
 onAuthStateChanged(auth, async (user) => {
@@ -64,6 +65,11 @@ async function carregarDadosDoUsuario(uid) {
             if(data.xtreamDns) document.getElementById('xtreamDns').value = data.xtreamDns;
             if(data.xtreamUser) document.getElementById('xtreamUser').value = data.xtreamUser;
             if(data.xtreamPass) document.getElementById('xtreamPass').value = data.xtreamPass;
+            if(data.xtreamM3uUrl) {
+                window.xtreamM3uUrl = data.xtreamM3uUrl;
+                const status = document.getElementById('m3u-upload-status');
+                if(status) status.innerText = "✅ Um arquivo M3U já está salvo na nuvem e será usado.";
+            }
             
             // Dispara evento manual para atualizar o Preview inicial
             document.getElementById('nome').dispatchEvent(new Event('input'));
@@ -197,6 +203,33 @@ function setupDropZone(zoneId, inputId) {
 setupDropZone('drop-logo', 'logoFile');
 setupDropZone('drop-novo-item', 'novoItemFile');
 setupDropZone('drop-novo-tv-ad', 'novoTvAdFile');
+
+// Lógica de Upload Imediato do M3U (Plano B)
+document.getElementById('m3uUploadInput').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const statusEl = document.getElementById('m3u-upload-status');
+    statusEl.style.color = "var(--accent-gold)";
+    statusEl.innerText = "⏳ Fazendo upload do arquivo M3U para a nuvem. Aguarde...";
+
+    try {
+        const barberId = document.getElementById('barberId').value.trim();
+        if (!barberId) throw new Error("ID da barbearia não encontrado. Salve a barbearia antes de enviar a lista.");
+
+        // Upload do M3U
+        const fileRef = ref(storage, `barbearias/${barberId}/playlist.m3u`);
+        await uploadBytes(fileRef, file);
+        const url = await getDownloadURL(fileRef);
+
+        window.xtreamM3uUrl = url;
+        statusEl.style.color = "#4caf50";
+        statusEl.innerText = "✅ Lista M3U salva com sucesso! Agora clique em 'Salvar Configurações' lá embaixo.";
+    } catch (error) {
+        statusEl.style.color = "#f44336";
+        statusEl.innerText = "❌ Erro ao enviar a lista: " + error.message;
+    }
+});
 
 // Lógica de Renderização do Catálogo Local
 window.renderCatalogAdmin = function() {
@@ -441,6 +474,8 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
             tvTempoAnuncio: parseInt(document.getElementById('tvTempoAnuncio').value) || 30,
             dataCriacao: new Date().toISOString()
         };
+
+        if (window.xtreamM3uUrl) barbeariaData.xtreamM3uUrl = window.xtreamM3uUrl;
 
         if (logoUrl) barbeariaData.logoUrl = logoUrl;
         

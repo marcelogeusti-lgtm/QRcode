@@ -180,6 +180,18 @@
                                 <input type="password" id="xtreamPass" style="width:100%;">
                             </div>
                         </div>
+
+                        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                            <h5 style="margin-bottom: 0.5rem; color: #fff;">Plano B: Falha na Conexão? (Anti-Bloqueio)</h5>
+                            <p style="font-size: 0.8rem; color: var(--muted-foreground); margin-bottom: 1rem;">
+                                Se a TV não carregar a lista devido a bloqueios do seu provedor, baixe a lista M3U no seu computador e faça o upload manual aqui. Isso garante 100% de funcionamento.
+                            </p>
+                            <input type="file" id="m3uUploadInput" accept=".m3u,.txt" style="display:none;">
+                            <button type="button" class="btn btn-outline" onclick="document.getElementById('m3uUploadInput').click()" style="width:100%;">
+                                📁 Fazer Upload do Arquivo M3U
+                            </button>
+                            <p id="m3u-upload-status" style="font-size: 0.85rem; margin-top: 0.5rem; color: var(--accent-gold);"></p>
+                        </div>
                     </div>
 
                     <script>
