@@ -1,3 +1,33 @@
+
+// Toast Notifications Module
+window.showToast = function(title, message, type = 'info') {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+    }
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+    
+    let icon = 'fa-info-circle';
+    if(type === 'success') icon = 'fa-check-circle';
+    if(type === 'error') icon = 'fa-exclamation-circle';
+    
+    toast.innerHTML = 
+        '<div class="toast-icon"><i class="fas ' + icon + '"></i></div>' +
+        '<div class="toast-content">' +
+            '<h4>' + title + '</h4>' +
+            '<p>' + message + '</p>' +
+        '</div>';
+        
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.add('toast-out');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+};
 import { db, doc, setDoc, storage, ref, uploadBytes, getDownloadURL, auth, onAuthStateChanged, signOut, getDoc, collection, query, where, getDocs } from './firebase-config.js';
 
 let currentUser = null;
@@ -180,12 +210,12 @@ if (btnCancelar) {
             try {
                 const docRef = doc(db, "barbearias", barberId);
                 await updateDoc(docRef, { plan: 'SUSPENDED' });
-                alert("Assinatura cancelada com sucesso.");
+                window.showToast('Sucesso', 'Assinatura cancelada', 'success');
                 // Força o recarregamento da página para engatilhar a Tela da Morte
                 window.location.reload();
             } catch(e) {
                 console.error("Erro ao cancelar:", e);
-                alert("Erro ao tentar cancelar a assinatura.");
+                window.showToast('Erro', 'Falha ao cancelar assinatura', 'error');
             }
         }
     });
@@ -346,7 +376,7 @@ document.getElementById('btn-add-item').addEventListener('click', () => {
     const fileInput = document.getElementById('novoItemFile');
     
     if (!fileInput.files[0]) {
-        alert("Por favor, selecione um arquivo.");
+        window.showToast('Aviso', 'Selecione um arquivo primeiro', 'info');
         return;
     }
     
@@ -410,7 +440,7 @@ document.getElementById('btn-add-tv-ad').addEventListener('click', () => {
     const fileInput = document.getElementById('novoTvAdFile');
     
     if (!fileInput.files[0]) {
-        alert("Por favor, selecione uma arte para o anúncio.");
+        window.showToast('Aviso', 'Selecione uma arte para a TV', 'info');
         return;
     }
     
@@ -578,9 +608,9 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
 
         await setDoc(docRef, barbeariaData, { merge: true });
         
-        alert('Dados salvos com sucesso!');
+        window.showToast('Salvo', 'Configura��es atualizadas', 'success');
         loadingMsg.style.display = 'none';
-        btn.disabled = false;
+        btn.disabled = false; btn.innerHTML = originalBtnText;
         
         // Atualiza a logo preview se fez upload
         if (logoUrl) {
@@ -598,11 +628,11 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
 
     } catch (error) {
         console.error("Erro ao salvar negócio: ", error);
-        alert('Erro ao salvar os dados.');
+        window.showToast('Erro', 'Falha ao salvar', 'error');
         loadingMsg.innerText = error.message.includes("pertence a outro") ? error.message : "Erro ao salvar. Verifique se o Firebase Storage está ativo.";
         loadingMsg.style.color = "red";
     } finally {
-        btn.disabled = false;
+        btn.disabled = false; btn.innerHTML = originalBtnText;
     }
 });
 
@@ -881,6 +911,7 @@ window.addCustomLink = function() {
         document.getElementById('new-link-url').value = '';
         renderCustomLinks();
     } else {
-        alert('Preencha título e URL');
+        window.showToast('Aviso', 'Preencha t�tulo e URL', 'info');
     }
 }
+

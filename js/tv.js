@@ -519,7 +519,8 @@ function mostrarComercial() {
     }
 
     const currentUrl = tvAdsArray[currentAdIndex];
-    overlay.style.display = 'flex';
+    overlay.style.opacity = '1';
+    overlay.style.pointerEvents = 'auto';
     currentAdIndex = (currentAdIndex + 1) % tvAdsArray.length;
 
     if (currentUrl.includes('.mp4')) {
@@ -556,9 +557,14 @@ function mostrarComercial() {
 }
 
 function encerrarComercial() {
-    document.getElementById('fullscreen-ad-overlay').style.display = 'none';
+    const overlay = document.getElementById('fullscreen-ad-overlay');
+    overlay.style.opacity = '0';
+    overlay.style.pointerEvents = 'none';
     const video = document.getElementById('fullscreen-ad-video');
-    video.pause();
+    
+    setTimeout(() => {
+        video.pause();
+    }, 1000); // Aguarda a transição terminar antes de pausar para não dar tranco
     
     // Retoma o Youtube
     if (ytPlayer && typeof ytPlayer.playVideo === 'function') {

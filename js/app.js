@@ -51,6 +51,8 @@ function aplicarConfiguracoes(config) {
     if(config.corPrincipal) {
         document.documentElement.style.setProperty('--accent-gold', config.corPrincipal);
         document.documentElement.style.setProperty('--accent-gold-hover', config.corPrincipal);
+        const textColor = getContrastYIQ(config.corPrincipal);
+        document.documentElement.style.setProperty('--btn-text-color', textColor);
     }
     
     // Textos e Logo
@@ -237,4 +239,16 @@ function setupMetricListeners(docRef) {
             updateDoc(docRef, { metrics_social: increment(1) }).catch(()=>{});
         });
     }
+}
+
+function getContrastYIQ(hexcolor){
+    hexcolor = hexcolor.replace("#", "");
+    if (hexcolor.length === 3) {
+        hexcolor = hexcolor.split('').map(function (hex) { return hex + hex; }).join('');
+    }
+    var r = parseInt(hexcolor.substr(0,2),16);
+    var g = parseInt(hexcolor.substr(2,2),16);
+    var b = parseInt(hexcolor.substr(4,2),16);
+    var yiq = ((r*299)+(g*587)+(b*114))/1000;
+    return (yiq >= 128) ? 'black' : 'white';
 }

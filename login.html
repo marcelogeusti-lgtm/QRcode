@@ -5,45 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SaaS Painel - Acesso Restrito</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { display: flex; align-items: center; justify-content: center; height: 100vh; background: var(--bg-dark); }
+        body { margin: 0; display: flex; min-height: 100vh; background: var(--bg-dark); color: white; font-family: 'Inter', sans-serif; }
+        .login-container { display: flex; width: 100%; }
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') center/cover;
+            display: none; flex-direction: column; justify-content: center; padding: 4rem;
+        }
+        @media (min-width: 900px) { .login-left { display: flex; } }
+        .login-left h1 { font-size: 3rem; margin-bottom: 1rem; font-weight: 800; line-height: 1.2; }
+        .login-left p { font-size: 1.2rem; color: #ccc; max-width: 400px; line-height: 1.6; }
+        
+        .login-right {
+            flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem;
+            position: relative;
+        }
         .login-box {
-            background: rgba(255,255,255,0.05); padding: 3rem 2rem; border-radius: 12px;
-            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 400px;
+            width: 100%; max-width: 400px; padding: 3rem 2rem;
+            background: rgba(255,255,255,0.03); border-radius: 20px;
+            backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
             text-align: center;
         }
-        .login-box h2 { color: var(--accent-gold); margin-bottom: 2rem; font-size: 1.8rem; }
+        .login-box h2 { color: var(--accent-gold); margin-bottom: 0.5rem; font-size: 2rem; font-weight: 700; }
+        .login-box p.subtitle { color: #aaa; margin-bottom: 2rem; font-size: 0.95rem; }
         .form-group { margin-bottom: 1.5rem; text-align: left; }
-        .form-group label { color: white; display: block; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .form-group label { color: #ccc; display: block; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
         .form-group input {
-            width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.5); color: white; box-sizing: border-box;
+            width: 100%; padding: 1rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.4); color: white; box-sizing: border-box; font-size: 1rem;
+            transition: all 0.3s ease;
         }
+        .form-group input:focus { outline: none; border-color: var(--accent-gold); background: rgba(0,0,0,0.6); }
+        .btn-submit {
+            width: 100%; padding: 1rem; background: var(--accent-gold); color: #000; font-weight: bold;
+            border: none; border-radius: 12px; cursor: pointer; font-size: 1rem;
+            transition: transform 0.2s, background 0.3s; margin-top: 1rem;
+        }
+        .btn-submit:hover { transform: translateY(-2px); background: var(--accent-gold-hover); }
         .btn-toggle {
-            background: none; border: none; color: var(--accent-gold); cursor: pointer;
-            margin-top: 1rem; font-size: 0.9rem; text-decoration: underline;
+            background: none; border: none; color: #888; cursor: pointer;
+            margin-top: 1.5rem; font-size: 0.9rem; transition: color 0.3s;
         }
-        #error-msg { color: #ff4444; font-size: 0.9rem; margin-top: 1rem; display: none; }
+        .btn-toggle:hover { color: var(--accent-gold); }
+        #error-msg { color: #ff4444; font-size: 0.9rem; margin-top: 1rem; display: none; background: rgba(255,68,68,0.1); padding: 0.5rem; border-radius: 8px; border: 1px solid rgba(255,68,68,0.2); }
     </style>
 </head>
 <body>
-    <div class="login-box">
-        <h2 id="form-title">Entrar na Conta</h2>
-        <form id="auth-form">
-            <div class="form-group">
-                <label>Seu E-mail</label>
-                <input type="email" id="email" required placeholder="contato@empresa.com">
+    <div class="login-container">
+        <div class="login-left fade-up">
+            <h1>Gestão e Presença Digital.</h1>
+            <p>Tudo o que o seu negócio precisa em uma única plataforma intuitiva e elegante.</p>
+        </div>
+        <div class="login-right">
+            <div class="login-box fade-up stagger-1">
+                <div style="margin-bottom: 2rem;">
+                    <i class="fas fa-bolt" style="font-size: 2.5rem; color: var(--accent-gold);"></i>
+                </div>
+                <h2 id="form-title">Bem-vindo</h2>
+                <p class="subtitle" id="form-subtitle">Faça login para acessar o Painel PRO</p>
+                <form id="auth-form">
+                    <div class="form-group">
+                        <label>E-mail</label>
+                        <input type="email" id="email" required placeholder="contato@empresa.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" id="password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn-submit" id="btn-submit">Entrar na Conta</button>
+                    <p id="error-msg">Erro ao autenticar.</p>
+                </form>
+                <button class="btn-toggle" id="btn-toggle">Primeiro acesso? Crie sua conta</button>
             </div>
-            <div class="form-group">
-                <label>Senha</label>
-                <input type="password" id="password" required placeholder="******">
-            </div>
-            <button type="submit" class="btn" style="width: 100%; padding: 1rem;" id="btn-submit">Fazer Login</button>
-            <p id="error-msg">Erro ao fazer login.</p>
-        </form>
-        <button class="btn-toggle" id="btn-toggle">Ainda não tem conta? Criar agora</button>
+        </div>
     </div>
 
     <script type="module" src="js/login.js"></script>
+    <script>
+        // Update subtitle when toggling form
+        document.getElementById('btn-toggle').addEventListener('click', () => {
+            setTimeout(() => {
+                const title = document.getElementById('form-title').innerText;
+                const subtitle = document.getElementById('form-subtitle');
+                if(title.includes('Criar')) {
+                    subtitle.innerText = "Crie sua conta para começar";
+                } else {
+                    subtitle.innerText = "Faça login para acessar o Painel PRO";
+                }
+            }, 50);
+        });
+    </script>
 </body>
 </html>
