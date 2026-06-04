@@ -24,7 +24,7 @@ btnToggle.addEventListener('click', () => {
         btnToggle.innerText = "Ainda não tem conta? Criar agora";
     } else {
         title.innerText = "Criar Nova Conta";
-        btnSubmit.innerText = "Cadastrar Barbearia";
+        btnSubmit.innerText = "Cadastrar Empresa";
         btnToggle.innerText = "Já tem uma conta? Fazer Login";
     }
 });
@@ -59,6 +59,6 @@ form.addEventListener('submit', async (e) => {
             errorMsg.innerText = "Erro ao conectar. Tente novamente.";
         }
         btnSubmit.disabled = false;
-        btnSubmit.innerText = isLoginMode ? "Fazer Login" : "Cadastrar Barbearia";
+        btnSubmit.innerText = isLoginMode ? "Fazer Login" : "Cadastrar Empresa";
     }
 });

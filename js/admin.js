@@ -1,4 +1,4 @@
-
+ï»¿
 // Toast Notifications Module
 window.showToast = function(title, message, type = 'info') {
     let container = document.getElementById('toast-container');
@@ -608,7 +608,7 @@ document.getElementById('admin-form').addEventListener('submit', async (e) => {
 
         await setDoc(docRef, barbeariaData, { merge: true });
         
-        window.showToast('Salvo', 'Configurações atualizadas', 'success');
+        window.showToast('Salvo', 'Configuraï¿½ï¿½es atualizadas', 'success');
         loadingMsg.style.display = 'none';
         btn.disabled = false; btn.innerHTML = originalBtnText;
         
@@ -911,7 +911,10 @@ window.addCustomLink = function() {
         document.getElementById('new-link-url').value = '';
         renderCustomLinks();
     } else {
-        window.showToast('Aviso', 'Preencha título e URL', 'info');
+        window.showToast('Aviso', 'Preencha tï¿½tulo e URL', 'info');
     }
 }
+
+
+window.copyStoreLink = function() { const link = document.getElementById('store-link').value; if(navigator.clipboard){ navigator.clipboard.writeText(link).then(()=>window.showToast('Link copiado com sucesso!', 'success')).catch(()=>window.showToast('Erro ao copiar', 'error')); } else { const ta = document.createElement('textarea'); ta.value = link; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); window.showToast('Link copiado com sucesso!', 'success'); } };
 

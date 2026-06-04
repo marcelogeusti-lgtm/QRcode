@@ -257,7 +257,7 @@ body {
 }
 
 /* Toast */
-.toast {
+.client-toast {
     position: fixed;
     bottom: 20px; left: 50%;
     transform: translateX(-50%) translateY(100px);
@@ -272,7 +272,7 @@ body {
     z-index: 1000;
     opacity: 0;
 }
-.toast.show {
+.client-toast.show {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
 }
@@ -885,3 +885,142 @@ input:focus {
     from { transform: translateX(0); opacity: 1; }
     to { transform: translateX(100%); opacity: 0; }
 }
+
+/* ================= ADMIN PRO REDESIGN ================= */
+.admin-section-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+.admin-section-title {
+    color: var(--accent-gold);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+.metric-card {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+.metric-card .icon-bg {
+    position: absolute;
+    right: -10px;
+    bottom: -15px;
+    font-size: 5rem;
+    color: rgba(255, 255, 255, 0.03);
+    z-index: 0;
+}
+.metric-card h3 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--accent-gold);
+    z-index: 1;
+}
+.metric-card p {
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    margin: 0.5rem 0 0 0;
+    z-index: 1;
+}
+
+/* Upload Area (Drag and drop feel) */
+.upload-area {
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 2rem 1rem;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+.upload-area:hover {
+    border-color: var(--accent-gold);
+    background: rgba(212, 175, 55, 0.05);
+}
+.upload-area i {
+    font-size: 2rem;
+    color: var(--accent-gold);
+}
+.upload-area p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+}
+.upload-area input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Enhancing inputs */
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #ccc;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+.form-control, select.form-control {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    padding: 0.8rem 1rem !important;
+    color: white !important;
+    font-family: 'Inter', sans-serif !important;
+    transition: all 0.3s ease !important;
+    width: 100%;
+    box-sizing: border-box;
+}
+.form-control:focus, select.form-control:focus {
+    outline: none !important;
+    border-color: var(--accent-gold) !important;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1) !important;
+}
+
+/* Beautiful QR Code Card */
+.qr-summary-card {
+    background: linear-gradient(135deg, rgba(212,175,55,0.1) 0%, rgba(0,0,0,0.5) 100%);
+    border: 1px solid var(--accent-gold);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.upload-area.dragover { border-color: var(--accent-gold); background: rgba(212, 175, 55, 0.1); }
+

@@ -36,7 +36,7 @@
         <div class="glass-card fade-up stagger-3" style="margin-bottom: 1.5rem;">
             <h2 class="card-title"><i class="fas fa-wifi"></i> Rede Wi-Fi</h2>
             <p style="color: var(--muted-foreground); margin-bottom: 1rem; font-size: 0.9rem;">Conecte-se na nossa rede enquanto espera.</p>
-            <div class="copy-box" onclick="copyWifi()" id="wl-wifi-container">
+            <div class="copy-box" onclick="copyToClipboard('wl-wifi', 'Senha do Wi-Fi copiada!')" id="wl-wifi-container">
                 <span id="wl-wifi">...</span>
                 <i class="far fa-copy"></i>
             </div>
@@ -46,11 +46,11 @@
         <div class="glass-card fade-up stagger-4" style="margin-bottom: 1.5rem;">
             <h2 class="card-title"><i class="fas fa-diamond"></i> Pagamento PIX</h2>
             <p style="color: var(--muted-foreground); margin-bottom: 1rem; font-size: 0.9rem;">Pague de forma rápida e segura.</p>
-            <div class="copy-box" onclick="copyPix()" id="wl-pix-container" style="margin-bottom: 1rem;">
+            <div class="copy-box" onclick="copyToClipboard('wl-pix', 'Chave PIX copiada!')" id="wl-pix-container" style="margin-bottom: 1rem;">
                 <span id="wl-pix">...</span>
                 <i class="far fa-copy"></i>
             </div>
-            <button class="btn btn-outline" onclick="copyPix()" style="width: 100%;">Copiar Chave PIX</button>
+            <button class="btn btn-outline" onclick="copyToClipboard('wl-pix', 'Chave PIX copiada!')" style="width: 100%;">Copiar Chave PIX</button>
         </div>
 
         <!-- Google Review -->
@@ -72,7 +72,7 @@
     </div>
 
     <!-- Toast de Notificação -->
-    <div id="toast" class="toast">Copiado!</div>
+    <div id="toast" class="client-toast">Copiado!</div>
 
     <!-- Scripts -->
     <script>

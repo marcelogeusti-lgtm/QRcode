@@ -7,14 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        .drag-zone {
-            border: 2px dashed rgba(255,255,255,0.3); padding: 2rem; text-align: center;
-            border-radius: 8px; cursor: pointer; transition: all 0.3s; margin-bottom: 1rem;
-            background: rgba(0,0,0,0.2);
-        }
-        .drag-zone.dragover { border-color: var(--accent-gold); background: rgba(212, 175, 55, 0.1); }
-        .drag-zone p { color: #aaa; margin: 0; pointer-events: none; }
-        .drag-zone input { display: none; }
         .header-painel { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
         #btn-logout { background: transparent; border: 1px solid #ff4444; color: #ff4444; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
     </style>
@@ -70,33 +62,41 @@
 
         <!-- Main Content -->
         <main class="app-main" id="app-main">
-            <!-- Top Bar -->
-            <div class="container" style="max-width: 1200px; margin: 0 auto; width: 100%;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <button type="button" class="btn-toggle-sidebar-mobile" id="btn-toggle-sidebar-mobile" style="color:white; font-size:1.5rem; background:none; border:none; cursor:pointer;" onclick="document.getElementById('app-sidebar').classList.add('mobile-open')"><i class="fas fa-bars"></i></button>
-                        <h1 style="margin: 0; font-size: 1.5rem; color: var(--foreground); display: flex; align-items: center; gap: 0.5rem;">
-                            <span id="badge-plan" style="background: rgba(255,255,255,0.1); color:#ccc; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight:bold;">Plano: BÁSICO</span>
-                        </h1>
+            <!-- Top Bar Sticky -->
+            <div style="position: sticky; top: 0; z-index: 100; background: rgba(9, 9, 11, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); margin-bottom: 2rem; padding: 1rem 0;">
+                <div class="container" style="max-width: 1200px; margin: 0 auto; width: 100%; padding: 0 1.5rem; box-sizing: border-box;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <button type="button" class="btn-toggle-sidebar-mobile" id="btn-toggle-sidebar-mobile" style="color:white; font-size:1.5rem; background:none; border:none; cursor:pointer;" onclick="document.getElementById('app-sidebar').classList.add('mobile-open')"><i class="fas fa-bars"></i></button>
+                            <h1 style="margin: 0; font-size: 1.5rem; color: var(--foreground); display: flex; align-items: center; gap: 0.5rem;">
+                                <span id="badge-plan" style="background: rgba(255,255,255,0.1); color:#ccc; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight:bold;">Plano: BÁSICO</span>
+                            </h1>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <span id="display-email" style="color: var(--muted-foreground); font-size: 0.9rem; display: none;"></span>
+                            <a href="#" target="_blank" id="btn-ver-app" class="btn"><i class="fas fa-external-link-alt"></i> <span class="nav-text">Ver App</span></a>
+                        </div>
                     </div>
                 </div>
             </div>
 
-        <!-- Métricas (Resultados do Mídia Indoor) -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
-            <div class="glass-card" style="text-align: center; padding: 1.5rem;">
-                <div id="met-views" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-gold); line-height: 1; margin-bottom: 0.5rem;">0</div>
-                <div style="font-size: 0.75rem; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.05em;">QR Codes Escaneados</div>
-            </div>
-            <div class="glass-card" style="text-align: center; padding: 1.5rem;">
-                <div id="met-google" style="font-size: 2.5rem; font-weight: 700; color: #fff; line-height: 1; margin-bottom: 0.5rem;">0</div>
-                <div style="font-size: 0.75rem; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.05em;">Cliques no Google</div>
-            </div>
-            <div class="glass-card" style="text-align: center; padding: 1.5rem;">
-                <div id="met-social" style="font-size: 2.5rem; font-weight: 700; color: #fff; line-height: 1; margin-bottom: 0.5rem;">0</div>
-                <div style="font-size: 0.75rem; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.05em;">Cliques Sociais</div>
-            </div>
-        </div>
+          <div class="metrics-grid">
+              <div class="metric-card">
+                  <i class="fas fa-qrcode icon-bg"></i>
+                  <h3 id="met-views">0</h3>
+                  <p>QR Codes Escaneados</p>
+              </div>
+              <div class="metric-card">
+                  <i class="fab fa-google icon-bg"></i>
+                  <h3 id="met-google">0</h3>
+                  <p>Cliques no Google</p>
+              </div>
+              <div class="metric-card">
+                  <i class="fas fa-mouse-pointer icon-bg"></i>
+                  <h3 id="met-social">0</h3>
+                  <p>Cliques Sociais</p>
+              </div>
+          </div>
 
     <div class="admin-wrapper">
         <!-- Lado Esquerdo: Formulário -->
@@ -106,39 +106,47 @@
             <!-- Abas de Navegação Antigas Removidas -->
 
             <!-- ================= ABA LOJA ================= -->
+            <!-- ================= ABA LOJA ================= -->
+            <!-- ================= ABA LOJA ================= -->
             <div id="tab-loja" class="tab-content active">
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display:block; margin-bottom:0.5rem;">ID do Negócio (Apenas minúsculas e sem acentos)</label>
-                    <input type="text" id="barberId" required style="width:100%; padding: 0.8rem; border-radius: 4px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
+                <div class="admin-section-card">
+                    <h3 class="admin-section-title"><i class="fas fa-info-circle"></i> Informações Básicas</h3>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label style="display:block; margin-bottom:0.5rem;">ID do Negócio (Apenas minúsculas e sem acentos)</label>
+                        <input type="text" id="barberId" required class="form-control">
+                    </div>
+
+                    <div class="paywall-container" id="pw-google-review">
+                        <div class="paywall-overlay" onclick="window.showUpsellModal()">
+                            <h3>⭐ Função Premium</h3>
+                            <p>Receba dezenas de avaliações no Google 5 estrelas.</p>
+                            <button type="button" class="btn" style="width: auto;">Desbloquear</button>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius); border: 1px dashed var(--border);">
+                            <label style="display:block; margin-bottom:0.5rem; font-weight: bold;">Link de Avaliação do Google (Google Meu Negócio) ⭐</label>
+                            <input type="url" id="googleReviewUrl" class="form-control" placeholder="Ex: https://g.page/r/...">
+                            <small style="color: var(--muted-foreground); margin-top: 0.5rem; display: block;">Se preenchido, os clientes verão um botão de 5 estrelas no celular para avaliar a barbearia.</small>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="paywall-container" id="pw-google-review">
-                    <div class="paywall-overlay" onclick="window.showUpsellModal()">
-                        <h3>🔒 Função Premium</h3>
-                        <p>Receba dezenas de avaliações no Google 5 estrelas.</p>
-                        <button type="button" class="btn" style="width: auto;">Desbloquear</button>
+                <div class="admin-section-card">
+                    <h3 class="admin-section-title"><i class="fas fa-paint-brush"></i> Personalização e Contatos</h3>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group"><label>Nome do Negócio</label><input type="text" id="nome" required class="form-control"></div>
+                        <div class="form-group"><label>Slogan</label><input type="text" id="slogan" class="form-control"></div>
+                        <div style="grid-column: span 2;" class="form-group"><label>Título da Galeria (Ex: Nosso Espaço, Nossos Trabalhos)</label><input type="text" id="tituloCatalogo" value="Galeria" class="form-control"></div>
+                        <div class="form-group"><label>Cor Principal (ex: #d4af37)</label><input type="color" id="cor" value="#d4af37" class="form-control" style="height: 45px; padding: 0.2rem;"></div>
+                        <div class="form-group"><label>Link do Instagram</label><input type="url" id="instagram" class="form-control"></div>
+                        <div class="form-group"><label>Link do WhatsApp</label><input type="url" id="whatsapp" class="form-control"></div>
+                        <div class="form-group"><label>Chave PIX</label><input type="text" id="pix" class="form-control"></div>
+                        <div class="form-group"><label>Senha do Wi-Fi</label><input type="text" id="wifi" class="form-control"></div>
                     </div>
-                    <div style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius); border: 1px dashed var(--border);">
-                        <label style="display:block; margin-bottom:0.5rem; font-weight: bold;">Link de Avaliação do Google (Google Meu Negócio) ⭐</label>
-                        <input type="url" id="googleReviewUrl" style="width:100%;" placeholder="Ex: https://g.page/r/...">
-                        <small style="color: var(--muted-foreground); margin-top: 0.5rem; display: block;">Se preenchido, os clientes verão um botão de 5 estrelas no celular para avaliar a barbearia.</small>
-                    </div>
-                </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                    <div><label>Nome do Negócio</label><input type="text" id="nome" required style="width:100%; padding:0.8rem;"></div>
-                    <div><label>Slogan</label><input type="text" id="slogan" style="width:100%; padding:0.8rem;"></div>
-                    <div style="grid-column: span 2;"><label>Título da Galeria (Ex: Nosso Espaço, Nossos Trabalhos)</label><input type="text" id="tituloCatalogo" value="Galeria" style="width:100%; padding:0.8rem;"></div>
-                    <div><label>Cor Principal (ex: #d4af37)</label><input type="color" id="cor" value="#d4af37" style="width:100%; height:45px;"></div>
-                    <div><label>Link do Instagram</label><input type="url" id="instagram" style="width:100%; padding:0.8rem;"></div>
-                    <div><label>Link do WhatsApp</label><input type="url" id="whatsapp" style="width:100%; padding:0.8rem;"></div>
-                    <div><label>Chave PIX</label><input type="text" id="pix" style="width:100%; padding:0.8rem;"></div>
-                    <div><label>Senha do Wi-Fi</label><input type="text" id="wifi" style="width:100%; padding:0.8rem;"></div>
                 </div>
 
                 <!-- Custom Links Section -->
-                <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border);">
-                    <h3>Botões / Links Extras</h3>
+                <div class="admin-section-card">
+                    <h3 class="admin-section-title"><i class="fas fa-link"></i> Botões / Links Extras</h3>
                     <p style="color: var(--muted-foreground); margin-bottom: 1rem; font-size: 0.9rem;">Adicione botões extras no estilo Linktree (Ex: Tabela de Preços, TikTok, Facebook).</p>
                     
                     <div id="custom-links-container" style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1rem;">
@@ -146,31 +154,36 @@
                     </div>
                     
                     <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem;">
-                        <input type="text" id="new-link-title" placeholder="Nome do Botão (Ex: Meu TikTok)" style="padding:0.8rem;">
-                        <input type="url" id="new-link-url" placeholder="URL do Link (https://...)" style="padding:0.8rem;">
+                        <input type="text" id="new-link-title" placeholder="Nome do Botão (Ex: Meu TikTok)" class="form-control">
+                        <input type="url" id="new-link-url" placeholder="URL do Link (https://...)" class="form-control">
                         <button type="button" class="btn" onclick="addCustomLink()" style="padding: 0.8rem 1.5rem;"><i class="fas fa-plus"></i></button>
                     </div>
                 </div>
 
-                <div style="margin-bottom: 1.5rem;">
-                    <label>Logo do Negócio</label>
-                    <div style="display: flex; gap: 1rem; align-items: center;">
-                        <img id="preview-logo" src="https://placehold.co/150x150/222222/d4af37?text=Logo" alt="Sua Logo" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); display: none;">
-                        <div class="drag-zone" id="drop-logo" style="flex: 1;" onclick="document.getElementById('logoFile').click()">
-                            <p id="txt-logo">Arraste a Logo aqui ou Clique para selecionar</p>
-                            <input type="file" id="logoFile" accept="image/*">
+                <div class="admin-section-card">
+                    <h3 class="admin-section-title"><i class="fas fa-image"></i> Mídia e Logo</h3>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label>Logo do Negócio</label>
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <img id="preview-logo" src="https://placehold.co/150x150/222222/d4af37?text=Logo" alt="Sua Logo" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); display: none;">
+                            <div class="upload-area" id="drop-logo" style="flex: 1;" onclick="document.getElementById('logoFile').click()">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p id="txt-logo">Arraste a Logo aqui ou Clique para selecionar</p>
+                                <input type="file" id="logoFile" accept="image/*">
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div style="margin-bottom: 1.5rem;">
-                    <label>Fundo Animado (Vídeo Curto ou Foto) <small style="color:var(--accent-gold);">(Recomendado: Máx 15s e 5MB)</small></label>
-                    <div style="display: flex; gap: 1rem; align-items: center;">
-                        <video id="preview-bg-video" autoplay loop muted playsinline style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); display: none;"></video>
-                        <img id="preview-bg-img" alt="Seu Fundo" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); display: none;">
-                        <div class="drag-zone" id="drop-bg" style="flex: 1;" onclick="document.getElementById('bgFile').click()">
-                            <p id="txt-bg">Arraste o Fundo aqui (mp4, jpg) ou Clique</p>
-                            <input type="file" id="bgFile" accept="image/*,video/mp4,video/quicktime">
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label>Fundo Animado (Vídeo Curto ou Foto) <small style="color:var(--muted-foreground);">(Recomendado: Máx 15s e 5MB)</small></label>
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <video id="preview-bg-video" autoplay loop muted playsinline style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); display: none;"></video>
+                            <img id="preview-bg-img" alt="Seu Fundo" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); display: none;">
+                            <div class="upload-area" id="drop-bg" style="flex: 1;" onclick="document.getElementById('bgFile').click()">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p id="txt-bg">Arraste o Fundo aqui (mp4, jpg) ou Clique</p>
+                                <input type="file" id="bgFile" accept="image/*,video/mp4,video/quicktime">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -178,68 +191,74 @@
 
             <!-- ================= ABA GALERIA ================= -->
             <div id="tab-catalogo" class="tab-content">
-                <h2 style="margin-bottom: 1rem;">Galeria de Imagens</h2>
-                <div class="catalog-grid" id="admin-catalog-grid">
-                    <!-- Preenchido via JS -->
+                <div class="admin-section-card">
+                    <h3 class="admin-section-title"><i class="fas fa-images"></i> Galeria de Imagens</h3>
+                    <div class="catalog-grid" id="admin-catalog-grid">
+                        <!-- Preenchido via JS -->
+                    </div>
                 </div>
 
-                <h3 style="margin-top:2rem; margin-bottom:1rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:1rem;">Adicionar Item à Galeria</h3>
-                <div class="add-item-form">
-                    <div class="drag-zone" id="drop-novo-item" onclick="document.getElementById('novoItemFile').click()" style="margin-bottom:0; padding:1rem;">
-                        <p id="txt-novo-item">Clique para selecionar uma foto ou PDF</p>
-                        <input type="file" id="novoItemFile" accept="image/*,application/pdf">
+                <div class="admin-section-card">
+                    <h3 class="admin-section-title"><i class="fas fa-plus-circle"></i> Adicionar Item à Galeria</h3>
+                    <div class="add-item-form">
+                        <div class="upload-area" id="drop-novo-item" onclick="document.getElementById('novoItemFile').click()" style="margin-bottom:1rem; padding:1.5rem;">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p id="txt-novo-item">Clique ou Arraste para selecionar uma foto ou PDF</p>
+                            <input type="file" id="novoItemFile" accept="image/*,application/pdf">
+                        </div>
+                        <button type="button" class="btn" id="btn-add-item">
+                            <i class="fas fa-check"></i> Enviar Item
+                        </button>
                     </div>
-                    <button type="button" class="btn btn-outline" id="btn-add-item" style="border-color: var(--accent-gold); color: var(--accent-gold);">
-                        + Enviar Item
-                    </button>
                 </div>
             </div>
 
             <!-- ================= ABA TV ================= -->
             <div id="tab-tv" class="tab-content">
-                <div class="paywall-container" id="pw-tv">
-                    <div class="paywall-overlay" onclick="window.showUpsellModal()">
-                        <h3>🔒 TV Corporativa</h3>
-                        <p>Transforme suas TVs em máquinas de fazer dinheiro com anunciantes.</p>
-                        <button type="button" class="btn" style="width: auto;">Desbloquear</button>
-                    </div>
-
-                    <h2 style="margin-bottom: 1rem;">Configuração da TV e Anúncios</h2>
-                    <div style="margin-bottom: 1.5rem;">
-                        <label style="display:block; margin-bottom:0.5rem;">Estilo / Layout da TV</label>
-                        <select id="tvLayout" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid var(--border); color:white; border-radius:4px;">
-                            <option value="l-shape">Tela Dividida (Vídeo + Sidebar + Banner Embaixo)</option>
-                            <option value="bottom">Rodapé Discreto (Vídeo Tela Cheia + Banner Fino Embaixo)</option>
-                            <option value="fullscreen">Intervalo Comercial (Vídeo Tela Cheia com Som + Anúncio Interrompe em Tela Cheia)</option>
-                        </select>
-                    </div>
-                    <div style="margin-bottom: 1.5rem;">
-                        <label style="display:block; margin-bottom:0.5rem;">Método de Conexão de Mídia</label>
-                        <select id="tipoConexao" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid var(--border); color:white; border-radius:4px;" onchange="toggleConexaoFields()">
-                            <option value="youtube">Vídeo / Link Rápido (YouTube ou Link .m3u direto)</option>
-                            <option value="iptv">Login IPTV (Xtream Codes API)</option>
-                        </select>
-                    </div>
+                <div class="admin-section-card">
+                    <h3 class="admin-section-title"><i class="fas fa-tv"></i> Configuração da TV Corporativa</h3>
+                  <div class="paywall-container" id="pw-tv">
+                      <div class="paywall-overlay" onclick="window.showUpsellModal()">
+                          <h3>⭐ TV Corporativa</h3>
+                          <p>Transforme suas TVs em máquinas de fazer dinheiro com anunciantes.</p>
+                          <button type="button" class="btn" style="width: auto;">Desbloquear</button>
+                      </div>
+  
+                      <div class="form-group" style="margin-bottom: 1.5rem;">
+                          <label>Estilo / Layout da TV</label>
+                          <select id="tvLayout" class="form-control">
+                              <option value="l-shape">Tela Dividida (Vídeo + Sidebar + Banner Embaixo)</option>
+                              <option value="bottom">Rodapé Discreto (Vídeo Tela Cheia + Banner Fino Embaixo)</option>
+                              <option value="fullscreen">Intervalo Comercial (Vídeo Tela Cheia com Som + Anúncio Interrompe em Tela Cheia)</option>
+                          </select>
+                      </div>
+                      <div class="form-group" style="margin-bottom: 1.5rem;">
+                          <label>Método de Conexão de Mídia</label>
+                          <select id="tipoConexao" class="form-control" onchange="toggleConexaoFields()">
+                              <option value="youtube">Vídeo / Link Rápido (YouTube ou Link .m3u direto)</option>
+                              <option value="iptv">Login IPTV (Xtream Codes API)</option>
+                          </select>
+                      </div>
 
                     <div id="box-youtube" style="margin-bottom: 1.5rem;">
                         <label style="display:block; margin-bottom:0.5rem;">Link da Programação</label>
-                        <input type="text" id="tvVideo" style="width:100%;" placeholder="Ex: https://youtube.com/watch?v=...">
+                        <input type="text" id="tvVideo" class="form-control" placeholder="Ex: https://youtube.com/watch?v=...">
                     </div>
 
                     <div id="box-iptv" style="margin-bottom: 1.5rem; display:none; padding: 1rem; border: 1px dashed var(--border); border-radius: 8px;">
                         <h4 style="margin-bottom: 1rem; color: var(--accent-gold);">Credenciais do Servidor IPTV</h4>
                         <div style="margin-bottom: 1rem;">
                             <label style="display:block; margin-bottom:0.5rem;">URL do Servidor / DNS</label>
-                            <input type="text" id="xtreamDns" style="width:100%;" placeholder="Ex: http://agkcb3.me:80">
+                            <input type="text" id="xtreamDns" class="form-control" placeholder="Ex: http://agkcb3.me:80">
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                             <div>
                                 <label style="display:block; margin-bottom:0.5rem;">Usuário</label>
-                                <input type="text" id="xtreamUser" style="width:100%;">
+                                <input type="text" id="xtreamUser" class="form-control">
                             </div>
                             <div>
                                 <label style="display:block; margin-bottom:0.5rem;">Senha</label>
-                                <input type="password" id="xtreamPass" style="width:100%;">
+                                <input type="password" id="xtreamPass" class="form-control">
                             </div>
                         </div>
 
@@ -249,7 +268,7 @@
                                 Se a TV não carregar a lista devido a bloqueios do seu provedor, baixe a lista M3U no seu computador e faça o upload manual aqui. Isso garante 100% de funcionamento.
                             </p>
                             <input type="file" id="m3uUploadInput" accept=".m3u,.txt" style="display:none;">
-                            <button type="button" class="btn btn-outline" onclick="document.getElementById('m3uUploadInput').click()" style="width:100%;">
+                            <button type="button" class="btn btn-outline" onclick="document.getElementById('m3uUploadInput').click()" class="form-control">
                                 📁 Fazer Upload do Arquivo M3U
                             </button>
                             <p id="m3u-upload-status" style="font-size: 0.85rem; margin-top: 0.5rem; color: var(--accent-gold);"></p>
@@ -269,7 +288,7 @@
                         }
                     </script>
                     <div style="display:grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                        <div><label>Velocidade do Carrossel (Tempo de cada Anúncio na tela - Segundos)</label><input type="number" id="tvTempoAnuncio" value="30" min="5" required style="width:100%;"></div>
+                        <div class="form-group"><label>Velocidade do Carrossel (Tempo de cada Anúncio na tela - Segundos)</label><input type="number" id="tvTempoAnuncio" value="30" min="5" required class="form-control"></div>
                     </div>
 
                     <h3 style="margin-top:2rem; margin-bottom:1rem; border-top:1px solid var(--border); padding-top:1rem;">Artes dos Comerciais da TV</h3>
@@ -280,7 +299,7 @@
                     </div>
 
                     <div class="add-item-form" style="margin-top: 1rem;">
-                        <div class="drag-zone" id="drop-novo-tv-ad" onclick="document.getElementById('novoTvAdFile').click()" style="margin-bottom:0; padding:1rem;">
+                        <div class="upload-area" id="drop-novo-tv-ad" onclick="document.getElementById('novoTvAdFile').click()" style="margin-bottom:0; padding:1rem;">
                             <p id="txt-novo-tv-ad">Clique para selecionar uma Arte ou Vídeo MP4</p>
                             <p style="font-size:0.75rem; color:var(--muted-foreground);">Recomendado: Vídeos de no máx 15MB e 30seg</p>
                             <input type="file" id="novoTvAdFile" accept="image/*,video/mp4">
@@ -294,31 +313,31 @@
 
             <!-- ================= ABA QR CODE ================= -->
             <div id="tab-qr" class="tab-content">
-                <div class="glass-card" style="margin-bottom: 1.5rem; padding: 1.5rem; border: 1px solid var(--border);">
-                    <h2 style="margin-bottom: 1rem; color: var(--accent-gold);"><i class="fas fa-print"></i> Gerador de Display de Mesa</h2>
+                <div class="admin-section-card">
+                    <h3 class="admin-section-title"><i class="fas fa-print"></i> Gerador de Display de Mesa</h3>
                     <p style="color: var(--muted-foreground); margin-bottom: 1.5rem;">Personalize e imprima plaquinhas de avaliação ou cardápios.</p>
                     
-                    <div style="margin-bottom: 1rem;">
+                    <div class="form-group" style="margin-bottom: 1rem;">
                         <label>Formato de Impressão</label>
-                        <select id="qrTamanho" style="width:100%; padding:0.8rem; background:rgba(0,0,0,0.5); border:1px solid var(--border); color:white; border-radius:4px;">
+                        <select id="qrTamanho" class="form-control">
                             <option value="5">Plaquinha Pequena (5x5cm no A4)</option>
                             <option value="10">Placa Média (10x10cm no A4)</option>
                             <option value="15">Folha Inteira (15x15cm no A4)</option>
                         </select>
                     </div>
                     
-                    <div style="margin-bottom: 1rem;">
+                    <div class="form-group" style="margin-bottom: 1rem;">
                         <label>Título (Ex: AVALIE-NOS!)</label>
-                        <input type="text" id="qrTitulo" value="AVALIE-NOS!" style="width:100%;">
+                        <input type="text" id="qrTitulo" value="AVALIE-NOS!" class="form-control">
                     </div>
                     
-                    <div style="margin-bottom: 1.5rem;">
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
                         <label>Subtítulo (Ex: Aponte a câmera para acessar)</label>
-                        <input type="text" id="qrSubtitulo" value="Aponte a câmera para acessar" style="width:100%;">
+                        <input type="text" id="qrSubtitulo" value="Aponte a câmera para acessar" class="form-control">
                     </div>
                     
                     <button type="button" id="btn-download-qr-new" class="btn" style="width: 100%; padding: 1rem;">
-                        📥 Baixar Arquivo para Impressão (A4)
+                        <i class="fas fa-file-pdf"></i> Baixar Arquivo para Impressão (A4)
                     </button>
                     
                     <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center;">
@@ -343,12 +362,12 @@
             <p id="loading-msg" style="text-align:center; display:none; margin-top:1rem; color: var(--accent-gold);">Processando imagens, comprimindo e salvando dados... Aguarde!</p>
         </form>
 
-        <div id="qrcode-container" style="display:none; text-align:center; padding:1.5rem; background:rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius:var(--radius); margin-top: 2rem;">
+        <div id="qrcode-container" class="qr-summary-card" style="display:none; margin-top: 2rem;">
             <h3 style="margin-bottom:1rem; color:var(--accent-gold);">Seu Link e QR Code</h3>
-            <div id="qrcode" style="display:flex; justify-content:center; margin-bottom:1rem; background:white; padding: 1rem; border-radius: 8px; width: max-content; margin-left: auto; margin-right: auto;"></div>
-            <div style="display:flex; flex-direction:column; gap:0.5rem; align-items:center;">
-                <a id="link-cliente" href="#" target="_blank" style="color:#caff00; text-decoration:none; font-weight:bold; border-bottom: 1px dashed #caff00;">Acessar Aplicativo / Catálogo</a>
-                <a id="link-tv" href="#" target="_blank" style="color:var(--muted-foreground); text-decoration:none; font-size:0.875rem;">Abrir Link da TV Indoor</a>
+            <div id="qrcode" style="display:flex; justify-content:center; margin-bottom:1.5rem; background:white; padding: 1.5rem; border-radius: 12px; width: max-content; margin-left: auto; margin-right: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.2);"></div>
+            <div style="display:flex; flex-direction:column; gap:0.8rem; align-items:center;">
+                <a id="link-cliente" href="#" target="_blank" style="color:var(--accent-gold); text-decoration:none; font-weight:800; font-size: 1.1rem; border-bottom: 2px dashed var(--accent-gold); padding-bottom: 2px;">Acessar Aplicativo / Catálogo</a>
+                <a id="link-tv" href="#" target="_blank" style="color:var(--muted-foreground); text-decoration:none; font-size:0.9rem; transition: color 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--muted-foreground)'">Abrir Link da TV Indoor</a>
             </div>
         </div>
         </div> <!-- /admin-main -->
