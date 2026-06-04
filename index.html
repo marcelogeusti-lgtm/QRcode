@@ -36,10 +36,11 @@
         <div class="glass-card fade-up stagger-3" style="margin-bottom: 1.5rem;">
             <h2 class="card-title"><i class="fas fa-wifi"></i> Rede Wi-Fi</h2>
             <p style="color: var(--muted-foreground); margin-bottom: 1rem; font-size: 0.9rem;">Conecte-se na nossa rede enquanto espera.</p>
-            <div class="copy-box" onclick="copyToClipboard('wl-wifi', 'Senha do Wi-Fi copiada!')" id="wl-wifi-container">
+            <div class="copy-box" onclick="copyToClipboard('wl-wifi', 'Senha do Wi-Fi copiada!')" id="wl-wifi-container" style="margin-bottom: 1rem;">
                 <span id="wl-wifi">...</span>
                 <i class="far fa-copy"></i>
             </div>
+            <button class="btn btn-outline" style="width: 100%; border-color: rgba(255,255,255,0.1); color: var(--foreground);" onclick="copyToClipboard('wl-wifi', 'Senha do Wi-Fi copiada!')">Copiar Senha do Wi-Fi</button>
         </div>
 
         <!-- PIX Card -->
